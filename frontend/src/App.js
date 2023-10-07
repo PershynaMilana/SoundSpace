@@ -8,6 +8,7 @@ import Welcome from "./components/Welcome";
 import PasswordResetRequest from "./components/PasswordResetRequest"; 
 import PasswordReset from "./components/PasswordReset"; 
 import { useSelector } from "react-redux";
+import Search from "./components/Search";
 function App() {
 
   const isLoggedIn = useSelector((state) => state.isLoggedIn);
@@ -24,6 +25,7 @@ function App() {
           {isLoggedIn && <Route path="/user" element={<Welcome />} />}
           <Route path="/reset-password" element={<PasswordResetRequest />} />{" "}
           <Route path="/reset-password/:token" element={<PasswordReset />} />{" "}
+          <Route path="/search" element={<Search/>} />
         </Routes>
       </main>
     </React.Fragment>

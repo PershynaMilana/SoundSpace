@@ -23,6 +23,16 @@ const Header = () => {
   const dispatch = useDispatch();
   const isLoggedIn = useSelector((state) => state.isLoggedIn);
   const location = useLocation();
+  const [value, setValue] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleMenuClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
 
   const sendLogoutReq = async () => {
     const res = await axios.post("http://localhost:5000/api/logout", null, {
@@ -36,17 +46,6 @@ const Header = () => {
 
   const handleLogout = () => {
     sendLogoutReq().then(() => dispatch(authActions.logout()));
-  };
-
-  const [value, setValue] = useState(null);
-  const [anchorEl, setAnchorEl] = useState(null);
-
-  const handleMenuClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
   };
 
   return (
@@ -76,6 +75,13 @@ const Header = () => {
                   to="/library"
                   LinkComponent={Link}
                   label="Library"
+                  sx={{ fontSize: "14px", color: "#808080" }}
+                />
+                {/* Добавьте Tab для перехода на страницу поиска */}
+                <Tab
+                  to="/search"
+                  LinkComponent={Link}
+                  label="Search"
                   sx={{ fontSize: "14px", color: "#808080" }}
                 />
               </Tabs>
