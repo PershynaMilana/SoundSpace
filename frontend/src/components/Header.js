@@ -35,17 +35,25 @@ const Header = () => {
   };
 
   const sendLogoutReq = async () => {
-    const res = await axios.post("http://localhost:5000/api/logout", null, {
-      withCredentials: true,
-    });
-    if (res.status === 200) {
-      return res;
+    try {
+      console.log("Sending logout request...");
+      const res = await axios.post("http://localhost:5000/api/logout", null, {
+        withCredentials: true,
+      });
+      console.log("Logout response:", res.data);
+      if (res.status === 200) {
+        return res;
+      }
+    } catch (error) {
+      return new Error("Unable to Logout. Please try again");
     }
-    return new Error("Unable to Logout. Please try again");
   };
 
   const handleLogout = () => {
-    sendLogoutReq().then(() => dispatch(authActions.logout()));
+    sendLogoutReq().then(() => {
+      dispatch(authActions.logout());
+      window.location.href = "/";
+    });
   };
 
   return (
@@ -77,7 +85,7 @@ const Header = () => {
                   label="Library"
                   sx={{ fontSize: "14px", color: "#808080" }}
                 />
-                {/* Добавьте Tab для перехода на страницу поиска */}
+                {}
                 <Tab
                   to="/search"
                   LinkComponent={Link}
@@ -106,12 +114,6 @@ const Header = () => {
                   value={value}
                   textColor="inherit"
                 >
-                  <Tab
-                    to="/logout"
-                    LinkComponent={Link}
-                    label="Logout"
-                    sx={{ fontSize: "14px", color: "#808080" }}
-                  />
                 </Tabs>
                 <IconButton onClick={handleMenuClick} color="inherit" style={{ width: "32px", height: "32px" }}>
                   <img src={menuIcon} alt="Menu" style={{ width: "40px", height: "40px", margin: "7px" }} />
