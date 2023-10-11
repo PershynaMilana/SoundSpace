@@ -1,0 +1,38 @@
+.track-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .track-item {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px 0;
+  }
+  
+  .track-name {
+    font-weight: bold;
+  }
+  
+  .artist-name {
+    color: #888;
+  }
+  
+  .playlist-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .playlist-item {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px 0;
+  }
+  
+  .playlist-name {
+    font-weight: bold;
+  }
+  
+  owner-name {
+    color: #888;
+  }
+  

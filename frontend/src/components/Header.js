@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   AppBar,
   Box,
@@ -52,9 +52,22 @@ const Header = () => {
   const handleLogout = () => {
     sendLogoutReq().then(() => {
       dispatch(authActions.logout());
+      document.cookie = "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       window.location.href = "/";
     });
   };
+
+  useEffect(() => {
+    const token = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("auth_token="))
+      ?.split("=")[1];
+
+    if (token) {
+      dispatch(authActions.login())
+    }
+  }, []);
+
 
   return (
     <div>

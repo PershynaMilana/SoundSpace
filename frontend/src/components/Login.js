@@ -47,10 +47,15 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     sendRequest()
-      .then(() => dispatch(authActions.login()))
-      .then(() => history("/home"));
+      .then((data) => {
+        document.cookie = `auth_token=${data.token}; path=/`;
+        dispatch(authActions.login());
+        history("/home");
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   };
-
 
   return (
     <section className="container forms">
