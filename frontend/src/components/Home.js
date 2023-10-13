@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import axios from 'axios';
 import prevIcon from "./images/prev.png";
 import playIcon from "./images/play.png";
@@ -28,3 +29,10 @@ const Home = () => {
 }
 
 export default Home
+=======
+const Home = () => {
+    return <h1 style={{ color: "white" }}>Home Page</h1>;
+};
+
+export default Home;
+>>>>>>> eb59dc3 (Seventh commit)

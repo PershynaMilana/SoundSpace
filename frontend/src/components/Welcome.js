@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import axios from 'axios';
 import prevIcon from "./images/prev.png";
 import playIcon from "./images/play.png";
@@ -6,33 +7,54 @@ import loopIcon from "./images/loop.png";
 import likeIcon from "./images/like.png";
 import volumeIcon from "./images/volume.png";
 import React, { useEffect, useState } from 'react';
+=======
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+>>>>>>> eb59dc3 (Seventh commit)
 
 axios.defaults.withCredentials = true;
 
 const Welcome = () => {
     const [user, setUser] = useState(null);
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> eb59dc3 (Seventh commit)
     const refreshToken = async () => {
         try {
             const res = await axios.get("http://localhost:5000/api/refresh", {
-                withCredentials: true
+                withCredentials: true,
             });
-            
+
             if (res.data) {
                 return res.data;
+<<<<<<< HEAD
             } else {              
+=======
+            } else {
+>>>>>>> eb59dc3 (Seventh commit)
                 throw new Error("Empty response from refreshToken");
             }
         } catch (error) {
             console.error(error);
             throw error;
         }
+<<<<<<< HEAD
     }
 
     const sendRequest = async () => {
         try {
             const res = await axios.get('http://localhost:5000/api/user', {
                 withCredentials: true
+=======
+    };
+
+    const sendRequest = async () => {
+        try {
+            const res = await axios.get("http://localhost:5000/api/user", {
+                withCredentials: true,
+>>>>>>> eb59dc3 (Seventh commit)
             });
             const data = res.data;
             return data;
@@ -41,6 +63,7 @@ const Welcome = () => {
             throw error;
         }
     };
+<<<<<<< HEAD
 
     useEffect(() => {
         if (!user) {
@@ -75,5 +98,25 @@ const Welcome = () => {
         </div>
       );
 }
+=======
+>>>>>>> eb59dc3 (Seventh commit)
 
-export default Welcome 
+    useEffect(() => {
+        if (!user) {
+            sendRequest()
+                .then((data) => setUser(data.user))
+                .catch((error) => console.error(error));
+        }
+
+        let interval = setInterval(() => {
+            refreshToken()
+                .then((data) => setUser(data.user))
+                .catch((error) => console.error(error));
+        }, 1000 * 29);
+
+        return () => clearInterval(interval);
+    }, [user]);
+    return <div></div>;
+};
+
+export default Welcome;
