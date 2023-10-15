@@ -76,6 +76,7 @@ const Author = ({ artistName }) => {
       </div>
       <h2>Tracks</h2>
       {authorData.tracks && authorData.tracks.length > 0 ? (
+        
         <ul>
           {authorData.tracks.map((track, index) => (
             <li key={index}>{track}</li>
