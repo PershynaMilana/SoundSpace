@@ -218,9 +218,7 @@ a.google span {
     align-items: center;
     justify-content: space-between;
     background-color: #191414;
-    /* Темный фон */
     color: #FFFFFF;
-    /* Белый текст */
     padding: 10px;
 }
 
@@ -256,56 +254,53 @@ a.google span {
 
 
 
-
-/* Стили для бегунка при наведении (меняется цвет на белый) */
 input[type=range]:hover::-webkit-slider-thumb {
-    background: #ffffff; /* Белый цвет для бегунка при наведении */
+    background: #ffffff;
     transition: background 0.3s;
 }
 
-/* Стили для ползунка при наведении (меняется цвет на зеленый) */
+
 input[type=range]:hover {
-    outline: none; /* Убираем контур при фокусировке */
-    background: #1DB954; /* Зеленый цвет для фона ползунка при наведении */
+    outline: none;
+    background: #1DB954;
 }
 
 
-/* Стили для трека ползунка при наведении (меняется цвет на зеленый) */
 input[type=range]:hover::-webkit-slider-runnable-track {
-    height: 5px; /* Задаем высоту трека */
-    width: 100%; /* Задаем ширину трека */
-    border-radius: 3px; /* Задаем скругленные углы (без них) */
+    height: 5px;
+    width: 100%;
+    border-radius: 3px;
 }
+
 input[type=range]::-webkit-slider-runnable-track {
     height: 5px;
     width: 100%;
-    background: #1DB954; /* Зеленый цвет для прогресса (Chrome) */
+    background: #1DB954;
     border: none;
     border-radius: 3px;
 }
 
-/* Стили для бегунка ползунка (thumb) (Chrome) */
+
 input[type=range]::-webkit-slider-thumb {
     -webkit-appearance: none;
     border: none;
     height: 14px;
     width: 14px;
     border-radius: 50%;
-    background: transparent; /* Прозрачный фон бегунка */
+    background: transparent;
     margin-top: -4px;
 }
 
-/* Стили для фона ползунка (весь ползунок) (Chrome) */
 input[type=range] {
     -webkit-appearance: none;
     width: 300px;
     height: 5px;
-    background: #535353; /* Серый цвет для фона ползунка (Chrome) */
+    background: #535353;
     border: none;
     border-radius: 3px;
-    background: transparent; /* Прозрачный фон ползунка */
-    border-color: transparent; /* Прозрачный цвет границы */
-    border-width: 6px 0; /* Задаем ширину границы (в данном случае, она прозрачная) */
+    background: transparent;
+    border-color: transparent;
+    border-width: 6px 0;
     color: transparent;
     accent-color: #1DB954;
 }
@@ -318,25 +313,44 @@ input[type=range] {
     margin: 8px;
     display: flex;
     align-items: center;
-  }
-  
-  .track-image {
+    width: 119%;
+}
+
+.track-image {
     width: 64px;
     height: 64px;
     margin-right: 16px;
     object-fit: cover;
     border: 2px solid #fff;
-  }
-  
-  .track-info {
+}
+
+.track-info {
     flex: 1;
-  }
-  
-  .track-name {
+}
+
+.track-name {
     font-size: 18px;
     margin: 4px 0;
-  }
-  
-  .artist-name {
+}
+
+.artist-name {
     font-size: 14px;
-  }
+}
+
+
+::-webkit-scrollbar {
+    width: 7px;
+    background-color: #888;
+    border-radius: 6px;
+}
+
+
+::-webkit-scrollbar-thumb {
+    background-color: #f2f2f2;
+    border-radius: 6px;
+}
+
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}
