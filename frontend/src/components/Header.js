@@ -31,7 +31,6 @@ const Header = () => {
 
     const handleSearch = (e) => {
         if (e.key === "Enter") {
-            // Перенаправляем пользователя на страницу поиска с параметром запроса
             window.location.href = `/search/${searchQuery}`;
         }
     };
@@ -191,7 +190,7 @@ const Header = () => {
                                         onChange={(e) =>
                                             setSearchQuery(e.target.value)
                                         }
-                                        onKeyDown={handleSearch} // Обработка нажатия клавиши Enter
+                                        onKeyDown={handleSearch} 
                                     />
                                 </div>
                                 <Tabs

@@ -9,6 +9,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebookSquare } from '@fortawesome/free-brands-svg-icons';
 import GoogleIcon from './images/google.png';
+import FacebookIcon from './images/facebook.png';
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -64,22 +65,24 @@ const Login = () => {
           <header>Login to Sound Space</header>
           <form onSubmit={handleSubmit}>
             <div className="media-options">
-              <a href="#" className="field facebook">
-              <FontAwesomeIcon icon={faFacebookSquare} className="facebook-icon" />
+              <a href="#" className="field google">
+                <img src={FacebookIcon} alt="Facebook" className="facebook-img" />
                 <span>Login with Facebook</span>
               </a>
             </div>
             <div className="media-options">
               <a href="#" className="field google">
-              <img src={GoogleIcon} alt="Google" className="google-img" />
+                <img src={GoogleIcon} alt="Google" className="google-img" />
                 <span>Login with Google</span>
               </a>
             </div>
             <div className="line"></div>
             <div className="field input-field">
+              <label htmlFor="email">Email</label>
               <input
                 type="email"
-                placeholder="Email"
+                id="email"
+                placeholder="Enter your email"
                 className="input"
                 name="email"
                 value={inputs.email}
@@ -87,9 +90,11 @@ const Login = () => {
               />
             </div>
             <div className="field input-field">
+              <label htmlFor="password">Password</label>
               <input
                 type={showPassword ? "text" : "password"}
-                placeholder="Password"
+                id="password"
+                placeholder="Enter your password"
                 className="password"
                 name="password"
                 value={inputs.password}
@@ -101,13 +106,13 @@ const Login = () => {
                 <VisibilityOffIcon onClick={handleTogglePassword} className="eye-icon" />
               )}
             </div>
-            <div className="form-link">
-              <a href="reset-password" className="forgot-pass">Forgot password?</a>
-            </div>
             <div className="field button-field">
               <button type="submit">Login</button>
             </div>
           </form>
+          <div className="form-link">
+              <a href="reset-password" className="forgot-pass">Forgot password?</a>
+            </div>
           <div className="line-second"></div>
           <div className="form-link">
             <span>Don't have an account? <a href="/signup" className="link signup-link">Signup</a></span>
