@@ -2,7 +2,7 @@ const User = require('../model/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
-const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY || 'MyKey';
+const JWT_SECRET_KEY =  'MyKey';
 
 const signup = async (req, res, next) => {
   const { name, email, password } = req.body;
@@ -70,24 +70,25 @@ const login = async (req, res, next) => {
 };
 
 const verifyToken = (req, res, next) => {
-  const cookies = req.headers.cookie;
-  const token = cookies.split("=")[1];
-  console.log(token);
+  const authorizationHeader = req.headers.authorization;
+
+  if (!authorizationHeader) {
+    return res.status(404).json({ message: "No token found" });
+  }
+  const token = authorizationHeader.split(' ')[1];
 
   if (!token) {
-    res.status(404).json({ message: "No token found" });
+    return res.status(404).json({ message: "No token found" });
   }
 
-  jwt.verify(String(token), JWT_SECRET_KEY, (err, user) => {
+  jwt.verify(token, JWT_SECRET_KEY, (err, user) => {
     if (err) {
       return res.status(400).json({ message: "Invalid token" });
     }
 
-    console.log(user.id);
     req.id = user.id;
+    next();
   });
-
-  next();
 };
 
 const getUser = async (req, res, next) => {
@@ -109,14 +110,19 @@ const getUser = async (req, res, next) => {
 };
 
 const refreshToken = (req, res, next) => {
-  const cookies = req.headers.cookie;
-  const prevToken = cookies.split("=")[1];
+  const authorizationHeader = req.headers.authorization;
+
+  if (!authorizationHeader) {
+    return res.status(400).json({ message: "Couldn't find token" });
+  }
+
+  const prevToken = authorizationHeader.split(' ')[1];
 
   if (!prevToken) {
     return res.status(400).json({ message: "Couldn't find token" });
   }
 
-  jwt.verify(String(prevToken), JWT_SECRET_KEY, (err, user) => {
+  jwt.verify(prevToken, JWT_SECRET_KEY, (err, user) => {
     if (err) {
       console.log(err);
       return res.status(403).json({ message: "Authentication failed" });
@@ -144,14 +150,19 @@ const refreshToken = (req, res, next) => {
 };
 
 const logout = (req, res, next) => {
-  const cookies = req.headers.cookie;
-  const prevToken = cookies.split("=")[1];
+  const authorizationHeader = req.headers.authorization;
+
+  if (!authorizationHeader) {
+    return res.status(400).json({ message: "Couldn't find token" });
+  }
+
+  const prevToken = authorizationHeader.split(' ')[1];
 
   if (!prevToken) {
     return res.status(400).json({ message: "Couldn't find token" });
   }
 
-  jwt.verify(String(prevToken), JWT_SECRET_KEY, (err, user) => {
+  jwt.verify(prevToken, JWT_SECRET_KEY, (err, user) => {
     if (err) {
       console.log(err);
       return res.status(403).json({ message: "Authentication failed" });
@@ -162,6 +173,25 @@ const logout = (req, res, next) => {
     return res.status(200).json({ message: "Successfully Logged Out" });
   });
 };
+
+
+const updateProfile = async (req, res, next) => {
+  const userId = req.id;
+  const { name, email } = req.body;
+
+  try {
+    const user = await User.findByIdAndUpdate(userId, { name, email }, { new: true });
+
+    return res.status(200).json({ user });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.updateProfile = updateProfile;
+
+
 
 exports.logout = logout;
 exports.signup = signup;

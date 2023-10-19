@@ -31,7 +31,6 @@ const Header = () => {
 
     const handleSearch = (e) => {
         if (e.key === "Enter") {
-            // Перенаправляем пользователя на страницу поиска с параметром запроса
             window.location.href = `/search/${searchQuery}`;
         }
     };
@@ -191,7 +190,7 @@ const Header = () => {
                                         onChange={(e) =>
                                             setSearchQuery(e.target.value)
                                         }
-                                        onKeyDown={handleSearch} // Обработка нажатия клавиши Enter
+                                        onKeyDown={handleSearch} 
                                     />
                                 </div>
                                 <Tabs
@@ -262,6 +261,9 @@ const Header = () => {
                                     onChange={(e, val) => setValue(val)}
                                     value={value}
                                     textColor="white"
+                                    TabIndicatorProps={{
+                                        style: { backgroundColor: "#1DB954" },
+                                    }}
                                 >
                                     <Tab
                                         to="/login"
@@ -271,6 +273,9 @@ const Header = () => {
                                             fontSize: "14px",
                                             color: "#808080",
                                         }}
+                                        TabIndicatorProps={{
+                                            style: { backgroundColor: "#1DB954" },
+                                        }}
                                     />
                                     <Tab
                                         to="/signup"
@@ -279,6 +284,9 @@ const Header = () => {
                                         sx={{
                                             fontSize: "14px",
                                             color: "#808080",
+                                        }}
+                                        TabIndicatorProps={{
+                                            style: { backgroundColor: "#1DB954" },
                                         }}
                                     />
                                 </Tabs>
