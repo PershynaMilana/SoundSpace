@@ -105,6 +105,7 @@ h2 {
   will-change: transform, opacity;
 }
 
+
 .button-17:hover {
   transform: scale(1.05);
 }

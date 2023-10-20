@@ -62,6 +62,7 @@ function UserProfile() {
                 setUpdateMessage("Failed to update data");
             });
     };
+    
 
     return (
         <div className="profile-container">
