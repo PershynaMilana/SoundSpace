@@ -272,10 +272,7 @@ const Header = () => {
                                         sx={{
                                             fontSize: "14px",
                                             color: "#808080",
-                                        }}
-                                        TabIndicatorProps={{
-                                            style: { backgroundColor: "#1DB954" },
-                                        }}
+                                        }}                                      
                                     />
                                     <Tab
                                         to="/signup"
@@ -285,9 +282,7 @@ const Header = () => {
                                             fontSize: "14px",
                                             color: "#808080",
                                         }}
-                                        TabIndicatorProps={{
-                                            style: { backgroundColor: "#1DB954" },
-                                        }}
+                                        
                                     />
                                 </Tabs>
                             )
