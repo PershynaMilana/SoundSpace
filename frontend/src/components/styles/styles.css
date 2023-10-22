@@ -385,7 +385,8 @@ input[type=range] {
     margin: 8px;
     display: flex;
     align-items: center;
-    width: 119%;
+    max-width: 1300px;
+    width: 110%;
 }
 
 .track-image {

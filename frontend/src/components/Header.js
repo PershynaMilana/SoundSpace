@@ -19,7 +19,6 @@ import logo from "./images/logo.png";
 
 axios.defaults.withCredentials = true;
 
-
 const Header = () => {
     const dispatch = useDispatch();
     const isLoggedIn = useSelector((state) => state.isLoggedIn);
@@ -31,6 +30,7 @@ const Header = () => {
 
     const handleSearch = (e) => {
         if (e.key === "Enter") {
+            // Перенаправляем пользователя на страницу поиска с параметром запроса
             window.location.href = `/search/${searchQuery}`;
         }
     };
@@ -167,31 +167,37 @@ const Header = () => {
                                         marginRight: "16px",
                                     }}
                                 >
-                                    <InputBase
-                                        id="search-input"
-                                        placeholder="Search..."
-                                        inputProps={{
-                                            "aria-label": "search",
-                                        }}
-                                        style={{
-                                            backgroundColor: "#808080",
-                                            borderRadius: "16px",
-                                            paddingLeft: "12px",
-                                            color: "white",
-                                            cursor: "pointer",
-                                            width: isInputActive
-                                                ? "500px"
-                                                : "200px",
-                                            transition: "width 0.3s",
-                                        }}
-                                        onBlur={() => setInputActive(false)}
-                                        onFocus={() => setInputActive(true)}
-                                        value={searchQuery}
-                                        onChange={(e) =>
-                                            setSearchQuery(e.target.value)
-                                        }
-                                        onKeyDown={handleSearch} 
-                                    />
+                                    <Link
+                                        to={`/search/${encodeURIComponent(
+                                            searchQuery
+                                        )}`}
+                                    >
+                                        <InputBase
+                                            id="search-input"
+                                            placeholder="Search..."
+                                            inputProps={{
+                                                "aria-label": "search",
+                                            }}
+                                            style={{
+                                                backgroundColor: "#808080",
+                                                borderRadius: "16px",
+                                                paddingLeft: "12px",
+                                                color: "white",
+                                                cursor: "pointer",
+                                                width: isInputActive
+                                                    ? "500px"
+                                                    : "200px",
+                                                transition: "width 0.3s",
+                                            }}
+                                            onBlur={() => setInputActive(false)}
+                                            onFocus={() => setInputActive(true)}
+                                            value={searchQuery}
+                                            onChange={(e) =>
+                                                setSearchQuery(e.target.value)
+                                            }
+                                            onKeyDown={handleSearch} // Обработка нажатия клавиши Enter
+                                        />
+                                    </Link>
                                 </div>
                                 <Tabs
                                     indicatorColor="secondary"
@@ -272,7 +278,7 @@ const Header = () => {
                                         sx={{
                                             fontSize: "14px",
                                             color: "#808080",
-                                        }}                                      
+                                        }}
                                     />
                                     <Tab
                                         to="/signup"
@@ -282,7 +288,6 @@ const Header = () => {
                                             fontSize: "14px",
                                             color: "#808080",
                                         }}
-                                        
                                     />
                                 </Tabs>
                             )

@@ -228,7 +228,7 @@ const Login = () => {
                         <span>
                             Don't have an account?{" "}
                             <a href="/signup" className="link signup-link">
-                                Signup
+                                Sign up
                             </a>
                         </span>
                     </div>
