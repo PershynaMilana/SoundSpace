@@ -14,9 +14,12 @@ import { Link, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { authActions } from "./store";
+import HomeIcon from "@mui/icons-material/Home";
+import HeadsetIcon from "@mui/icons-material/Headset";
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import menuIcon from "./images/account_icon2.png";
-import logo from "./images/logo.png";
-
+import logo from "./images/SounD-3-removebg-preview.png";
+import { styled } from "@mui/system";
 axios.defaults.withCredentials = true;
 
 const Header = () => {
@@ -30,7 +33,6 @@ const Header = () => {
 
     const handleSearch = (e) => {
         if (e.key === "Enter") {
-            // Перенаправляем пользователя на страницу поиска с параметром запроса
             window.location.href = `/search/${searchQuery}`;
         }
     };
@@ -55,7 +57,7 @@ const Header = () => {
         try {
             console.log("Sending logout request...");
             const res = await axios.post(
-                "http://localhost:5000/api/logout",
+                "http://localhost:8080/api/logout",
                 null,
                 {
                     withCredentials: true,
@@ -69,7 +71,9 @@ const Header = () => {
             return new Error("Unable to Logout. Please try again");
         }
     };
-
+    const SearchContainer = styled("div")({
+        position: "relative",
+    });
     const handleLogout = () => {
         sendLogoutReq().then(() => {
             dispatch(authActions.logout());
@@ -90,211 +94,275 @@ const Header = () => {
         }
     }, []);
 
+    const CustomTab = (props) => {
+        return (
+            <Tab
+                component={Link}
+                {...props}
+                sx={{
+                    fontSize: "16px", // Increase font size
+                    color: "white",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "4px", // Adjust spacing between icon and label
+                }}
+                label={
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                        {props.label === "Library" ? (
+                            <>
+                                <HeadsetIcon
+                                    style={{ fontSize: 24, marginRight: "4px" }}
+                                />{" "}
+                                {props.label}
+                            </>
+                        ) : props.label === "Home" ? (
+                            <>
+                                <HomeIcon
+                                    style={{ fontSize: 24, marginRight: "4px" }}
+                                />{" "}
+                                {props.label}
+                            </>
+                        ) : (
+                            props.label
+                        )}
+                    </div>
+                }
+            />
+        );
+    };
+
     return (
         <div>
-            <AppBar position="sticky" sx={{ backgroundColor: "black" }}>
-                <Toolbar>
-                    <Link
-                        to="/home"
-                        style={{ textDecoration: "none", color: "inherit" }}
+            <Box
+                sx={{
+                    borderBottom: "1px solid #696969",
+                    backgroundColor: "#333333",
+                }}
+            >
+                <AppBar position="sticky" sx={{ backgroundColor: "#000000" }}>
+                    <Toolbar
+                        style={{ marginLeft: "50px", marginRight: "20px" }}
                     >
-                        <img
-                            src={logo}
-                            alt="Logo"
-                            style={{
-                                height: "60px",
-                                marginRight: "10px",
-                                marginTop: "10px",
+                        <Link
+                            to="/home"
+                            style={{ textDecoration: "none", color: "inherit" }}
+                        >
+                            <img
+                                src={logo}
+                                alt="Logo"
+                                style={{
+                                    height: "60px",
+                                    width: "110px",
+                                    marginRight: "10px",
+                                    marginTop: "10px",
+                                    marginBottom: "10px",
+                                }}
+                            />
+                        </Link>
+                        <Box
+                            sx={{
+                                marginRight: "auto",
+                                display: "flex",
+                                alignItems: "center",
                             }}
-                        />
-                    </Link>
-                    <Box
-                        sx={{
-                            marginRight: "auto",
-                            display: "flex",
-                            alignItems: "center",
-                        }}
-                    >
-                        {location.pathname !== "/login" &&
-                            location.pathname !== "/signup" && (
-                                <Tabs
-                                    indicatorColor="secondary"
-                                    onChange={(e, val) => setValue(val)}
-                                    value={value}
-                                    textColor="white"
-                                    TabIndicatorProps={{
-                                        style: { backgroundColor: "#1DB954" },
-                                    }}
-                                >
-                                    <Tab
-                                        to="/home"
-                                        LinkComponent={Link}
-                                        label="Home"
-                                        sx={{
-                                            fontSize: "14px",
-                                            color: "#808080",
-                                        }}
-                                    />
-                                    <Tab
-                                        to="/library"
-                                        LinkComponent={Link}
-                                        label="Library"
-                                        sx={{
-                                            fontSize: "14px",
-                                            color: "#808080",
-                                        }}
-                                        style={{
-                                            "&.Mui-selected": {
-                                                textDecoration: "#1DB954",
+                        >
+                            {location.pathname !== "/login" &&
+                                location.pathname !== "/signup" && (
+                                    <Tabs
+                                        indicatorColor="secondary"
+                                        onChange={(e, val) => setValue(val)}
+                                        value={value}
+                                        textColor="white"
+                                        TabIndicatorProps={{
+                                            style: {
+                                                backgroundColor: "#1DB954",
                                             },
                                         }}
-                                    />
-                                </Tabs>
-                            )}
-                    </Box>
-                    <Box>
-                        {isLoggedIn ? (
-                            <div
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                }}
-                            >
-                                <div
-                                    onClick={() => setInputActive(true)}
-                                    style={{
-                                        cursor: "pointer",
-                                        marginRight: "16px",
-                                    }}
-                                >
-                                    <Link
-                                        to={`/search/${encodeURIComponent(
-                                            searchQuery
-                                        )}`}
                                     >
-                                        <InputBase
-                                            id="search-input"
-                                            placeholder="Search..."
-                                            inputProps={{
-                                                "aria-label": "search",
-                                            }}
-                                            style={{
-                                                backgroundColor: "#808080",
-                                                borderRadius: "16px",
-                                                paddingLeft: "12px",
-                                                color: "white",
-                                                cursor: "pointer",
-                                                width: isInputActive
-                                                    ? "500px"
-                                                    : "200px",
-                                                transition: "width 0.3s",
-                                            }}
-                                            onBlur={() => setInputActive(false)}
-                                            onFocus={() => setInputActive(true)}
-                                            value={searchQuery}
-                                            onChange={(e) =>
-                                                setSearchQuery(e.target.value)
-                                            }
-                                            onKeyDown={handleSearch} // Обработка нажатия клавиши Enter
+                                        <CustomTab to="/home" label="Home" />
+                                        <CustomTab
+                                            to="/library"
+                                            label="Library"
                                         />
-                                    </Link>
-                                </div>
-                                <Tabs
-                                    indicatorColor="secondary"
-                                    onChange={(e, val) => setValue(val)}
-                                    value={value}
-                                    textColor="white"
-                                />
-                                <IconButton
-                                    onClick={handleMenuClick}
-                                    color="inherit"
-                                    style={{ width: "32px", height: "32px" }}
-                                >
-                                    <img
-                                        src={menuIcon}
-                                        alt="Menu"
-                                        style={{
-                                            width: "40px",
-                                            height: "40px",
-                                            margin: "7px",
-                                        }}
-                                    />
-                                </IconButton>
-                                <Menu
-                                    anchorEl={anchorEl}
-                                    open={Boolean(anchorEl)}
-                                    onClose={handleMenuClose}
-                                >
-                                    <MenuItem
-                                        component={Link}
-                                        to="/account"
-                                        onClick={handleMenuClose}
-                                        sx={{ color: "black" }}
-                                    >
-                                        Account
-                                    </MenuItem>
-                                    <MenuItem
-                                        component={Link}
-                                        to="/profile"
-                                        onClick={handleMenuClose}
-                                        sx={{ color: "black" }}
-                                    >
-                                        Profile
-                                    </MenuItem>
-                                    <MenuItem
-                                        component={Link}
-                                        to="/settings"
-                                        onClick={handleMenuClose}
-                                        sx={{ color: "black" }}
-                                    >
-                                        Settings
-                                    </MenuItem>
-                                    <MenuItem
-                                        component={Link}
-                                        to="/logout"
-                                        onClick={handleLogout}
-                                        sx={{ color: "black" }}
-                                    >
-                                        Logout
-                                    </MenuItem>
-                                </Menu>
-                            </div>
-                        ) : (
-                            location.pathname !== "/login" &&
-                            location.pathname !== "/signup" && (
-                                <Tabs
-                                    indicatorColor="secondary"
-                                    onChange={(e, val) => setValue(val)}
-                                    value={value}
-                                    textColor="white"
-                                    TabIndicatorProps={{
-                                        style: { backgroundColor: "#1DB954" },
+                                    </Tabs>
+                                )}
+                        </Box>
+                        <Box>
+                            {isLoggedIn ? (
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
                                     }}
                                 >
-                                    <Tab
-                                        to="/login"
-                                        LinkComponent={Link}
-                                        label="Login"
-                                        sx={{
-                                            fontSize: "14px",
-                                            color: "#808080",
+                                    <div
+                                        onClick={() => setInputActive(true)}
+                                        style={{
+                                            cursor: "pointer",
+                                            marginRight: "16px",
                                         }}
+                                    >
+                                        <div
+                                            onClick={() => setInputActive(true)}
+                                        >
+                                            <Link
+                                                to={`/search/${encodeURIComponent(
+                                                    searchQuery
+                                                )}`}
+                                            >
+                                                <div
+                                                    style={{
+                                                        position: "relative",
+                                                    }}
+                                                >
+                                                    <InputBase
+                                                        id="search-input"
+                                                        placeholder="Search"
+                                                        inputProps={{
+                                                            "aria-label":
+                                                                "search",
+                                                        }}
+                                                        style={{
+                                                            backgroundColor:
+                                                                "#dadad9",
+                                                            color: "black",
+                                                            paddingLeft: "40px",
+                                                            cursor: "pointer",
+                                                            width: isInputActive
+                                                                ? "700px"
+                                                                : "250px",
+                                                            borderRadius:
+                                                                isInputActive
+                                                                    ? "0px"
+                                                                    : "20px",
+                                                            height: isInputActive
+                                                                ? "80px"
+                                                                : "40px",
+                                                            position:
+                                                                "relative",
+                                                            transition:
+                                                                "all 0.3s ease-in-out",
+                                                        }}
+                                                        onBlur={
+                                                            handleSearchBlur
+                                                        }
+                                                        onFocus={
+                                                            handleSearchClick
+                                                        }
+                                                        value={searchQuery}
+                                                        onChange={(e) =>
+                                                            setSearchQuery(
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        onKeyDown={handleSearch}
+                                                    />
+                                                    <SearchRoundedIcon
+                                                        style={{
+                                                            color: "black",
+                                                            fontSize: 24,
+                                                            position:
+                                                                "absolute",
+                                                            left: "12px",
+                                                            top: "50%",
+                                                            transform:
+                                                                "translateY(-50%)",
+                                                        }}
+                                                    />
+                                                </div>
+                                            </Link>
+                                        </div>
+                                    </div>
+
+                                    <Tabs
+                                        indicatorColor="secondary"
+                                        onChange={(e, val) => setValue(val)}
+                                        value={value}
+                                        textColor="white"
                                     />
-                                    <Tab
-                                        to="/signup"
-                                        LinkComponent={Link}
-                                        label="Signup"
-                                        sx={{
-                                            fontSize: "14px",
-                                            color: "#808080",
+                                    <IconButton
+                                        onClick={handleMenuClick}
+                                        color="inherit"
+                                        style={{
+                                            width: "32px",
+                                            height: "32px",
                                         }}
-                                    />
-                                </Tabs>
-                            )
-                        )}
-                    </Box>
-                </Toolbar>
-            </AppBar>
+                                    >
+                                        <img
+                                            src={menuIcon}
+                                            alt="Menu"
+                                            style={{
+                                                width: "40px",
+                                                height: "40px",
+                                                margin: "7px",
+                                            }}
+                                        />
+                                    </IconButton>
+                                    <Menu
+                                        anchorEl={anchorEl}
+                                        open={Boolean(anchorEl)}
+                                        onClose={handleMenuClose}
+                                    >
+                                        <MenuItem
+                                            component={Link}
+                                            to="/account"
+                                            onClick={handleMenuClose}
+                                            sx={{ color: "black" }}
+                                        >
+                                            Account
+                                        </MenuItem>
+                                        <MenuItem
+                                            component={Link}
+                                            to="/profile"
+                                            onClick={handleMenuClose}
+                                            sx={{ color: "black" }}
+                                        >
+                                            Profile
+                                        </MenuItem>
+                                        <MenuItem
+                                            component={Link}
+                                            to="/settings"
+                                            onClick={handleMenuClose}
+                                            sx={{ color: "black" }}
+                                        >
+                                            Settings
+                                        </MenuItem>
+                                        <MenuItem
+                                            component={Link}
+                                            to="/logout"
+                                            onClick={handleLogout}
+                                            sx={{ color: "black" }}
+                                        >
+                                            Logout
+                                        </MenuItem>
+                                    </Menu>
+                                </div>
+                            ) : (
+                                location.pathname !== "/login" &&
+                                location.pathname !== "/signup" && (
+                                    <Tabs
+                                        indicatorColor="secondary"
+                                        onChange={(e, val) => setValue(val)}
+                                        value={value}
+                                        textColor="white"
+                                        TabIndicatorProps={{
+                                            style: {
+                                                backgroundColor: "#1DB954",
+                                            },
+                                        }}
+                                    >
+                                        <CustomTab to="/login" label="Login" />
+                                        <CustomTab
+                                            to="/signup"
+                                            label="Signup"
+                                        />
+                                    </Tabs>
+                                )
+                            )}
+                        </Box>
+                    </Toolbar>
+                </AppBar>
+            </Box>
         </div>
     );
 };

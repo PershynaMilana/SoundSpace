@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFacebookSquare } from "@fortawesome/free-brands-svg-icons";
 import GoogleIcon from "./images/google.png";
 import FacebookIcon from "./images/facebook.png";
+import GoogleLogin from 'react-google-login';
 
 const Signup = () => {
     const history = useNavigate();
@@ -19,7 +20,7 @@ const Signup = () => {
     const [showPassword, setShowPassword] = useState(false);
     const sendRequest = async () => {
         try {
-            const res = await axios.post("http://localhost:5000/api/signup", {
+            const res = await axios.post("http://localhost:8080/api/signup", {
                 name: inputs.name,
                 email: inputs.email,
                 password: inputs.password,
@@ -46,6 +47,15 @@ const Signup = () => {
     const handleTogglePassword = () => {
         setShowPassword(!showPassword);
     };
+
+    const responseSuccessGoogle = (response) => {
+      console.log(response);
+    }
+    
+
+    const responseErrorGoogle = (response) => {
+      console.log(response);
+    }
 
     return (
         <section className="container forms">
@@ -78,6 +88,7 @@ const Signup = () => {
                             </a>
                         </div>
                         <div className="media-options">
+                            
                             <a
                                 href="#"
                                 className="field google"
@@ -89,7 +100,7 @@ const Signup = () => {
                                     className="google-img"
                                 />
                                 <span>Register with Google</span>
-                            </a>
+                                </a>
                         </div>
                     </form>
 
@@ -98,12 +109,12 @@ const Signup = () => {
                     <form
                         onSubmit={handleSubmit}
                         style={{
-                            Maxwidth: "300px",
+                            Maxwidth: "400px",
                             width: "100%",
                             alignItems: "center",
                         }}
                     >
-                        <div
+                         <div
                             className="field input-field"
                             style={{ textAlign: "left" }}
                         >
@@ -112,6 +123,36 @@ const Signup = () => {
                                     display: "flex",
                                     flexDirection: "column",
                                     marginLeft: "20px",
+                                }}
+                            >
+                                <label
+                                    className="labels-inputs"
+                                    htmlFor="name"
+                                >
+                                    Name
+                                </label>
+                                <input
+                                    type="text"
+                                    id="name"
+                                    placeholder="Enter your name"
+                                    className="input"
+                                    name="name"
+                                    value={inputs.name}
+                                    onChange={handleChange}
+                                    
+                                />
+                            </div>
+                        </div>
+
+                        <div
+                            className="field input-field"
+                            style={{ textAlign: "left", paddingTop: "20px" }}
+                        >
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    marginLeft: "20px",                                    
                                 }}
                             >
                                 <label

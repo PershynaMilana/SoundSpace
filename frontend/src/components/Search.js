@@ -1,7 +1,40 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import getToken from "./spotifyAuth";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import {
+    Container,
+    Card,
+    CardMedia,
+    CardContent,
+    Typography,
+} from "@mui/material";
+import { styled } from "@mui/system";
+
+const ContainerStyled = styled(Container)(({ theme }) => ({
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
+}));
+
+const CardStyled = styled(Card)(({ theme }) => ({
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    height: "100%",
+    width: "105%",
+    backgroundColor: "#333333",
+    color: "white",
+    transition: "transform 0.2s",
+    "&:hover": {
+        transform: "scale(1.05)",
+    },
+}));
+
+const CardMediaStyled = styled(CardMedia)(({ theme }) => ({
+    width: "100%",
+    height: 0,
+    paddingTop: "56.25%",
+}));
 
 const Search = () => {
     const { query } = useParams();
@@ -10,6 +43,8 @@ const Search = () => {
     const [authorName, setAuthorName] = useState("");
     const [authorImage, setAuthorImage] = useState("");
     const [authorTracks, setAuthorTracks] = useState([]);
+    const [currentTrack, setCurrentTrack] = useState(null);
+    const navigate = useNavigate();
 
     const searchTracks = async (query, accessToken) => {
         const response = await axios.get("https://api.spotify.com/v1/search", {
@@ -115,43 +150,57 @@ const Search = () => {
 
     const handleAuthorClick = () => {
         if (authorName) {
-            window.location.href = `/author/${authorName}`;
+            navigate(`/author/${authorName}`);
         }
     };
 
-    const handlePlaylistClick = (playlist) => {
-        if (playlist.name) {
-            window.location.href = `/playlist/${playlist.name}`;
+    const handlePlaylistClick = (playlistId) => {
+        navigate(`/playlist/${playlistId}`);
+    };
+
+    const playTrack = (track) => {
+        const audioPlayer = document.getElementById("audio-player");
+        if (currentTrack === track) {
+            audioPlayer.pause();
+            setCurrentTrack(null);
+        } else {
+            audioPlayer.src = track.preview_url;
+            audioPlayer.play();
+            setCurrentTrack(track);
         }
     };
+
+    useEffect(() => {
+        const audioPlayer = document.getElementById("audio-player");
+        audioPlayer.addEventListener("ended", () => {
+            setCurrentTrack(null);
+        });
+
+        return () => {
+            audioPlayer.removeEventListener("ended", () => {
+                setCurrentTrack(null);
+            });
+        };
+    }, []);
 
     return (
-        <div>
-            <h1
-                style={{
-                    color: "white",
-                    fontFamily: "Verdana",
-                    margin: "20px",
-                }}
-            >
-                Search page
-            </h1>
+        <ContainerStyled maxWidth="lg">
+            {/* <Typography variant="h4" gutterBottom style={{ color: "white" }}>
+        Search page
+      </Typography> */}
             {query && (
-                <div>
-                    <h1
-                        style={{
-                            color: "white",
-                            fontFamily: "Verdana",
-                            margin: "20px",
-                        }}
-                    >
-                        Results for - {query}
-                    </h1>
-                </div>
+                <Typography
+                    variant="h4"
+                    gutterBottom
+                    style={{ color: "white", fontWeight: "500" }}
+                >
+                    Results for - {query}
+                </Typography>
             )}
             {query && (
                 <div
                     style={{
+                        fontWeight: "500",
                         display: "flex",
                         flexWrap: "wrap",
                         color: "white",
@@ -160,21 +209,23 @@ const Search = () => {
                 >
                     <div
                         style={{
+                            fontWeight: "500",
                             display: "flex",
                             flexDirection: "column",
                             alignItems: "flex-start",
                         }}
                     >
-                        <h2
+                        <Typography
+                            variant="h5"
                             style={{
+                                fontWeight: "500",
                                 color: "white",
                                 fontFamily: "Verdana",
-                                marginLeft: "40px",
-                                width: "600px",
+                                width: "500px",
                             }}
                         >
                             Author:
-                        </h2>
+                        </Typography>
                         <div
                             style={{
                                 width: "500px",
@@ -185,8 +236,9 @@ const Search = () => {
                                 flexDirection: "column",
                                 alignItems: "center",
                                 justifyContent: "center",
-                                margin: "30px",
+                                marginTop: "30px",
                                 borderRadius: "10px",
+                                fontWeight: "500",
                             }}
                             onClick={handleAuthorClick}
                         >
@@ -198,37 +250,70 @@ const Search = () => {
                                         width: "150px",
                                         height: "150px",
                                         background: "gray",
+                                        fontWeight: "500",
                                     }}
                                 />
                             )}
-                            <p style={{ textAlign: "center" }}>{authorName}</p>
+                            <Typography
+                                variant="body1"
+                                style={{ textAlign: "center" }}
+                            >
+                                {authorName}
+                            </Typography>
                         </div>
                     </div>
                     <div>
-                        <h2
+                        <Typography
+                            variant="h5"
                             style={{
                                 color: "white",
                                 fontFamily: "Verdana",
-                                marginLeft: "20px",
+                                alignContent: "left",
+                                marginLeft: "30px",
+                                marginBottom: "30px",
+                                fontWeight: "500",
                             }}
                         >
                             Tracks:
-                        </h2>
-                        <ul className="track-list">
+                        </Typography>
+                        <ul
+                            className="track-list"
+                            style={{
+                                paddingLeft: "0",
+                                width: "620px",
+                                marginLeft: "30px",
+                            }}
+                        >
                             {searchResults.slice(0, 5).map((track) => (
-                                <li key={track.id} className="track-container">
+                                <li
+                                    key={track.id}
+                                    className="track-container"
+                                    onClick={() => playTrack(track)}
+                                >
                                     <img
                                         src={track.album.images[0]?.url}
                                         alt={track.name}
                                         className="track-image"
                                     />
                                     <div className="track-info">
-                                        <p className="track-name">
+                                        <Typography
+                                            variant="body1"
+                                            style={{
+                                                textAlign: "center",
+                                                fontWeight: "500",
+                                            }}
+                                        >
                                             {track.name}
-                                        </p>
-                                        <p className="artist-name">
+                                        </Typography>
+                                        <Typography
+                                            variant="body2"
+                                            style={{
+                                                textAlign: "center",
+                                                fontWeight: "500",
+                                            }}
+                                        >
                                             by {track.artists[0].name}
-                                        </p>
+                                        </Typography>
                                     </div>
                                 </li>
                             ))}
@@ -238,12 +323,24 @@ const Search = () => {
                         style={{
                             color: "white",
                             fontFamily: "Verdana",
-                            marginLeft: "30px",
+                            marginTop: "30px",
+                            width: "100%",
+                            fontWeight: "500",
+                            padding: "0px",
                         }}
                     >
-                        <h2 style={{ color: "white", fontFamily: "Verdana" }}>
+                        <Typography
+                            variant="h5"
+                            style={{
+                                color: "white",
+                                fontFamily: "Verdana",
+                                fontWeight: "500",
+                                marginBottom: "30px",
+                                padding: "0",
+                            }}
+                        >
                             Playlists:
-                        </h2>
+                        </Typography>
                         <div
                             className="playlist-list"
                             style={{
@@ -259,42 +356,58 @@ const Search = () => {
                                         width: "230px",
                                         height: "250px",
                                         margin: "10px",
-                                        background: "gray",
+
                                         borderRadius: "10px",
-                                        display: "flex",
-                                        flexDirection: "column",
                                         alignItems: "center",
-                                        padding: "10px",
                                     }}
                                     onClick={() =>
-                                        handlePlaylistClick(playlist)
+                                        handlePlaylistClick(playlist.id)
                                     }
                                 >
                                     {playlist.images[0] && (
-                                        <img
-                                            src={playlist.images[0].url}
-                                            alt={playlist.name}
-                                            style={{
-                                                width: "150px",
-                                                height: "150px",
-                                                background: "gray",
-                                                margin: "10px",
-                                            }}
-                                        />
+                                        <CardStyled>
+                                            <CardMediaStyled
+                                                image={playlist.images[0].url}
+                                                title={playlist.name}
+                                            />
+                                            <CardContent>
+                                                <Typography
+                                                    variant="h6"
+                                                    component="div"
+                                                    style={{
+                                                        textAlign: "center",
+                                                    }}
+                                                >
+                                                    {playlist.name}
+                                                </Typography>
+                                                <Typography
+                                                    variant="body2"
+                                                    component="div"
+                                                    style={{
+                                                        textAlign: "center",
+                                                    }}
+                                                >
+                                                    by{" "}
+                                                    {
+                                                        playlist.owner
+                                                            .display_name
+                                                    }
+                                                </Typography>
+                                            </CardContent>
+                                        </CardStyled>
                                     )}
-                                    <p style={{ textAlign: "center" }}>
-                                        {playlist.name}
-                                    </p>
-                                    <p style={{ textAlign: "center" }}>
-                                        by {playlist.owner.display_name}
-                                    </p>
                                 </div>
                             ))}
                         </div>
                     </div>
                 </div>
             )}
-        </div>
+            <audio
+                id="audio-player"
+                controls
+                style={{ position: "fixed", bottom: 0, left: 0, width: "100%" }}
+            />
+        </ContainerStyled>
     );
 };
 

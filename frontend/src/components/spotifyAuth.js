@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const clientId = "66f229a545fd41418f66f0aa93a4302a";
-const clientSecret = "dca09046541743cb9e11b2d2043bd033";
+export const clientId = "897fe6d6d0b74dea8034725aad7fae27";
+export const clientSecret = "e0d354ef58574551a3b14f58df3c0364";
 
 const getToken = async () => {
     const response = await axios.post(

@@ -12,7 +12,7 @@ function UserProfile() {
 
     useEffect(() => {
         axios
-            .get("http://localhost:5000/api/user", {
+            .get("http://localhost:8080/api/user", {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -43,7 +43,7 @@ function UserProfile() {
 
         axios
             .post(
-                "http://localhost:5000/api/update-profile",
+                "http://localhost:8080/api/update-profile",
                 { name: updatedName, email: updatedEmail },
                 {
                     headers: {

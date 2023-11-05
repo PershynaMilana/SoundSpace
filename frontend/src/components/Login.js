@@ -18,10 +18,11 @@ const Login = () => {
         password: "",
     });
     const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState(null); 
 
     const sendRequest = async () => {
         try {
-            const res = await axios.post("http://localhost:5000/api/login", {
+            const res = await axios.post("http://localhost:8080/api/login", {
                 email: inputs.email,
                 password: inputs.password,
             });
@@ -46,6 +47,14 @@ const Login = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        setError(null);
+
+        if (!validateEmail(inputs.email) || !inputs.password) {
+            setError("Invalid Email or Password");
+            return;
+        }
+
         sendRequest()
             .then((data) => {
                 document.cookie = `auth_token=${data.token}; path=/`;
@@ -54,8 +63,15 @@ const Login = () => {
             })
             .catch((err) => {
                 console.error(err);
+                setError("Invalid Email or Password");
             });
     };
+
+    const validateEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
+
 
     return (
         <section className="container forms">
@@ -88,6 +104,7 @@ const Login = () => {
                             </a>
                         </div>
                         <div className="media-options">
+                            
                             <a
                                 href="#"
                                 className="field google"
@@ -112,7 +129,8 @@ const Login = () => {
                             width: "100%",
                             alignItems: "center",
                         }}
-                    >
+                    >                    {error && <p className="error-message">{error}</p>}
+
                         <div
                             className="field input-field"
                             style={{ textAlign: "left" }}
