@@ -1,0 +1,25 @@
+.library-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .library-nav {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+  }
+  
+  .library-nav a {
+    margin: 0 10px;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    font-size: 18px;
+  }
+  
+  .library-nav a:hover {
+    color: #0070f3;
+  }
+  

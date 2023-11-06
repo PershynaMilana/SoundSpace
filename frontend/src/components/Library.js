@@ -1,5 +1,13 @@
+import React from "react";
+import "../assets/styles/library.css"; 
+import LibraryNav from "./LibraryNav";
+
 const Library = () => {
-    return <h1 style={{ color: "white" }}>Library Page</h1>;
+  return (
+   <div>
+     <LibraryNav/>
+   </div>
+  );
 };
 
 export default Library;

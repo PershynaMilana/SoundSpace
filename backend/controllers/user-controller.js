@@ -174,7 +174,6 @@ const logout = (req, res, next) => {
   });
 };
 
-
 const updateProfile = async (req, res, next) => {
   const userId = req.id;
   const { name, email } = req.body;

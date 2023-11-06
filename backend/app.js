@@ -2,7 +2,8 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const connectToDatabase = require('./config/database');
-const router = require('./routes/user-routes');
+const UserRouter = require('./routes/user-routes');
+const PlaylistRouter = require('./routes/playlist-routes');
 require('dotenv').config();
 
 const app = express();
@@ -13,7 +14,8 @@ app.use(express.json());
 
 connectToDatabase();
 
-app.use('/api', router);
+app.use('/api', UserRouter);
+app.use('/api', PlaylistRouter);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {

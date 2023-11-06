@@ -13,13 +13,14 @@ import {
 import { Link, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-import { authActions } from "./store";
+import { authActions } from "../store/index";
 import HomeIcon from "@mui/icons-material/Home";
 import HeadsetIcon from "@mui/icons-material/Headset";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
-import menuIcon from "./images/account_icon2.png";
-import logo from "./images/SounD-3-removebg-preview.png";
+import menuIcon from "../assets/images/account_icon2.png";
+import logo from "../assets/images/SounD-3-removebg-preview.png";
 import { styled } from "@mui/system";
+import ClearIcon from "@mui/icons-material/Clear";
 axios.defaults.withCredentials = true;
 
 const Header = () => {
@@ -32,9 +33,14 @@ const Header = () => {
     const [isInputActive, setInputActive] = useState(false);
 
     const handleSearch = (e) => {
-        if (e.key === "Enter") {
+        if (e.key === "Enter" && isInputActive) {
             window.location.href = `/search/${searchQuery}`;
         }
+    };
+
+    const handleClearSearch = () => {
+        setInputActive(false);
+        setSearchQuery("");
     };
 
     const handleSearchClick = () => {
@@ -43,6 +49,7 @@ const Header = () => {
 
     const handleSearchBlur = () => {
         setInputActive(false);
+        setSearchQuery("");
     };
 
     const handleMenuClick = (event) => {
@@ -100,11 +107,11 @@ const Header = () => {
                 component={Link}
                 {...props}
                 sx={{
-                    fontSize: "16px", // Increase font size
+                    fontSize: "16px",
                     color: "white",
                     display: "flex",
                     alignItems: "center",
-                    gap: "4px", // Adjust spacing between icon and label
+                    gap: "4px",
                 }}
                 label={
                     <div style={{ display: "flex", alignItems: "center" }}>
@@ -141,7 +148,13 @@ const Header = () => {
             >
                 <AppBar position="sticky" sx={{ backgroundColor: "#000000" }}>
                     <Toolbar
-                        style={{ marginLeft: "50px", marginRight: "20px" }}
+                        style={{
+                            marginLeft: "50px",
+                            marginRight: "20px",
+                            display: "flex",
+                            alignItems: "center",
+                            verticalAlign: "middle",
+                        }}
                     >
                         <Link
                             to="/home"
@@ -151,11 +164,8 @@ const Header = () => {
                                 src={logo}
                                 alt="Logo"
                                 style={{
-                                    height: "60px",
-                                    width: "110px",
-                                    marginRight: "10px",
-                                    marginTop: "10px",
-                                    marginBottom: "10px",
+                                    height: "90px",
+                                    width: "100px",
                                 }}
                             />
                         </Link>
@@ -224,7 +234,7 @@ const Header = () => {
                                                         }}
                                                         style={{
                                                             backgroundColor:
-                                                                "#dadad9",
+                                                                "#b5b5b5",
                                                             color: "black",
                                                             paddingLeft: "40px",
                                                             cursor: "pointer",
@@ -269,6 +279,24 @@ const Header = () => {
                                                                 "translateY(-50%)",
                                                         }}
                                                     />
+                                                    {searchQuery && ( // Show clear button when there's a search query
+                                                        <ClearIcon
+                                                            onClick={
+                                                                handleClearSearch
+                                                            }
+                                                            style={{
+                                                                color: "black",
+                                                                fontSize: 20,
+                                                                position:
+                                                                    "absolute",
+                                                                right: "12px",
+                                                                top: "50%",
+                                                                transform:
+                                                                    "translateY(-50%)",
+                                                                cursor: "pointer",
+                                                            }}
+                                                        />
+                                                    )}
                                                 </div>
                                             </Link>
                                         </div>
