@@ -1,17 +1,32 @@
 import React, { useState } from "react";
 import axios from "axios";
-
 import "../assets/styles/styles.css";
+import is from "is_js";
+
 const PasswordResetRequest = () => {
     const [email, setEmail] = useState("");
     const [isRequestSent, setIsRequestSent] = useState(false);
+    const [emailError, setEmailError] = useState("");
 
     const handleEmailChange = (e) => {
         setEmail(e.target.value);
     };
 
+    const validateEmail = () => {
+        if (!is.email(email)) {
+            setEmailError("Invalid email format.");
+            return false;
+        } else {
+            setEmailError("");
+            return true;
+        }
+    };
+
     const handleResetRequest = async (e) => {
         e.preventDefault();
+        if (!validateEmail()) {
+            return;
+        }
         try {
             const response = await axios.post(
                 "http://localhost:8080/api/password-reset-request",
@@ -48,6 +63,11 @@ const PasswordResetRequest = () => {
                             We will send you an email with a link to reset your password.
                         </h4>
                         <form style={{ Maxwidth: "300px", width: "100%", alignItems: "center", verticalAlign: "top" }}>
+                        {emailError && (
+                                        <p className="error-message" style={{height:"10px", alignItems: "center",
+                                        display: "flex",
+                                        justifyContent: "center", marginTop:"30px"}}>{emailError}</p>
+                                    )}
                             <div className="field input-field" style={{ textAlign: "left", marginLeft: "70px" }}>
                                 <div style={{ display: "flex", flexDirection: "column" }}>
                                     <label className="labels-inputs" htmlFor="email">
@@ -61,10 +81,10 @@ const PasswordResetRequest = () => {
                                         name="email"
                                         value={email}
                                         onChange={handleEmailChange}
-                                    />
+                                    />                                   
                                 </div>
                             </div>
-
+                            
                             <div className="field">
                                 <button onClick={handleResetRequest} style={{ marginTop: "30px", maxHeight:"50px", height:"100px" }}>
                                     Send

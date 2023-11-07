@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { authActions } from "../store";
+import is from "is_js";
 import "../assets/styles/styles.css";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -18,7 +19,7 @@ const Login = () => {
         password: "",
     });
     const [showPassword, setShowPassword] = useState(false);
-    const [error, setError] = useState(null); 
+    const [error, setError] = useState(null);
 
     const sendRequest = async () => {
         try {
@@ -47,10 +48,8 @@ const Login = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
         setError(null);
-
-        if (!validateEmail(inputs.email) || !inputs.password) {
+        if (!is.email(inputs.email) || !inputs.password) {
             setError("Invalid Email or Password");
             return;
         }
@@ -66,12 +65,6 @@ const Login = () => {
                 setError("Invalid Email or Password");
             });
     };
-
-    const validateEmail = (email) => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-    };
-
 
     return (
         <section className="container forms">
@@ -104,7 +97,6 @@ const Login = () => {
                             </a>
                         </div>
                         <div className="media-options">
-                            
                             <a
                                 href="#"
                                 className="field google"
@@ -129,8 +121,9 @@ const Login = () => {
                             width: "100%",
                             alignItems: "center",
                         }}
-                    >   {error && <p className="error-message">{error}</p>}
-
+                    >
+                        {" "}
+                        {error && <p className="error-message">{error}</p>}
                         <div
                             className="field input-field"
                             style={{ textAlign: "left" }}
@@ -224,7 +217,6 @@ const Login = () => {
                             >
                                 <button type="submit">Login</button>
                             </div>
-
                             <div style={{ textAlign: "center" }}>
                                 <a
                                     href="reset-password"
@@ -236,12 +228,10 @@ const Login = () => {
                         </div>
                     </form>
                     <br />
-
                     <div
                         className="line-second"
                         style={{ marginTop: "230px" }}
                     ></div>
-
                     <div className="form-link">
                         <span>
                             Don't have an account?{" "}
