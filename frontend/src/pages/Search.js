@@ -12,14 +12,15 @@ import {
 import { styled } from "@mui/system";
 
 const ContainerStyled = styled(Container)(({ theme }) => ({
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
+    paddingTop: theme.spacing(3),
+    paddingBottom: theme.spacing(4),
 }));
 
 const CardStyled = styled(Card)(({ theme }) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
+
     height: "100%",
     width: "105%",
     backgroundColor: "#333333",
@@ -34,6 +35,8 @@ const CardMediaStyled = styled(CardMedia)(({ theme }) => ({
     width: "100%",
     height: 0,
     paddingTop: "56.25%",
+    marginLeft: "20px",
+    marginRight: "20px",
 }));
 
 const Search = () => {
@@ -184,12 +187,12 @@ const Search = () => {
     }, []);
 
     return (
-        <ContainerStyled maxWidth="lg">
+        <ContainerStyled style={{ marginLeft: "150px" }}>
             {query && (
                 <Typography
                     variant="h4"
                     gutterBottom
-                    style={{ color: "white", fontWeight: "500" }}
+                    style={{ color: "white", fontWeight: "600" }}
                 >
                     Results for - {query}
                 </Typography>
@@ -225,10 +228,10 @@ const Search = () => {
                         </Typography>
                         <div
                             style={{
-                                width: "500px",
-                                height: "500px",
+                                width: "470px",
+                                height: "310px",
                                 cursor: "pointer",
-                                background: "gray",
+                                background: "#333333",
                                 display: "flex",
                                 flexDirection: "column",
                                 alignItems: "center",
@@ -281,7 +284,7 @@ const Search = () => {
                                 marginLeft: "30px",
                             }}
                         >
-                            {searchResults.slice(0, 5).map((track) => (
+                            {searchResults.slice(0, 4).map((track) => (
                                 <li
                                     key={track.id}
                                     className="track-container"
@@ -296,7 +299,8 @@ const Search = () => {
                                         <Typography
                                             variant="body1"
                                             style={{
-                                                textAlign: "center",
+                                                textAlign: "left",
+                                                marginLeft: "15px",
                                                 fontWeight: "500",
                                             }}
                                         >
@@ -305,7 +309,8 @@ const Search = () => {
                                         <Typography
                                             variant="body2"
                                             style={{
-                                                textAlign: "center",
+                                                textAlign: "left",
+                                                marginLeft: "15px",
                                                 fontWeight: "500",
                                             }}
                                         >
@@ -324,6 +329,8 @@ const Search = () => {
                             width: "100%",
                             fontWeight: "500",
                             padding: "0px",
+                            width: "2500px", // Установите желаемую ширину
+                            margin: "0 auto", // Центрирование блока
                         }}
                     >
                         <Typography
@@ -334,28 +341,27 @@ const Search = () => {
                                 fontWeight: "500",
                                 marginBottom: "30px",
                                 padding: "0",
+                                width: "1300px",
                             }}
                         >
                             Playlists:
                         </Typography>
                         <div
                             className="playlist-list"
-                            style={{
-                                display: "flex",
-                                flexWrap: "wrap",
-                            }}
+                            style={{ display: "flex", flexWrap: "wrap" }}
                         >
                             {playlistResults.map((playlist) => (
                                 <div
                                     key={playlist.id}
-                                    className="playlist-item"
+                                    className="playlist-item" // Add a class name here
                                     style={{
                                         width: "230px",
                                         height: "250px",
-                                        margin: "10px",
-
                                         borderRadius: "10px",
+                                        display: "flex",
+                                        flexDirection: "column",
                                         alignItems: "center",
+                                        margin: "10px", // Add margin here
                                     }}
                                     onClick={() =>
                                         handlePlaylistClick(playlist.id)

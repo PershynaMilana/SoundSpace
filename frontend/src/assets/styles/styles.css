@@ -5,7 +5,7 @@ body {
     height: 100%;
     background: linear-gradient(to bottom, #000000 0%, #222121 100%);
     background-size: cover;
-    background-attachment: fixed; 
+    background-attachment: fixed;
     background-repeat: no-repeat;
     margin: 0;
     padding: 0;
@@ -61,7 +61,7 @@ body {
 
 .form2 {
     position: absolute;
-    max-width:570px;
+    max-width: 570px;
     max-height: 350px;
     height: 40%;
     width: 100%;
@@ -420,22 +420,28 @@ input[type=range] {
 }
 
 .track-container {
-    background-color: #666;
+    background-color: transperent;
     color: #fff;
     border-radius: 5px;
     padding: 16px;
     margin: 8px;
     display: flex;
     align-items: center;
-    max-width: 1000px;
-    width: 80%;
-    margin-left:0;
-    height: 62px;
+    text-align: left;
+    max-width: 1700px;
+    width: 110%;
+    margin-left: 0;
+    max-height: 40px;
+    height: 100%;
+}
+
+.track-container:hover {
+    background-color: #333333;
 }
 
 .track-image {
-    width: 64px;
-    height: 64px;
+    width: 50px;
+    height: 50px;
     object-fit: cover;
     border: 2px solid #fff;
 }

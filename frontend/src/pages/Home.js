@@ -98,7 +98,7 @@ const Home = () => {
     }, []);
 
     return (
-        <ContainerStyled maxWidth="lg">
+        <ContainerStyled >
             <div
                 style={{
                     display: "flex",

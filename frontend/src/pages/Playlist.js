@@ -302,12 +302,16 @@ const Playlist = () => {
                                             <PlayIcon
                                                 className="playIcon"
                                                 style={{
-                                                    marginRight: "50px",
+                                                    marginRight: "80px",
                                                     padding: "0px",
                                                 }}
                                             />
                                         </CustomTableCell>
-                                        <CustomTableCell>
+                                        <CustomTableCell
+                                            style={{
+                                                borderRadius: "5px 0px 0px 5px",
+                                            }}
+                                        >
                                             {track.track.name}
                                         </CustomTableCell>
                                         <CustomTableCell>

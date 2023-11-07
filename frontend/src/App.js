@@ -65,8 +65,8 @@ function App() {
                         element={<Playlist />}
                     />
 
-                     <Route path="/playlist/:playlistId"
-                     element={<Playlist />}/>
+                    <Route path="/playlist/:playlistId"
+                    element={<Playlist />}/>
 
                 </Routes>
             </main>
