@@ -49,6 +49,10 @@ const Search = () => {
     const [currentTrack, setCurrentTrack] = useState(null);
     const navigate = useNavigate();
 
+    const playPauseHandler = () => {
+        setCurrentTrack(null);
+    };
+
     const searchTracks = async (query, accessToken) => {
         const response = await axios.get("https://api.spotify.com/v1/search", {
             headers: {
@@ -59,6 +63,7 @@ const Search = () => {
                 type: "track",
             },
             withCredentials: false,
+            mode: "no-cors",
         });
         return response.data.tracks.items;
     };
@@ -119,14 +124,11 @@ const Search = () => {
 
     const fetchData = async () => {
         const accessToken = await getToken();
-
         if (query) {
             const trackResults = await searchTracks(query, accessToken);
             const playlistResults = await searchPlaylists(query, accessToken);
-
             setSearchResults(trackResults);
             setPlaylistResults(playlistResults);
-
             if (trackResults.length > 0) {
                 if (
                     query.toLowerCase() === trackResults[0].name.toLowerCase()
@@ -175,15 +177,17 @@ const Search = () => {
 
     useEffect(() => {
         const audioPlayer = document.getElementById("audio-player");
-        audioPlayer.addEventListener("ended", () => {
-            setCurrentTrack(null);
-        });
-
-        return () => {
-            audioPlayer.removeEventListener("ended", () => {
+        if (audioPlayer) {
+            audioPlayer.addEventListener("ended", () => {
                 setCurrentTrack(null);
             });
-        };
+
+            return () => {
+                audioPlayer.removeEventListener("ended", () => {
+                    setCurrentTrack(null);
+                });
+            };
+        }
     }, []);
 
     return (
@@ -329,8 +333,8 @@ const Search = () => {
                             width: "100%",
                             fontWeight: "500",
                             padding: "0px",
-                            width: "2500px", // Установите желаемую ширину
-                            margin: "0 auto", // Центрирование блока
+                            width: "2500px",
+                            margin: "0 auto", 
                         }}
                     >
                         <Typography
@@ -353,7 +357,7 @@ const Search = () => {
                             {playlistResults.map((playlist) => (
                                 <div
                                     key={playlist.id}
-                                    className="playlist-item" // Add a class name here
+                                    className="playlist-item" 
                                     style={{
                                         width: "230px",
                                         height: "250px",
@@ -361,7 +365,7 @@ const Search = () => {
                                         display: "flex",
                                         flexDirection: "column",
                                         alignItems: "center",
-                                        margin: "10px", // Add margin here
+                                        margin: "10px", 
                                     }}
                                     onClick={() =>
                                         handlePlaylistClick(playlist.id)
@@ -405,11 +409,6 @@ const Search = () => {
                     </div>
                 </div>
             )}
-            <audio
-                id="audio-player"
-                controls
-                style={{ position: "fixed", bottom: 0, left: 0, width: "100%" }}
-            />
         </ContainerStyled>
     );
 };

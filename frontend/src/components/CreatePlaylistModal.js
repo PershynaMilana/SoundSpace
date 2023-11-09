@@ -195,15 +195,15 @@ const CreatePlaylistModal = ({ open, onClose, onCreatePlaylist }) => {
                             className="button-18"
                             onClick={handleCreatePlaylist}
                             style={{
-                              justifyContent: "center",
-                              aligniItems: "center",
-                            margin:"10px",
-                          marginLeft: "20px",
-                        borderRadius:"30px", 
-                        backgroundColor:"#cccccc",
-                      color:"black",
-                      fontWeight:"600"
-                      }}
+                                justifyContent: "center",
+                                aligniItems: "center",
+                                margin: "10px",
+                                marginLeft: "20px",
+                                borderRadius: "30px",
+                                backgroundColor: "#cccccc",
+                                color: "black",
+                                fontWeight: "600",
+                            }}
                         >
                             Создать плейлист
                         </Button>

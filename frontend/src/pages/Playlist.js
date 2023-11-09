@@ -4,6 +4,7 @@ import axios from "axios";
 import { clientId, clientSecret } from "../services/spotifyAuth";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import PlayArrowIcon from "@mui/icons-material/PlayArrowRounded";
+
 import {
     Table,
     TableBody,
@@ -102,6 +103,43 @@ const Playlist = () => {
     const [playlist, setPlaylist] = useState(null);
     const [tracks, setTracks] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [currentTrack, setCurrentTrack] = useState(null);
+
+    const playTrack = (track) => {
+        const audioPlayer = document.getElementById("audio-player");
+        if (currentTrack === track) {
+            audioPlayer.pause();
+            setCurrentTrack(null);
+        } else {
+            audioPlayer.src = track.preview_url;
+            audioPlayer.play();
+            setCurrentTrack(track);
+        }
+    };
+    const playPauseTrack = (track) => {
+        const audioPlayer = document.getElementById("audio-player");
+        if (currentTrack === track) {
+            audioPlayer.pause();
+            setCurrentTrack(null);
+        } else {
+            audioPlayer.src = track.preview_url;
+            audioPlayer.play();
+            setCurrentTrack(track);
+        }
+    };
+
+    useEffect(() => {
+        const audioPlayer = document.getElementById("audio-player");
+        audioPlayer.addEventListener("ended", () => {
+            setCurrentTrack(null);
+        });
+
+        return () => {
+            audioPlayer.removeEventListener("ended", () => {
+                setCurrentTrack(null);
+            });
+        };
+    }, []);
 
     useEffect(() => {
         if (playlistId) {
@@ -289,6 +327,9 @@ const Playlist = () => {
                                             handleRowHover(index)
                                         }
                                         onMouseLeave={() => handleRowHover(-1)}
+                                        onClick={() =>
+                                            playPauseTrack(track.track)
+                                        }
                                     >
                                         <CustomTableCell
                                             className="customTableCell"

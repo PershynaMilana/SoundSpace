@@ -191,7 +191,7 @@ const Header = () => {
                                     >
                                         <CustomTab to="/home" label="Home" />
                                         <CustomTab
-                                            to="/library"
+                                            to="/library/overview"
                                             label="Library"
                                         />
                                     </Tabs>
@@ -279,7 +279,7 @@ const Header = () => {
                                                                 "translateY(-50%)",
                                                         }}
                                                     />
-                                                    {searchQuery && ( // Show clear button when there's a search query
+                                                    {searchQuery && ( 
                                                         <ClearIcon
                                                             onClick={
                                                                 handleClearSearch
