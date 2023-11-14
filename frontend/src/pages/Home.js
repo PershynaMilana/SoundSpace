@@ -1,22 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { clientId, clientSecret } from "../services/spotifyAuth";
 import {
     Container,
-    Grid,
     Card,
     CardMedia,
     CardContent,
     Typography,
     CircularProgress,
-    Button,
 } from "@mui/material";
 import { styled } from "@mui/system";
 
 const ContainerStyled = styled(Container)(({ theme }) => ({
-    paddingTop: theme.spacing(2),
-    paddingBottom: theme.spacing(2),
+    paddingTop: theme.spacing(5),
+    paddingBottom: theme.spacing(5),
 }));
 
 const CardStyled = styled(Card)(({ theme }) => ({
@@ -38,7 +36,10 @@ const CardMediaStyled = styled(CardMedia)(({ theme }) => ({
 
 const Home = () => {
     const [popularPlaylists, setPopularPlaylists] = useState([]);
+    const [artists, setArtists] = useState([]);
+    const [newReleases, setNewReleases] = useState([]);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const getToken = async () => {
@@ -85,11 +86,66 @@ const Home = () => {
             }
         };
 
+        const getArtistInfo = async (token) => {
+            try {
+                const artistIds = [
+                    "2CIMQHirSU0MQqyYHq0eOx",
+                    "57dN52uHvrHOxijzpIgu3E",
+                    "1vCWHaC5f2uS3yhpwWbIA6",
+                    "3TVXtAsR1Inumwj472S9r4",
+                    "1Xyo4u8uXC1ZmMpatF05PJ",
+                ];
+                const artistsInfoPromises = artistIds.map(async (artistId) => {
+                    const response = await axios.get(
+                        `https://api.spotify.com/v1/artists/${artistId}`,
+                        {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                            },
+                            withCredentials: false,
+                        }
+                    );
+                    return response.data;
+                });
+                const artistsInfo = await Promise.all(artistsInfoPromises);
+                return artistsInfo;
+            } catch (error) {
+                console.error(
+                    "Ошибка при получении информации об артистах:",
+                    error
+                );
+                return [];
+            }
+        };
+
+        const getNewReleases = async (token) => {
+            try {
+                const response = await axios.get(
+                    "https://api.spotify.com/v1/browse/new-releases",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                        withCredentials: false,
+                    }
+                );
+                return response.data.albums.items.slice(0, 5);
+            } catch (error) {
+                console.error("Ошибка при получении новых релизов:", error);
+                return [];
+            }
+        };
+
         const fetchData = async () => {
             const token = await getToken();
             if (token) {
                 const playlists = await getPopularPlaylists(token);
+                const artistInfo = await getArtistInfo(token);
+                const releases = await getNewReleases(token);
+
                 setPopularPlaylists(playlists);
+                setArtists(artistInfo);
+                setNewReleases(releases);
                 setLoading(false);
             }
         };
@@ -98,7 +154,7 @@ const Home = () => {
     }, []);
 
     return (
-        <ContainerStyled >
+        <ContainerStyled>
             <div
                 style={{
                     display: "flex",
@@ -115,16 +171,17 @@ const Home = () => {
                     Популярные плейлисты
                 </Typography>
                 <Link
+                    onClick={() => navigate("/section")}
                     to="/section"
                     variant="outlined"
                     color="primary"
                     style={{
                         order: "2",
                         textDecoration: "none",
-                        color: "grey",
+                        color: "white",
                         fontSize: "20px",
                         verticalAlign: "middle",
-                        marrginTop: "30px",
+                        marginTop: "30px",
                         "&:hover": {
                             textDecoration: "underline",
                         },
@@ -134,17 +191,29 @@ const Home = () => {
                 </Link>
             </div>
             {loading ? (
-                <CircularProgress />
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        margin: "15px",
+                    }}
+                >
+                    <CircularProgress style={{ color: "gray" }} />
+                </div>
             ) : (
                 <div style={{ display: "flex", flexWrap: "wrap" }}>
                     {popularPlaylists.map((playlist) => (
                         <CardStyled
                             key={playlist.id}
+                            onClick={() => navigate(`/playlist/${playlist.id}`)}
                             style={{
                                 flex: "0 0 calc(20% - 20px)",
                                 margin: "10px",
                                 backgroundColor: "#222222",
                                 height: "220px",
+                                cursor: "pointer",
+                                color: "white",
                             }}
                         >
                             <CardMediaStyled
@@ -153,23 +222,159 @@ const Home = () => {
                             />
                             <CardContent>
                                 <Typography variant="h6" component="div">
-                                    <Link
-                                        to={`/playlist/${playlist.id}`}
-                                        style={{
-                                            order: "2",
-                                            textDecoration: "none",
-                                            color: "grey",
-                                            textAlign: "center",
-                                            verticalAlign: "middle",
-                                            fontSize: "18px",
-                                            fontWeight: "550",
-                                            "&:hover": {
-                                                textDecoration: "underline",
-                                            },
-                                        }}
-                                    >
-                                        {playlist.name}
-                                    </Link>
+                                    {playlist.name}
+                                </Typography>
+                            </CardContent>
+                        </CardStyled>
+                    ))}
+                </div>
+            )}
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    marginBottom: "10px",
+                }}
+            >
+                <Typography
+                    variant="h4"
+                    gutterBottom
+                    color={"white"}
+                    style={{ order: "1" }}
+                >
+                    Популярные артисты
+                </Typography>
+                <Link
+                    onClick={() => navigate("/section")}
+                    to="/section"
+                    variant="outlined"
+                    color="primary"
+                    style={{
+                        order: "2",
+                        textDecoration: "none",
+                        color: "white",
+                        fontSize: "20px",
+                        verticalAlign: "middle",
+                        marginTop: "30px",
+                        "&:hover": {
+                            textDecoration: "underline",
+                        },
+                    }}
+                >
+                    Показать все
+                </Link>
+            </div>
+            {loading ? (
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        margin: "15px",
+                    }}
+                >
+                    <CircularProgress style={{ color: "gray" }} />
+                </div>
+            ) : (
+                <div style={{ display: "flex", flexWrap: "wrap" }}>
+                    {artists.map((artist) => (
+                        <CardStyled
+                            key={artist.id}
+                            onClick={() => navigate(`/artist/${artist.id}`)}
+                            style={{
+                                flex: "0 0 calc(20% - 20px)",
+                                margin: "10px",
+                                backgroundColor: "#222222",
+                                height: "220px",
+                                cursor: "pointer",
+                                color: "white",
+                            }}
+                        >
+                            {artist.images.length > 0 && (
+                                <CardMediaStyled
+                                    image={artist.images[0].url}
+                                    title={artist.name}
+                                />
+                            )}
+                            <CardContent>
+                                <Typography variant="h6" component="div">
+                                    {artist.name}
+                                </Typography>
+                            </CardContent>
+                        </CardStyled>
+                    ))}
+                </div>
+            )}
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    marginBottom: "10px",
+                }}
+            >
+                <Typography
+                    variant="h4"
+                    gutterBottom
+                    color={"white"}
+                    style={{ order: "1" }}
+                >
+                    Популярные плейлисты
+                </Typography>
+                <Link
+                    onClick={() => navigate("/section")}
+                    to="/section"
+                    variant="outlined"
+                    color="primary"
+                    style={{
+                        order: "2",
+                        textDecoration: "none",
+                        color: "white",
+                        fontSize: "20px",
+                        verticalAlign: "middle",
+                        marginTop: "30px",
+                        "&:hover": {
+                            textDecoration: "underline",
+                        },
+                    }}
+                >
+                    Показать все
+                </Link>
+            </div>
+            {loading ? (
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        margin: "15px",
+                    }}
+                >
+                    <CircularProgress style={{ color: "gray" }} />
+                </div>
+            ) : (
+                <div style={{ display: "flex", flexWrap: "wrap" }}>
+                    {newReleases.map((release) => (
+                        <CardStyled
+                            key={release.id}
+                            onClick={() => navigate(`/album/${release.id}`)}
+                            style={{
+                                flex: "0 0 calc(20% - 20px)",
+                                margin: "10px",
+                                backgroundColor: "#222222",
+                                height: "220px",
+                                cursor: "pointer",
+                                color: "white",
+                            }}
+                        >
+                            {release.images.length > 0 && (
+                                <CardMediaStyled
+                                    image={release.images[0].url}
+                                    title={release.name}
+                                />
+                            )}
+                            <CardContent>
+                                <Typography variant="h6" component="div">
+                                    {release.name}
                                 </Typography>
                             </CardContent>
                         </CardStyled>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { clientId, clientSecret } from "../services/spotifyAuth";
 import {
     Container,
@@ -38,6 +38,7 @@ const CardMediaStyled = styled(CardMedia)(({ theme }) => ({
 const Section = () => {
     const [sectionPlaylists, setSectionPlaylists] = useState([]);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const getToken = async () => {
@@ -93,9 +94,14 @@ const Section = () => {
         fetchData();
     }, []);
 
+    const handlePlaylistClick = (playlistId) => {
+        navigate(`/playlist/${playlistId}`);
+    };
+
+
     return (
         <ContainerStyled maxWidth="lg">
-            <Typography variant="h4" gutterBottom>
+            <Typography variant="h4" color={"white"} gutterBottom>
                 Все плейлисты
             </Typography>
             {loading ? (
@@ -119,31 +125,32 @@ const Section = () => {
                                     backgroundColor: "#222222",
                                     height: "220px",
                                 }}
+                                onClick={() => handlePlaylistClick(playlist.id)}
                             >
                                 <CardMediaStyled
                                     image={playlist.images[0].url}
                                     title={playlist.name}
                                 />
                                 <CardContent>
-                                    <Typography variant="h6" component="div">
-                                        <Link
-                                            to={`/playlist/${playlist.id}`}
-                                            style={{
-                                                order: "2",
-                                                textDecoration: "none",
-                                                color: "grey",
-                                                textAlign: "center",
-                                                verticalAlign: "middle",
-                                                fontSize: "18px",
-                                                fontWeight: "550",
-                                                "&:hover": {
-                                                    textDecoration: "underline",
-                                                },
-                                            }}
-                                        >
-                                            {playlist.name}
-                                        </Link>
-                                    </Typography>
+                                <Typography variant="h6" component="div">
+                                <Link
+                                    style={{
+                                        order: "2",
+                                        textDecoration: "none",
+                                        color: "white",
+                                        textAlign: "center",
+                                        verticalAlign: "middle",
+                                        fontSize: "18px",
+                                        fontWeight: "550",
+                                        "&:hover": {
+                                            textDecoration: "underline",
+                                        },
+                                    }}
+                                >
+                                    {playlist.name}
+                                </Link>
+                            </Typography>
+
                                 </CardContent>
                             </CardStyled>
                         </Grid>

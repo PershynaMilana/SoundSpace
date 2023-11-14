@@ -27,7 +27,7 @@ function App() {
     return (
         <React.Fragment>
             <header>
-                <Header />
+                <Header style={{ position: "fixed",}}/>
             </header>
             <main>
                 <Routes>
@@ -64,6 +64,9 @@ function App() {
                         path="/author/:playlistName"
                         element={<Playlist />}
                     />
+
+                    <Route path="/artist/:artistId" 
+                        element={<Author />} />
 
                     <Route path="/playlist/:playlistId"
                     element={<Playlist />}/>

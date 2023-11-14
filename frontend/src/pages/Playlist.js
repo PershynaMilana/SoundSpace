@@ -105,17 +105,7 @@ const Playlist = () => {
     const [loading, setLoading] = useState(true);
     const [currentTrack, setCurrentTrack] = useState(null);
 
-    const playTrack = (track) => {
-        const audioPlayer = document.getElementById("audio-player");
-        if (currentTrack === track) {
-            audioPlayer.pause();
-            setCurrentTrack(null);
-        } else {
-            audioPlayer.src = track.preview_url;
-            audioPlayer.play();
-            setCurrentTrack(track);
-        }
-    };
+    
     const playPauseTrack = (track) => {
         const audioPlayer = document.getElementById("audio-player");
         if (currentTrack === track) {
