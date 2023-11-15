@@ -1,4 +1,4 @@
-header {
+.header-loggedin {
     position: fixed;
     width: 100%;
     top: 0;
@@ -6,7 +6,21 @@ header {
     z-index: 1000;
 }
 
-main {
+.main-loggedin {
     padding-top: 90px;
-    padding-bottom: 60px;    
+    padding-bottom: 70px;    
+    margin-left: 0px;
+}
+
+.header-notloggedin {
+    position: relative;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+.main-notloggedin {
+    padding-top: 0px;
+    padding-bottom: 0px;   
 }

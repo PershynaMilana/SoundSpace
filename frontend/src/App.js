@@ -26,10 +26,10 @@ function App() {
     console.log(isLoggedIn);
     return (
         <React.Fragment>
-            <header>
-                <Header style={{ position: "fixed",}}/>
+            <header className={isLoggedIn ? "header-loggedin" : "header-notloggedin"}>
+                <Header />
             </header>
-            <main>
+            <main className={isLoggedIn ? "main-loggedin" : "main-notloggedin"}>
                 <Routes>
                     <Route path="/login" element={<Login />} />
                     <Route path="/signup" element={<Signup />} />
@@ -41,6 +41,7 @@ function App() {
                     <Route path="/library" element={<Library />} />
                     <Route path="/library/sets" element={<Sets />} />
                     <Route path="/library/albums" element={<Albums/>}/>
+                    <Route path="/album/:albumId" element={<Albums/>}/>
                     <Route path="/library/likes" element={<Likes/>}/>
                     <Route path="/library/overview" element={<Overview/>}/>
                     {isLoggedIn && <Route path="/user" element={<Welcome />} />}

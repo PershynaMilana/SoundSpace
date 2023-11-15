@@ -9,8 +9,11 @@ import {
     CardContent,
     Typography,
     CircularProgress,
+    IconButton,
 } from "@mui/material";
 import { styled } from "@mui/system";
+import ArrowBackIosNewRoundedIcon from "@mui/icons-material/ArrowBackIosNewRounded";
+import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
 
 const ContainerStyled = styled(Container)(({ theme }) => ({
     paddingTop: theme.spacing(5),
@@ -39,7 +42,34 @@ const Home = () => {
     const [artists, setArtists] = useState([]);
     const [newReleases, setNewReleases] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [playlistIndex, setPlaylistIndex] = useState(0);
     const navigate = useNavigate();
+    const [artistIndex, setArtistIndex] = useState(0);
+    const [releaseIndex, setReleaseIndex] = useState(0);
+
+    const handleNextArtist = () => {
+        setArtistIndex((prevIndex) => prevIndex + 6);
+    };
+
+    const handlePrevArtist = () => {
+        setArtistIndex((prevIndex) => Math.max(0, prevIndex - 6));
+    };
+
+    const handleNextRelease = () => {
+        setReleaseIndex((prevIndex) => prevIndex + 6);
+    };
+
+    const handlePrevRelease = () => {
+        setReleaseIndex((prevIndex) => Math.max(0, prevIndex - 6));
+    };
+
+    const handleNextPlaylist = () => {
+        setPlaylistIndex((prevIndex) => prevIndex + 6);
+    };
+
+    const handlePrevPlaylist = () => {
+        setPlaylistIndex((prevIndex) => Math.max(0, prevIndex - 6));
+    };
 
     useEffect(() => {
         const getToken = async () => {
@@ -76,7 +106,7 @@ const Home = () => {
                         withCredentials: false,
                     }
                 );
-                return response.data.playlists.items.slice(0, 5);
+                return response.data.playlists.items.slice(0, 20);
             } catch (error) {
                 console.error(
                     "Ошибка при получении популярных плейлистов:",
@@ -94,6 +124,7 @@ const Home = () => {
                     "1vCWHaC5f2uS3yhpwWbIA6",
                     "3TVXtAsR1Inumwj472S9r4",
                     "1Xyo4u8uXC1ZmMpatF05PJ",
+                    "0TnOYISbd1XYRBk9myaseg",
                 ];
                 const artistsInfoPromises = artistIds.map(async (artistId) => {
                     const response = await axios.get(
@@ -129,7 +160,7 @@ const Home = () => {
                         withCredentials: false,
                     }
                 );
-                return response.data.albums.items.slice(0, 5);
+                return response.data.albums.items.slice(0, 6);
             } catch (error) {
                 console.error("Ошибка при получении новых релизов:", error);
                 return [];
@@ -166,29 +197,71 @@ const Home = () => {
                     variant="h4"
                     gutterBottom
                     color={"white"}
-                    style={{ order: "1" }}
+                    style={{
+                        order: "1",
+                        fontWeight: "700",
+                        fontFamily: "Verdana",
+                        marginTop: "25px",
+                    }}
                 >
                     Популярные плейлисты
                 </Typography>
-                <Link
-                    onClick={() => navigate("/section")}
-                    to="/section"
-                    variant="outlined"
-                    color="primary"
+                <div
                     style={{
+                        display: "flex",
+                        alignItems: "center",
                         order: "2",
-                        textDecoration: "none",
-                        color: "white",
-                        fontSize: "20px",
-                        verticalAlign: "middle",
-                        marginTop: "30px",
-                        "&:hover": {
-                            textDecoration: "underline",
-                        },
                     }}
                 >
-                    Показать все
-                </Link>
+                    <IconButton
+                        style={{
+                            color: "white",
+                            cursor: "pointer",
+                            marginTop: "25px",
+                        }}
+                        onClick={handlePrevPlaylist}
+                        disabled={playlistIndex === 0}
+                    >
+                        <ArrowBackIosNewRoundedIcon />
+                    </IconButton>
+                    <Link
+                        onClick={() => navigate("/section")}
+                        to="/section"
+                        variant="outlined"
+                        color="primary"
+                        style={{
+                            textDecoration: "none",
+                            color: "white",
+                            fontSize: "20px",
+                            verticalAlign: "middle",
+                            marginTop: "30px",
+                            fontWeight: "600",
+                            "&:hover": {
+                                textDecoration: "underline",
+                            },
+                        }}
+                    >
+                        Показать все
+                    </Link>
+                    <IconButton
+                        style={{
+                            color: "white",
+                            marginTop: "25px",
+                            cursor:
+                                playlistIndex + 6 >= popularPlaylists.length
+                                    ? "not-allowed"
+                                    : "pointer",
+                            opacity:
+                                playlistIndex + 6 >= popularPlaylists.length
+                                    ? 0.5
+                                    : 1,
+                        }}
+                        onClick={handleNextPlaylist}
+                        disabled={playlistIndex + 6 >= popularPlaylists.length}
+                    >
+                        <ArrowForwardIosRoundedIcon />
+                    </IconButton>
+                </div>
             </div>
             {loading ? (
                 <div
@@ -203,30 +276,34 @@ const Home = () => {
                 </div>
             ) : (
                 <div style={{ display: "flex", flexWrap: "wrap" }}>
-                    {popularPlaylists.map((playlist) => (
-                        <CardStyled
-                            key={playlist.id}
-                            onClick={() => navigate(`/playlist/${playlist.id}`)}
-                            style={{
-                                flex: "0 0 calc(20% - 20px)",
-                                margin: "10px",
-                                backgroundColor: "#222222",
-                                height: "220px",
-                                cursor: "pointer",
-                                color: "white",
-                            }}
-                        >
-                            <CardMediaStyled
-                                image={playlist.images[0].url}
-                                title={playlist.name}
-                            />
-                            <CardContent>
-                                <Typography variant="h6" component="div">
-                                    {playlist.name}
-                                </Typography>
-                            </CardContent>
-                        </CardStyled>
-                    ))}
+                    {popularPlaylists
+                        .slice(playlistIndex, playlistIndex + 6)
+                        .map((playlist) => (
+                            <CardStyled
+                                key={playlist.id}
+                                onClick={() =>
+                                    navigate(`/playlist/${playlist.id}`)
+                                }
+                                style={{
+                                    flex: "0 0 calc(16.666% - 20px)",
+                                    margin: "10px",
+                                    backgroundColor: "#222222",
+                                    height: "220px",
+                                    cursor: "pointer",
+                                    color: "white",
+                                }}
+                            >
+                                <CardMediaStyled
+                                    image={playlist.images[0].url}
+                                    title={playlist.name}
+                                />
+                                <CardContent>
+                                    <Typography variant="h6" component="div">
+                                        {playlist.name}
+                                    </Typography>
+                                </CardContent>
+                            </CardStyled>
+                        ))}
                 </div>
             )}
             <div
@@ -240,29 +317,69 @@ const Home = () => {
                     variant="h4"
                     gutterBottom
                     color={"white"}
-                    style={{ order: "1" }}
+                    style={{
+                        order: "1",
+                        fontWeight: "700",
+                        fontFamily: "Verdana",
+                        marginTop: "25px",
+                    }}
                 >
                     Популярные артисты
                 </Typography>
-                <Link
-                    onClick={() => navigate("/section")}
-                    to="/section"
-                    variant="outlined"
-                    color="primary"
+                <div
                     style={{
+                        display: "flex",
+                        alignItems: "center",
                         order: "2",
-                        textDecoration: "none",
-                        color: "white",
-                        fontSize: "20px",
-                        verticalAlign: "middle",
-                        marginTop: "30px",
-                        "&:hover": {
-                            textDecoration: "underline",
-                        },
                     }}
                 >
-                    Показать все
-                </Link>
+                    <IconButton
+                        style={{
+                            color: "white",
+                            cursor: "pointer",
+                            marginTop: "25px",
+                        }}
+                        onClick={handlePrevArtist}
+                        disabled={artistIndex === 0}
+                    >
+                        <ArrowBackIosNewRoundedIcon />
+                    </IconButton>
+                    <Link
+                        onClick={() => navigate("/section")}
+                        to="/section"
+                        variant="outlined"
+                        color="primary"
+                        style={{
+                            textDecoration: "none",
+                            color: "white",
+                            fontSize: "20px",
+                            verticalAlign: "middle",
+                            marginTop: "30px",
+                            fontWeight: "600",
+                            "&:hover": {
+                                textDecoration: "underline",
+                            },
+                        }}
+                    >
+                        Показать все
+                    </Link>
+                    <IconButton
+                        style={{
+                            color: "white",
+                            marginTop: "25px",
+                            cursor:
+                                artistIndex + 6 >= artists.length
+                                    ? "not-allowed"
+                                    : "pointer",
+                            opacity:
+                                artistIndex + 6 >= artists.length ? 0.5 : 1,
+                        }}
+                        onClick={handleNextArtist}
+                        disabled={artistIndex + 6 >= artists.length}
+                    >
+                        <ArrowForwardIosRoundedIcon />
+                    </IconButton>
+                </div>
             </div>
             {loading ? (
                 <div
@@ -282,7 +399,7 @@ const Home = () => {
                             key={artist.id}
                             onClick={() => navigate(`/artist/${artist.id}`)}
                             style={{
-                                flex: "0 0 calc(20% - 20px)",
+                                flex: "0 0 calc(16.666% - 20px)",
                                 margin: "10px",
                                 backgroundColor: "#222222",
                                 height: "220px",
@@ -316,29 +433,71 @@ const Home = () => {
                     variant="h4"
                     gutterBottom
                     color={"white"}
-                    style={{ order: "1" }}
-                >
-                    Популярные плейлисты
-                </Typography>
-                <Link
-                    onClick={() => navigate("/section")}
-                    to="/section"
-                    variant="outlined"
-                    color="primary"
                     style={{
-                        order: "2",
-                        textDecoration: "none",
-                        color: "white",
-                        fontSize: "20px",
-                        verticalAlign: "middle",
-                        marginTop: "30px",
-                        "&:hover": {
-                            textDecoration: "underline",
-                        },
+                        order: "1",
+                        fontWeight: "700",
+                        fontFamily: "Verdana",
+                        marginTop: "25px",
                     }}
                 >
-                    Показать все
-                </Link>
+                    Новые релизы
+                </Typography>
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        order: "2",
+                    }}
+                >
+                    <IconButton
+                        style={{
+                            color: "white",
+                            cursor: "pointer",
+                            marginTop: "25px",
+                        }}
+                        onClick={handlePrevRelease}
+                        disabled={releaseIndex === 0}
+                    >
+                        <ArrowBackIosNewRoundedIcon />
+                    </IconButton>
+                    <Link
+                        onClick={() => navigate("/section")}
+                        to="/section"
+                        variant="outlined"
+                        color="primary"
+                        style={{
+                            textDecoration: "none",
+                            color: "white",
+                            fontSize: "20px",
+                            verticalAlign: "middle",
+                            marginTop: "30px",
+                            fontWeight: "600",
+                            "&:hover": {
+                                textDecoration: "underline",
+                            },
+                        }}
+                    >
+                        Показать все
+                    </Link>
+                    <IconButton
+                        style={{
+                            color: "white",
+                            marginTop: "25px",
+                            cursor:
+                                releaseIndex + 6 >= newReleases.length
+                                    ? "not-allowed"
+                                    : "pointer",
+                            opacity:
+                                releaseIndex + 6 >= newReleases.length
+                                    ? 0.5
+                                    : 1,
+                        }}
+                        onClick={handleNextRelease}
+                        disabled={releaseIndex + 6 >= newReleases.length}
+                    >
+                        <ArrowForwardIosRoundedIcon />
+                    </IconButton>
+                </div>
             </div>
             {loading ? (
                 <div
@@ -358,7 +517,7 @@ const Home = () => {
                             key={release.id}
                             onClick={() => navigate(`/album/${release.id}`)}
                             style={{
-                                flex: "0 0 calc(20% - 20px)",
+                                flex: "0 0 calc(16.666% - 20px)",
                                 margin: "10px",
                                 backgroundColor: "#222222",
                                 height: "220px",

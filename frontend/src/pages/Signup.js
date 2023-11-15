@@ -99,13 +99,26 @@ const Signup = () => {
                     <p
                         className="error-message"
                         style={{
-                            height: "3px",
+                            height: "5px",
                             alignItems: "center",
                             display: "flex",
                             justifyContent: "center",
                         }}
                     >
                         {nameError}
+                    </p>
+                )}
+                {passwordError && (
+                    <p
+                        className="error-message"
+                        style={{
+                            height: "7px",
+                            alignItems: "center",
+                            display: "flex",
+                            justifyContent: "center",
+                        }}
+                    >
+                        {passwordError}
                     </p>
                 )}
                 <div className="form-content">
@@ -238,18 +251,19 @@ const Signup = () => {
                                     value={inputs.password}
                                     onChange={handleChange}
                                 />
+
+                                {showPassword ? (
+                                    <VisibilityIcon
+                                        onClick={handleTogglePassword}
+                                        className="eye-icon2"
+                                    />
+                                ) : (
+                                    <VisibilityOffIcon
+                                        onClick={handleTogglePassword}
+                                        className="eye-icon2"
+                                    />
+                                )}
                             </div>
-                            {showPassword ? (
-                                <VisibilityIcon
-                                    onClick={handleTogglePassword}
-                                    className="eye-icon2"
-                                />
-                            ) : (
-                                <VisibilityOffIcon
-                                    onClick={handleTogglePassword}
-                                    className="eye-icon2"
-                                />
-                            )}
                             <div
                                 className="field button-field"
                                 style={{ marginBottom: "20px" }}

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import getToken from "../services/spotifyAuth";
 import { clientId, clientSecret } from "../services/spotifyAuth";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import PlayArrowIcon from "@mui/icons-material/PlayArrowRounded";
@@ -69,7 +70,6 @@ const PlayIcon = styled(PlayArrowIcon)({
     width: "25px",
     color: "white",
     marginRight: "50px",
-
     transform: "translate(-57%, -15%)",
     cursor: "pointer",
     visibility: "hidden",
@@ -104,7 +104,93 @@ const Author = () => {
     const [topTracks, setTopTracks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentTrack, setCurrentTrack] = useState(null);
+    const [displayedTracks, setDisplayedTracks] = useState(5);
+    const [expanded, setExpanded] = useState(false);
+    const [selectedButton, setSelectedButton] = useState("albums");
+    const [albums, setAlbums] = useState([]);
+    const [playlists, setPlaylists] = useState([]);
 
+    const searchArtists = async (artistName, accessToken) => {
+        try {
+            const response = await axios.get(
+                "https://api.spotify.com/v1/search",
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                    params: {
+                        q: artistName,
+                        type: "artist",
+                        limit: 1,
+                    },
+                }
+            );
+            const artistId = response.data.artists.items[0].id;
+            return artistId;
+        } catch (error) {
+            console.error("Ошибка при поиске артиста:", error);
+            return null;
+        }
+    };
+
+    const searchPlaylistsByArtist = async (artistName, accessToken) => {
+        try {
+            const artistId = await searchArtists(artistName, accessToken);
+            if (artistId) {
+                const response = await axios.get(
+                    `https://api.spotify.com/v1/artists/${artistId}/playlists`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`,
+                        },
+                        params: {
+                            limit: 10,
+                        },
+                    }
+                );
+                return response.data.items;
+            } else {
+                return [];
+            }
+        } catch (error) {
+            console.error(
+                "Ошибка при получении плейлистов по имени артиста:",
+                error
+            );
+            return [];
+        }
+    };
+
+    const searchAlbumsByArtist = async (artistName, accessToken) => {
+        try {
+            const artistId = await searchArtists(artistName, accessToken);
+            if (artistId) {
+                const response = await axios.get(
+                    `https://api.spotify.com/v1/artists/${artistId}/albums`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`,
+                        },
+                        params: {
+                            include_groups: "album",
+                            limit: 10,
+                        },
+                    }
+                );
+                return response.data.items;
+            } else {
+                return [];
+            }
+        } catch (error) {
+            console.error(
+                "Ошибка при получении альбомов по имени артиста:",
+                error
+            );
+            return [];
+        }
+    };
+
+    // ----------------------------------------------------------------
     const playTrack = (track) => {
         const audioPlayer = document.getElementById("audio-player");
         if (currentTrack === track) {
@@ -116,7 +202,13 @@ const Author = () => {
             setCurrentTrack(track);
         }
     };
-
+    const handleClick = (button) => {
+        if (selectedButton !== button) {
+            setSelectedButton(button);
+        } else {
+            setSelectedButton(null);
+        }
+    };
     useEffect(() => {
         const audioPlayer = document.getElementById("audio-player");
         audioPlayer.addEventListener("ended", () => {
@@ -131,73 +223,77 @@ const Author = () => {
     }, []);
 
     useEffect(() => {
+        const loadMoreTracks = () => {
+            setDisplayedTracks(displayedTracks + 5);
+        };
+
         if (artistId) {
-            const getToken = async () => {
-                try {
-                    const response = await axios.post(
-                        "https://accounts.spotify.com/api/token",
-                        null,
-                        {
-                            params: {
-                                grant_type: "client_credentials",
-                            },
-                            auth: {
-                                username: clientId,
-                                password: clientSecret,
-                            },
-                            withCredentials: false,
-                        }
-                    );
-                    return response.data.access_token;
-                } catch (error) {
-                    console.error("Ошибка при получении токена:", error);
-                    return null;
-                }
-            };
-
-            const getArtistInfo = async (token) => {
-                try {
-                    const response = await axios.get(
-                        `https://api.spotify.com/v1/artists/${artistId}`,
-                        {
-                            headers: {
-                                Authorization: `Bearer ${token}`,
-                            },
-                            withCredentials: false,
-                        }
-                    );
-                    return response.data;
-                } catch (error) {
-                    console.error(
-                        "Ошибка при получении информации об артисте:",
-                        error
-                    );
-                    return null;
-                }
-            };
-
-            const getTopTracks = async (token) => {
-                try {
-                    const response = await axios.get(
-                        `https://api.spotify.com/v1/artists/${artistId}/top-tracks?country=US`,
-                        {
-                            headers: {
-                                Authorization: `Bearer ${token}`,
-                            },
-                            withCredentials: false,
-                        }
-                    );
-                    return response.data.tracks;
-                } catch (error) {
-                    console.error(
-                        "Ошибка при получении топ-треков артиста:",
-                        error
-                    );
-                    return [];
-                }
-            };
-
             const fetchData = async () => {
+                const getToken = async () => {
+                    try {
+                        const response = await axios.post(
+                            "https://accounts.spotify.com/api/token",
+                            null,
+                            {
+                                params: {
+                                    grant_type: "client_credentials",
+                                },
+                                auth: {
+                                    username: clientId,
+                                    password: clientSecret,
+                                },
+                                withCredentials: false,
+                            }
+                        );
+                        return response.data.access_token;
+                    } catch (error) {
+                        console.error("Ошибка при получении токена:", error);
+                        return null;
+                    }
+                };
+
+                const getArtistInfo = async (token) => {
+                    try {
+                        const response = await axios.get(
+                            `https://api.spotify.com/v1/artists/${artistId}`,
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${token}`,
+                                },
+                                withCredentials: false,
+                            }
+                        );
+                        return response.data;
+                    } catch (error) {
+                        console.error(
+                            "Ошибка при получении информации об артисте:",
+                            error
+                        );
+                        return null;
+                    }
+                };
+
+                const getTopTracks = async (token) => {
+                    try {
+                        const response = await axios.get(
+                            `https://api.spotify.com/v1/artists/${artistId}/top-tracks?country=US`,
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${token}`,
+                                },
+                                withCredentials: false,
+                            }
+                        );
+                        return response.data.tracks;
+                    } catch (error) {
+                        console.error(
+                            "Ошибка при получении топ-треков артиста:",
+                            error
+                        );
+                        return [];
+                    }
+                };
+
                 const token = await getToken();
                 if (token) {
                     const artistInfo = await getArtistInfo(token);
@@ -213,7 +309,7 @@ const Author = () => {
         return () => {
             document.body.style.background = "";
         };
-    }, [artistId]);
+    }, [artistId, displayedTracks]);
 
     const handleRowHover = (index) => {
         const playIcons = document.getElementsByClassName("playIcon");
@@ -225,7 +321,18 @@ const Author = () => {
                 i === index ? "hidden" : "visible";
         }
     };
+    const loadMoreTracks = () => {
+        setDisplayedTracks(displayedTracks + 5);
+    };
 
+    const toggleTracks = () => {
+        setExpanded(!expanded);
+        if (expanded) {
+            setDisplayedTracks(5);
+        } else {
+            setDisplayedTracks(topTracks.length);
+        }
+    };
     return (
         <Container>
             {loading ? (
@@ -249,7 +356,7 @@ const Author = () => {
                                     variant="h1"
                                     style={{
                                         marginTop: "170px",
-                                        marginLeft:"35px",
+                                        marginLeft: "35px",
                                         fontWeight: "700",
                                     }}
                                 >
@@ -257,7 +364,10 @@ const Author = () => {
                                 </Typography>
                                 <Typography
                                     variant="body1"
-                                    style={{ fontWeight: "600",marginLeft:"35px" }}
+                                    style={{
+                                        fontWeight: "600",
+                                        marginLeft: "35px",
+                                    }}
                                 >
                                     Популярность: {artist.popularity}
                                 </Typography>
@@ -302,48 +412,160 @@ const Author = () => {
                             </TableHead>
                             <br />
                             <TableBody>
-                                {topTracks.map((track, index) => (
-                                    <CustomTableRow
-                                        key={track.id}
-                                        onMouseEnter={() =>
-                                            handleRowHover(index)
-                                        }
-                                        onMouseLeave={() => handleRowHover(-1)}
-                                        onClick={() => playTrack(track)}
-                                    >
-                                        <CustomTableCell
-                                            className="customTableCell"
-                                            style={{
-                                                borderRadius: "5px 0px 0px 5px",
-                                                color: "#b5b5b5",
-                                                padding: "0px",
-                                            }}
+                                {topTracks
+                                    .slice(0, displayedTracks)
+                                    .map((track, index) => (
+                                        <CustomTableRow
+                                            key={track.id}
+                                            onMouseEnter={() =>
+                                                handleRowHover(index)
+                                            }
+                                            onMouseLeave={() =>
+                                                handleRowHover(-1)
+                                            }
+                                            onClick={() => playTrack(track)}
                                         >
-                                            {index + 1}
-                                            <PlayIcon
-                                                className="playIcon"
+                                            <CustomTableCell
+                                                className="customTableCell"
                                                 style={{
-                                                    marginRight: "80px",
+                                                    borderRadius:
+                                                        "5px 0px 0px 5px",
+                                                    color: "#b5b5b5",
                                                     padding: "0px",
                                                 }}
-                                            />
-                                        </CustomTableCell>
-                                        <CustomTableCell>
-                                            {track.name}
-                                        </CustomTableCell>
-                                        <CustomTableCell
-                                            style={{
-                                                borderRadius: "0px 5px 5px 0px",
-                                                textAlign: "center",
-                                            }}
-                                        >
-                                            {track.popularity}
-                                        </CustomTableCell>
-                                    </CustomTableRow>
-                                ))}
+                                            >
+                                                {index + 1}
+                                                <PlayIcon
+                                                    className="playIcon"
+                                                    style={{
+                                                        marginRight: "80px",
+                                                        padding: "0px",
+                                                    }}
+                                                />
+                                            </CustomTableCell>
+                                            <CustomTableCell>
+                                                {track.name}
+                                            </CustomTableCell>
+                                            <CustomTableCell
+                                                style={{
+                                                    borderRadius:
+                                                        "0px 5px 5px 0px",
+                                                    textAlign: "center",
+                                                }}
+                                            >
+                                                {track.popularity}
+                                            </CustomTableCell>
+                                        </CustomTableRow>
+                                    ))}
                             </TableBody>
                         </Table>
                     </TrackTable>
+                    {topTracks.length > 5 && (
+                        <div
+                            style={{
+                                textAlign: "right",
+                                marginTop: "20px",
+                                width: "100%",
+                            }}
+                        >
+                            <div>
+                                <button
+                                    onClick={toggleTracks}
+                                    style={{
+                                        background: "#333333",
+                                        paddingLeft: "25px",
+                                        paddingRight: "25px",
+                                        paddingTop: "7px",
+                                        paddingBottom: "7px",
+                                        borderRadius: "50px",
+                                        fontFamily: "Verdana",
+                                        border: "none",
+                                        color: "#888",
+                                        cursor: "pointer",
+                                        transition: "color 0.3s ease-in-out",
+                                        fontWeight: "500",
+                                        marginRight: "150px",
+                                        marginTop: "30px",
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.target.style.color = "white";
+                                        e.target.style.background = "#404040";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.target.style.color = "#888";
+                                        e.target.style.background = "#333333";
+                                    }}
+                                >
+                                    {expanded ? "Свернуть" : "Еще"}
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                    <div>
+                        <button
+                            onClick={() => handleClick("albums")}
+                            style={{
+                                backgroundColor:
+                                    selectedButton === "albums"
+                                        ? "#FFF"
+                                        : "#333",
+                                color:
+                                    selectedButton === "albums"
+                                        ? "#333"
+                                        : "#FFF",
+                                border: "none",
+                                borderRadius: "50px",
+                                padding: "10px 20px",
+                                margin: "5px",
+                                fontWeight: "500",
+                                fontFamily: "Verdana",
+                                cursor: "pointer",
+                                transition:
+                                    "background-color 0.1s ease-in-out, color 0.1s ease-in-out",
+                            }}
+                            onMouseEnter={(e) => {
+                                if (selectedButton !== "albums")
+                                    e.target.style.backgroundColor = "#888";
+                            }}
+                            onMouseLeave={(e) => {
+                                if (selectedButton !== "albums")
+                                    e.target.style.backgroundColor = "#333";
+                            }}
+                        >
+                            Альбомы
+                        </button>
+
+                        <button
+                            onClick={() => handleClick("playlists")}
+                            style={{
+                                backgroundColor:
+                                    selectedButton === "playlists"
+                                        ? "#FFF"
+                                        : "#333",
+                                color:
+                                    selectedButton === "playlists"
+                                        ? "#333"
+                                        : "#FFF",
+                                border: "none",
+                                borderRadius: "50px",
+                                padding: "10px 20px",
+                                margin: "5px",
+                                fontWeight: "500",
+                                fontFamily: "Verdana",
+                                cursor: "pointer",
+                            }}
+                            onMouseEnter={(e) => {
+                                if (selectedButton !== "playlists")
+                                    e.target.style.backgroundColor = "#888";
+                            }}
+                            onMouseLeave={(e) => {
+                                if (selectedButton !== "playlists")
+                                    e.target.style.backgroundColor = "#333";
+                            }}
+                        >
+                            Плейлисты
+                        </button>
+                    </div>
                 </>
             )}
         </Container>
