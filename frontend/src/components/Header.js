@@ -18,7 +18,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import HeadsetIcon from "@mui/icons-material/Headset";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import menuIcon from "../assets/images/account_icon2.png";
-import logo from "../assets/images/SounD-3-removebg-preview.png";
+import logo from "../assets/images/logo2.png";
 import { styled } from "@mui/system";
 import ClearIcon from "@mui/icons-material/Clear";
 axios.defaults.withCredentials = true;
@@ -114,11 +114,11 @@ const Header = () => {
                     gap: "4px",
                 }}
                 label={
-                    <div style={{ display: "flex", alignItems: "center" }}>
+                    <div style={{ display: "flex", alignItems: "center", marginTop: "7px",}}>
                         {props.label === "Library" ? (
                             <>
                                 <HeadsetIcon
-                                    style={{ fontSize: 24, marginRight: "4px" }}
+                                    style={{ fontSize: 24, marginRight: "4px", marginTop: "7px", }}
                                 />{" "}
                                 {props.label}
                             </>
@@ -164,8 +164,9 @@ const Header = () => {
                                 src={logo}
                                 alt="Logo"
                                 style={{
-                                    height: "90px",
-                                    width: "100px",
+                                    marginTop: "7px",
+                                    height: "65px",
+                                    width: "250px",
                                 }}
                             />
                         </Link>

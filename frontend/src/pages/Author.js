@@ -17,6 +17,9 @@ import {
     Typography,
     Grid,
     styled,
+    Card,
+    CardMedia,
+    CardContent,
 } from "@mui/material";
 
 const Container = styled("div")(({ theme }) => ({
@@ -27,6 +30,29 @@ const Container = styled("div")(({ theme }) => ({
     height: "100%",
     color: "white",
     background: `linear-gradient(#04009A -70%, #1d1d1d, black)`,
+}));
+
+const CardStyled = styled(Card)(({ theme }) => ({
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+
+    height: "100%",
+    width: "105%",
+    backgroundColor: "#333333",
+    color: "white",
+    transition: "transform 0.2s",
+    "&:hover": {
+        transform: "scale(1.05)",
+    },
+}));
+
+const CardMediaStyled = styled(CardMedia)(({ theme }) => ({
+    width: "100%",
+    height: 0,
+    paddingTop: "56.25%",
+    marginLeft: "20px",
+    marginRight: "20px",
 }));
 
 const ArtistImage = styled("img")({
@@ -107,16 +133,17 @@ const Author = () => {
     const [displayedTracks, setDisplayedTracks] = useState(5);
     const [expanded, setExpanded] = useState(false);
     const [selectedButton, setSelectedButton] = useState("albums");
+    const navigate = useNavigate();
     const [albums, setAlbums] = useState([]);
     const [playlists, setPlaylists] = useState([]);
 
-    const searchArtists = async (artistName, accessToken) => {
+    const searchArtists = async (artistName, token) => {
         try {
             const response = await axios.get(
                 "https://api.spotify.com/v1/search",
                 {
                     headers: {
-                        Authorization: `Bearer ${accessToken}`,
+                        Authorization: `Bearer ${token}`,
                     },
                     params: {
                         q: artistName,
@@ -133,15 +160,15 @@ const Author = () => {
         }
     };
 
-    const searchPlaylistsByArtist = async (artistName, accessToken) => {
+    const searchPlaylistsByArtist = async (artistName, token) => {
         try {
-            const artistId = await searchArtists(artistName, accessToken);
+            const artistId = await searchArtists(artistName, token);
             if (artistId) {
                 const response = await axios.get(
                     `https://api.spotify.com/v1/artists/${artistId}/playlists`,
                     {
                         headers: {
-                            Authorization: `Bearer ${accessToken}`,
+                            Authorization: `Bearer ${token}`,
                         },
                         params: {
                             limit: 10,
@@ -161,15 +188,15 @@ const Author = () => {
         }
     };
 
-    const searchAlbumsByArtist = async (artistName, accessToken) => {
+    const searchAlbumsByArtist = async (artistName, token) => {
         try {
-            const artistId = await searchArtists(artistName, accessToken);
+            const artistId = await searchArtists(artistName, token);
             if (artistId) {
                 const response = await axios.get(
                     `https://api.spotify.com/v1/artists/${artistId}/albums`,
                     {
                         headers: {
-                            Authorization: `Bearer ${accessToken}`,
+                            Authorization: `Bearer ${token}`,
                         },
                         params: {
                             include_groups: "album",
@@ -190,7 +217,113 @@ const Author = () => {
         }
     };
 
+    const getArtistInfo = async (artistId, token) => {
+        try {
+            const response = await axios.get(
+                `https://api.spotify.com/v1/artists/${artistId}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                    withCredentials: false,
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.error("Ошибка при получении информации об артисте:", error);
+            return null;
+        }
+    };
+
+    const getTopTracks = async (artistId, token) => {
+        try {
+            const response = await axios.get(
+                `https://api.spotify.com/v1/artists/${artistId}/top-tracks?country=US`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                    withCredentials: false,
+                }
+            );
+            return response.data.tracks;
+        } catch (error) {
+            console.error("Ошибка при получении топ-треков артиста:", error);
+            return [];
+        }
+    };
+
+    const fetchData = async (
+        artistId,
+        displayedTracks,
+        setArtist,
+        setTopTracks,
+        setLoading
+    ) => {
+        const token = await getToken();
+        if (token && artistId) {
+            const artistInfo = await getArtistInfo(artistId, token);
+            const artistTopTracks = await getTopTracks(artistId, token);
+            setArtist(artistInfo);
+            setTopTracks(artistTopTracks);
+            setLoading(false);
+            handleClick(token);
+            searchArtists(artistInfo.name, token);
+            searchPlaylistsByArtist(artistInfo.name, token);
+        }
+    };
+
+    const handleClick = async (token) => {
+        if (selectedButton) {
+            if (selectedButton === "albums") {
+                const fetchedAlbums = await searchAlbumsByArtist(
+                    artist.name,
+                    token
+                );
+                setAlbums(fetchedAlbums);
+            } else if (selectedButton === "playlists") {
+                const fetchedPlaylists = await searchPlaylistsByArtist(
+                    artist.name,
+                    token
+                );
+                setPlaylists(fetchedPlaylists);
+            }
+            setSelectedButton(null);
+        } else {
+            setSelectedButton(selectedButton);
+        }
+    };
+
+    useEffect(() => {
+        const fetchDataEffect = async () => {
+            const token = await getToken();
+            if (token && artistId) {
+                const artistInfo = await getArtistInfo(artistId, token);
+                const artistTopTracks = await getTopTracks(artistId, token);
+                setArtist(artistInfo);
+                setTopTracks(artistTopTracks);
+                setLoading(false);
+            }
+        };
+
+        if (artistId) {
+            fetchDataEffect();
+        }
+
+        return () => {
+            document.body.style.background = "";
+        };
+    }, [artistId, displayedTracks]);
+
+    const handlePlaylistClick = (playlistId) => {
+        navigate(`/playlist/${playlistId}`);
+    };
+
+    const handleAlbumClick = (albumId) => {
+        navigate(`/album/${albumId}`);
+    };
     // ----------------------------------------------------------------
+
     const playTrack = (track) => {
         const audioPlayer = document.getElementById("audio-player");
         if (currentTrack === track) {
@@ -202,13 +335,7 @@ const Author = () => {
             setCurrentTrack(track);
         }
     };
-    const handleClick = (button) => {
-        if (selectedButton !== button) {
-            setSelectedButton(button);
-        } else {
-            setSelectedButton(null);
-        }
-    };
+
     useEffect(() => {
         const audioPlayer = document.getElementById("audio-player");
         audioPlayer.addEventListener("ended", () => {
@@ -222,95 +349,6 @@ const Author = () => {
         };
     }, []);
 
-    useEffect(() => {
-        const loadMoreTracks = () => {
-            setDisplayedTracks(displayedTracks + 5);
-        };
-
-        if (artistId) {
-            const fetchData = async () => {
-                const getToken = async () => {
-                    try {
-                        const response = await axios.post(
-                            "https://accounts.spotify.com/api/token",
-                            null,
-                            {
-                                params: {
-                                    grant_type: "client_credentials",
-                                },
-                                auth: {
-                                    username: clientId,
-                                    password: clientSecret,
-                                },
-                                withCredentials: false,
-                            }
-                        );
-                        return response.data.access_token;
-                    } catch (error) {
-                        console.error("Ошибка при получении токена:", error);
-                        return null;
-                    }
-                };
-
-                const getArtistInfo = async (token) => {
-                    try {
-                        const response = await axios.get(
-                            `https://api.spotify.com/v1/artists/${artistId}`,
-                            {
-                                headers: {
-                                    Authorization: `Bearer ${token}`,
-                                },
-                                withCredentials: false,
-                            }
-                        );
-                        return response.data;
-                    } catch (error) {
-                        console.error(
-                            "Ошибка при получении информации об артисте:",
-                            error
-                        );
-                        return null;
-                    }
-                };
-
-                const getTopTracks = async (token) => {
-                    try {
-                        const response = await axios.get(
-                            `https://api.spotify.com/v1/artists/${artistId}/top-tracks?country=US`,
-                            {
-                                headers: {
-                                    Authorization: `Bearer ${token}`,
-                                },
-                                withCredentials: false,
-                            }
-                        );
-                        return response.data.tracks;
-                    } catch (error) {
-                        console.error(
-                            "Ошибка при получении топ-треков артиста:",
-                            error
-                        );
-                        return [];
-                    }
-                };
-
-                const token = await getToken();
-                if (token) {
-                    const artistInfo = await getArtistInfo(token);
-                    const artistTopTracks = await getTopTracks(token);
-                    setArtist(artistInfo);
-                    setTopTracks(artistTopTracks);
-                    setLoading(false);
-                }
-            };
-            fetchData();
-        }
-
-        return () => {
-            document.body.style.background = "";
-        };
-    }, [artistId, displayedTracks]);
-
     const handleRowHover = (index) => {
         const playIcons = document.getElementsByClassName("playIcon");
         const customTableCells =
@@ -321,6 +359,7 @@ const Author = () => {
                 i === index ? "hidden" : "visible";
         }
     };
+
     const loadMoreTracks = () => {
         setDisplayedTracks(displayedTracks + 5);
     };
@@ -333,6 +372,7 @@ const Author = () => {
             setDisplayedTracks(topTracks.length);
         }
     };
+
     return (
         <Container>
             {loading ? (
@@ -501,9 +541,9 @@ const Author = () => {
                             </div>
                         </div>
                     )}
-                    <div>
+                    <div style={{ marginTop: "20px" }}>
                         <button
-                            onClick={() => handleClick("albums")}
+                            onClick={() => setSelectedButton("albums")}
                             style={{
                                 backgroundColor:
                                     selectedButton === "albums"
@@ -523,20 +563,12 @@ const Author = () => {
                                 transition:
                                     "background-color 0.1s ease-in-out, color 0.1s ease-in-out",
                             }}
-                            onMouseEnter={(e) => {
-                                if (selectedButton !== "albums")
-                                    e.target.style.backgroundColor = "#888";
-                            }}
-                            onMouseLeave={(e) => {
-                                if (selectedButton !== "albums")
-                                    e.target.style.backgroundColor = "#333";
-                            }}
                         >
                             Альбомы
                         </button>
 
                         <button
-                            onClick={() => handleClick("playlists")}
+                            onClick={() => setSelectedButton("playlists")}
                             style={{
                                 backgroundColor:
                                     selectedButton === "playlists"
@@ -553,18 +585,208 @@ const Author = () => {
                                 fontWeight: "500",
                                 fontFamily: "Verdana",
                                 cursor: "pointer",
-                            }}
-                            onMouseEnter={(e) => {
-                                if (selectedButton !== "playlists")
-                                    e.target.style.backgroundColor = "#888";
-                            }}
-                            onMouseLeave={(e) => {
-                                if (selectedButton !== "playlists")
-                                    e.target.style.backgroundColor = "#333";
+                                transition:
+                                    "background-color 0.1s ease-in-out, color 0.1s ease-in-out",
                             }}
                         >
                             Плейлисты
                         </button>
+                    </div>
+
+                    <div
+                        style={{
+                            color: "white",
+                            fontFamily: "Verdana",
+                            marginTop: "30px",
+                            width: "100%",
+                            fontWeight: "500",
+                            padding: "0px",
+                            width: "2500px",
+                            margin: "0 auto",
+                        }}
+                    >
+                        {selectedButton === "albums" && (
+                            <div>
+                                <Typography
+                                    variant="h5"
+                                    style={{
+                                        color: "white",
+                                        fontWeight: "600",
+                                        marginBottom: "30px",
+                                        padding: "0",
+                                        width: "1300px",
+                                        marginTop: "30px",
+                                    }}
+                                >
+                                    Альбомы
+                                </Typography>
+
+                                <div
+                                    className="album-list"
+                                    style={{
+                                        display: "flex",
+                                        flexWrap: "wrap",
+                                    }}
+                                >
+                                    {albums.map((album) => (
+                                        <div
+                                            key={album.id}
+                                            className="album-item"
+                                            style={{
+                                                width: "230px",
+                                                height: "250px",
+                                                borderRadius: "10px",
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                alignItems: "center",
+                                                margin: "10px",
+                                            }}
+                                            onClick={() =>
+                                                handleAlbumClick(album.id)
+                                            }
+                                        >
+                                            {album.images[0] && (
+                                                <CardStyled>
+                                                    <CardMediaStyled
+                                                        image={
+                                                            album.images[0].url
+                                                        }
+                                                        title={album.name}
+                                                    />
+                                                    <CardContent>
+                                                        <Typography
+                                                            variant="h6"
+                                                            component="div"
+                                                            style={{
+                                                                textAlign:
+                                                                    "center",
+                                                            }}
+                                                        >
+                                                            {album.name}
+                                                        </Typography>
+                                                        <Typography
+                                                            variant="body2"
+                                                            component="div"
+                                                            style={{
+                                                                textAlign:
+                                                                    "center",
+                                                            }}
+                                                        >
+                                                            by{" "}
+                                                            {
+                                                                album.artists[0]
+                                                                    .name
+                                                            }
+                                                        </Typography>
+                                                    </CardContent>
+                                                </CardStyled>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {selectedButton === "playlists" && (
+                            <div>
+                                <div
+                                    style={{
+                                        color: "white",
+                                        fontFamily: "Verdana",
+                                        marginTop: "30px",
+                                        width: "100%",
+                                        fontWeight: "500",
+                                        padding: "0px",
+                                        width: "2500px",
+                                        margin: "0 auto",
+                                    }}
+                                >
+                                    <Typography
+                                        variant="h5"
+                                        style={{
+                                            color: "white",
+                                            fontWeight: "600",
+                                            marginBottom: "30px",
+                                            padding: "0",
+                                            width: "1300px",
+                                            marginTop: "30px",
+                                        }}
+                                    >
+                                        Плейлисты
+                                    </Typography>
+                                    <div
+                                        className="playlist-list"
+                                        style={{
+                                            display: "flex",
+                                            flexWrap: "wrap",
+                                        }}
+                                    >
+                                        {playlists.map((playlist) => (
+                                            <div
+                                                key={playlist.id}
+                                                className="playlist-item"
+                                                style={{
+                                                    width: "230px",
+                                                    height: "250px",
+                                                    borderRadius: "10px",
+                                                    display: "flex",
+                                                    flexDirection: "column",
+                                                    alignItems: "center",
+                                                    margin: "10px",
+                                                }}
+                                                onClick={() =>
+                                                    handlePlaylistClick(
+                                                        playlist.id
+                                                    )
+                                                }
+                                            >
+                                                {playlist.images[0] && (
+                                                    <CardStyled>
+                                                        <CardMediaStyled
+                                                            image={
+                                                                playlist
+                                                                    .images[0]
+                                                                    .url
+                                                            }
+                                                            title={
+                                                                playlist.name
+                                                            }
+                                                        />
+                                                        <CardContent>
+                                                            <Typography
+                                                                variant="h6"
+                                                                component="div"
+                                                                style={{
+                                                                    textAlign:
+                                                                        "center",
+                                                                }}
+                                                            >
+                                                                {playlist.name}
+                                                            </Typography>
+                                                            <Typography
+                                                                variant="body2"
+                                                                component="div"
+                                                                style={{
+                                                                    textAlign:
+                                                                        "center",
+                                                                }}
+                                                            >
+                                                                by{" "}
+                                                                {
+                                                                    playlist
+                                                                        .owner
+                                                                        .display_name
+                                                                }
+                                                            </Typography>
+                                                        </CardContent>
+                                                    </CardStyled>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </>
             )}

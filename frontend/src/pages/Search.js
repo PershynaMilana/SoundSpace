@@ -10,17 +10,17 @@ import {
     Typography,
 } from "@mui/material";
 import { styled } from "@mui/system";
- 
+
 const ContainerStyled = styled(Container)(({ theme }) => ({
     paddingTop: theme.spacing(3),
     paddingBottom: theme.spacing(4),
 }));
- 
+
 const CardStyled = styled(Card)(({ theme }) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
- 
+
     height: "100%",
     width: "105%",
     backgroundColor: "#333333",
@@ -30,7 +30,7 @@ const CardStyled = styled(Card)(({ theme }) => ({
         transform: "scale(1.05)",
     },
 }));
- 
+
 const CardMediaStyled = styled(CardMedia)(({ theme }) => ({
     width: "100%",
     height: 0,
@@ -38,19 +38,19 @@ const CardMediaStyled = styled(CardMedia)(({ theme }) => ({
     marginLeft: "20px",
     marginRight: "20px",
 }));
- 
+
 const Search = () => {
-  const { query } = useParams();
-  const [searchResults, setSearchResults] = useState([]);
-  const [playlistResults, setPlaylistResults] = useState([]);
-  const [artistResults, setArtistResults] = useState([]);
-  const [albumResults, setAlbumResults] = useState([]);
-  const [authorName, setAuthorName] = useState("");
-  const [authorImage, setAuthorImage] = useState("");
-  const [authorTracks, setAuthorTracks] = useState([]);
-  const [currentTrack, setCurrentTrack] = useState(null);
-  const navigate = useNavigate();
- 
+    const { query } = useParams();
+    const [searchResults, setSearchResults] = useState([]);
+    const [playlistResults, setPlaylistResults] = useState([]);
+    const [artistResults, setArtistResults] = useState([]);
+    const [albumResults, setAlbumResults] = useState([]);
+    const [authorName, setAuthorName] = useState("");
+    const [authorImage, setAuthorImage] = useState("");
+    const [authorTracks, setAuthorTracks] = useState([]);
+    const [currentTrack, setCurrentTrack] = useState(null);
+    const navigate = useNavigate();
+
     const searchTracks = async (query, accessToken) => {
         const response = await axios.get("https://api.spotify.com/v1/search", {
             headers: {
@@ -64,7 +64,7 @@ const Search = () => {
         });
         return response.data.tracks.items;
     };
- 
+
     const searchPlaylists = async (query, accessToken) => {
         const response = await axios.get("https://api.spotify.com/v1/search", {
             headers: {
@@ -78,20 +78,23 @@ const Search = () => {
         });
         return response.data.playlists.items;
     };
- 
+
     const searchArtist = async (query, accessToken) => {
         try {
-            const response = await axios.get("https://api.spotify.com/v1/search", {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
-                params: {
-                    q: query,
-                    type: "artist",
-                },
-                withCredentials: false,
-            });
- 
+            const response = await axios.get(
+                "https://api.spotify.com/v1/search",
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                    params: {
+                        q: query,
+                        type: "artist",
+                    },
+                    withCredentials: false,
+                }
+            );
+
             const artists = response.data.artists.items;
             if (artists.length > 0) {
                 return [artists[0]];
@@ -103,21 +106,21 @@ const Search = () => {
             throw error;
         }
     };
- 
+
     const searchAlbums = async (query, accessToken) => {
         const response = await axios.get("https://api.spotify.com/v1/search", {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-          params: {
-            q: query,
-            type: "album",
-          },
-          withCredentials: false,
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+            params: {
+                q: query,
+                type: "album",
+            },
+            withCredentials: false,
         });
         return response.data.albums.items;
-      };
- 
+    };
+
     const fetchData = async () => {
         const accessToken = await getToken();
         if (query) {
@@ -125,12 +128,12 @@ const Search = () => {
             const playlistResults = await searchPlaylists(query, accessToken);
             const artistResults = await searchArtist(query, accessToken);
             const albumResults = await searchAlbums(query, accessToken);
- 
+
             setSearchResults(trackResults);
             setPlaylistResults(playlistResults);
             setArtistResults(artistResults);
             setAlbumResults(albumResults);
- 
+
             if (artistResults.length > 0) {
                 setAuthorName(artistResults[0].name);
                 setAuthorImage(artistResults[0].images[0]?.url || "");
@@ -139,23 +142,23 @@ const Search = () => {
             }
         }
     };
- 
+
     useEffect(() => {
         fetchData();
     }, [query]);
- 
+
     const handleArtistClick = (artistId) => {
         navigate(`/artist/${artistId}`);
     };
- 
+
     const handlePlaylistClick = (playlistId) => {
         navigate(`/playlist/${playlistId}`);
     };
- 
+
     const handleAlbumClick = (albumId) => {
         navigate(`/album/${albumId}`);
-    }
- 
+    };
+
     const playTrack = (track) => {
         const audioPlayer = document.getElementById("audio-player");
         if (currentTrack === track) {
@@ -167,14 +170,14 @@ const Search = () => {
             setCurrentTrack(track);
         }
     };
- 
+
     useEffect(() => {
         const audioPlayer = document.getElementById("audio-player");
         if (audioPlayer) {
             audioPlayer.addEventListener("ended", () => {
                 setCurrentTrack(null);
             });
- 
+
             return () => {
                 audioPlayer.removeEventListener("ended", () => {
                     setCurrentTrack(null);
@@ -215,6 +218,7 @@ const Search = () => {
                                     height: "292px",
                                     marginTop: "40px",
                                     width: "500px",
+                                    backgroundColor: "#212121",
                                 }}
                                 onMouseEnter={(e) => {
                                     e.currentTarget.style.backgroundColor =
@@ -224,9 +228,7 @@ const Search = () => {
                                     e.currentTarget.style.backgroundColor =
                                         "#212121";
                                 }}
-                                onClick={() =>
-                                    handleArtistClick(artist.id)
-                                }
+                                onClick={() => handleArtistClick(artist.id)}
                             >
                                 <div>
                                     {artistResults.map((artist) => (
@@ -447,86 +449,85 @@ const Search = () => {
                         </div>
                     </div>
                     <div
-                style={{
-                  color: "white",
-                  fontFamily: "Verdana",
-                  marginTop: "30px",
-                  width: "100%",
-                  fontWeight: "500",
-                  padding: "0px",
-                  width: "2500px",
-                  margin: "0 auto",
-                }}
-              >
-                <Typography
-                  variant="h5"
-                  style={{
-                    color: "white",
-                    fontFamily: "Verdana",
-                    fontWeight: "500",
-                    marginBottom: "30px",
-                    padding: "0",
-                    width: "1300px",
-                  }}
-                >
-                  Albums:
-                </Typography>
-                <div
-                  className="album-list"
-                  style={{ display: "flex", flexWrap: "wrap" }}
-                >
-                  {albumResults.map((album) => (
-                    <div
-                      key={album.id}
-                      className="album-item"
-                      style={{
-                        width: "230px",
-                        height: "250px",
-                        borderRadius: "10px",
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        margin: "10px",
-                      }}
-                      onClick={() => handleAlbumClick(album.id)}
+                        style={{
+                            color: "white",
+                            fontFamily: "Verdana",
+                            marginTop: "30px",
+                            width: "100%",
+                            fontWeight: "500",
+                            padding: "0px",
+                            width: "2500px",
+                            margin: "0 auto",
+                        }}
                     >
-                      {album.images[0] && (
-                        <CardStyled>
-                          <CardMediaStyled
-                            image={album.images[0].url}
-                            title={album.name}
-                          />
-                          <CardContent>
-                            <Typography
-                              variant="h6"
-                              component="div"
-                              style={{
-                                textAlign: "center",
-                              }}
-                            >
-                              {album.name}
-                            </Typography>
-                            <Typography
-                              variant="body2"
-                              component="div"
-                              style={{
-                                textAlign: "center",
-                              }}
-                            >
-                              by {album.artists[0].name}
-                            </Typography>
-                          </CardContent>
-                        </CardStyled>
-                      )}
+                        <Typography
+                            variant="h5"
+                            style={{
+                                color: "white",
+                                fontWeight: "600",
+                                marginBottom: "30px",
+                                padding: "0",
+                                width: "1300px",
+                                marginTop: "30px",
+                            }}
+                        >
+                            Альбомы
+                        </Typography>
+                        <div
+                            className="album-list"
+                            style={{ display: "flex", flexWrap: "wrap" }}
+                        >
+                            {albumResults.map((album) => (
+                                <div
+                                    key={album.id}
+                                    className="album-item"
+                                    style={{
+                                        width: "230px",
+                                        height: "250px",
+                                        borderRadius: "10px",
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "center",
+                                        margin: "10px",
+                                    }}
+                                    onClick={() => handleAlbumClick(album.id)}
+                                >
+                                    {album.images[0] && (
+                                        <CardStyled>
+                                            <CardMediaStyled
+                                                image={album.images[0].url}
+                                                title={album.name}
+                                            />
+                                            <CardContent>
+                                                <Typography
+                                                    variant="h6"
+                                                    component="div"
+                                                    style={{
+                                                        textAlign: "center",
+                                                    }}
+                                                >
+                                                    {album.name}
+                                                </Typography>
+                                                <Typography
+                                                    variant="body2"
+                                                    component="div"
+                                                    style={{
+                                                        textAlign: "center",
+                                                    }}
+                                                >
+                                                    by {album.artists[0].name}
+                                                </Typography>
+                                            </CardContent>
+                                        </CardStyled>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                  ))}
                 </div>
-              </div>
-            </div>
-          )}
+            )}
         </ContainerStyled>
-      );
-    };
-    
-    export default Search;
-                
+    );
+};
+
+export default Search;

@@ -1,6 +1,6 @@
 import "./App.css";
 import React from "react";
-import { Route, Routes } from "react-router-dom"
+import { Route, Routes } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Header from "./components/Header";
 import Player from "./components/Player";
@@ -15,8 +15,8 @@ import PasswordResetRequest from "./pages/PasswordResetRequest";
 import PasswordReset from "./pages/PasswordReset";
 import Author from "./pages/Author";
 import Playlist from "./pages/Playlist";
-import Section from "./pages/Section"
-import Sets from "./pages/Sets"
+import Section from "./pages/Section";
+import Sets from "./pages/Sets";
 import Albums from "./pages/Albums";
 import Likes from "./pages/Likes";
 import Overview from "./pages/Overview";
@@ -26,7 +26,11 @@ function App() {
     console.log(isLoggedIn);
     return (
         <React.Fragment>
-            <header className={isLoggedIn ? "header-loggedin" : "header-notloggedin"}>
+            <header
+                className={
+                    isLoggedIn ? "header-loggedin" : "header-notloggedin"
+                }
+            >
                 <Header />
             </header>
             <main className={isLoggedIn ? "main-loggedin" : "main-notloggedin"}>
@@ -37,41 +41,32 @@ function App() {
                     <Route path="/search/:query" element={<Search />} />
                     <Route path="/search" element={<Search />} />
                     <Route path="/account" element={<Account />} />
-                    <Route path="/section" element={<Section/>}/>
+                    <Route path="/section" element={<Section />} />
                     <Route path="/library" element={<Library />} />
                     <Route path="/library/sets" element={<Sets />} />
-                    <Route path="/library/albums" element={<Albums/>}/>
-                    <Route path="/album/:albumId" element={<Albums/>}/>
-                    <Route path="/library/likes" element={<Likes/>}/>
-                    <Route path="/library/overview" element={<Overview/>}/>
+                    <Route path="/library/albums" element={<Albums />} />
+                    <Route path="/album/:albumId" element={<Albums />} />
+                    <Route path="/library/likes" element={<Likes />} />
+                    <Route path="/library/overview" element={<Overview />} />
                     {isLoggedIn && <Route path="/user" element={<Welcome />} />}
-
-
                     <Route
                         path="/reset-password"
                         element={<PasswordResetRequest />}
                     />{" "}
-
-                    <Route  
-                    path="/reset-password/:token" 
-                    element={<PasswordReset />}
+                    <Route
+                        path="/reset-password/:token"
+                        element={<PasswordReset />}
                     />{" "}
-
-                    <Route 
-                    path="/author/:authorName" 
-                    element={<Author />} />
-                    
+                    <Route path="/author/:authorName" element={<Author />} />
                     <Route
                         path="/author/:playlistName"
                         element={<Playlist />}
                     />
-
-                    <Route path="/artist/:artistId" 
-                        element={<Author />} />
-
-                    <Route path="/playlist/:playlistId"
-                    element={<Playlist />}/>
-
+                    <Route path="/artist/:artistId" element={<Author />} />
+                    <Route
+                        path="/playlist/:playlistId"
+                        element={<Playlist />}
+                    />
                 </Routes>
             </main>
             <footer>{isLoggedIn ? <Player /> : false}</footer>

@@ -26,6 +26,7 @@ const CardStyled = styled(Card)(({ theme }) => ({
     alignItems: "center",
     height: "100%",
     transition: "transform 0.2s",
+    flex: "1 1 auto", // Изменение этой строки
     "&:hover": {
         transform: "scale(1.05)",
     },
@@ -48,11 +49,15 @@ const Home = () => {
     const [releaseIndex, setReleaseIndex] = useState(0);
 
     const handleNextArtist = () => {
-        setArtistIndex((prevIndex) => prevIndex + 6);
+        if (artistIndex + 6 < artists.length) {
+            setArtistIndex((prevIndex) => prevIndex + 6);
+        }
     };
 
     const handlePrevArtist = () => {
-        setArtistIndex((prevIndex) => Math.max(0, prevIndex - 6));
+        if (artistIndex - 6 >= 0) {
+            setArtistIndex((prevIndex) => prevIndex - 6);
+        }
     };
 
     const handleNextRelease = () => {
@@ -119,12 +124,26 @@ const Home = () => {
         const getArtistInfo = async (token) => {
             try {
                 const artistIds = [
-                    "2CIMQHirSU0MQqyYHq0eOx",
-                    "57dN52uHvrHOxijzpIgu3E",
-                    "1vCWHaC5f2uS3yhpwWbIA6",
-                    "3TVXtAsR1Inumwj472S9r4",
-                    "1Xyo4u8uXC1ZmMpatF05PJ",
-                    "0TnOYISbd1XYRBk9myaseg",
+                    "1Xyo4u8uXC1ZmMpatF05PJ", // The Weeknd 1
+                    "3TVXtAsR1Inumwj472S9r4", // Drake 2
+                    "1vCWHaC5f2uS3yhpwWbIA6", // Avicii 3
+                    "1HY2Jd0NmPuamShAr6KMms", // Lady Gaga 4
+                    "6qqNVTkY8uBg9cP3Jd7DAH", // Billie Eilish 5
+                    "0du5cEVh5yTK9QJze8zA0C", // Bruno Mars 6
+                    "246dkjvS1zLTtiykXe5h60", // Post Malone 7
+                    "4gzpq5DPGxSnKTe4SA8HAU", // Coldplay 8
+                    "66CXWjxzNUsdJxJ2JdwvnR", // Ariana Grande 9
+                    "4MCBfE4596Uoi2O4DtmEMz", // Juice WRLD 10
+                    "4nDoRrQiYLoBzwC5BhVJzF", // Camila Cabello 11
+                    "0ohUvVskERzK18bvWXFEqi", // GONE.Fludd 12
+                    "00FQb4jTyendYWaN8pK0wa", // Lana Del Rey 13
+                    "7ITMCzIU9uII8gwRg8JAhc", // Odetari 14
+                    "7cYEt1pqMgXJdq00hAwVpT", // Chase Atlantic 15
+                    "77SW9BnxLY8rJ0RciFqkHh", // The Neighbourhood 16
+                    "1nccv1GNVkBdvsYi2FB5FB", // Nueki 17
+                    "0iEtIxbK0KxaSlF7G42ZOp", // Metro Boomin 18
+                    "3MZsBdqDrRTJihTHQrO6Dq", // Joji 19
+                    "7Ln80lUS6He07XvHI8qqHH", // Arctic Monkeys 20
                 ];
                 const artistsInfoPromises = artistIds.map(async (artistId) => {
                     const response = await axios.get(
@@ -160,7 +179,7 @@ const Home = () => {
                         withCredentials: false,
                     }
                 );
-                return response.data.albums.items.slice(0, 6);
+                return response.data.albums.items.slice(0, 20);
             } catch (error) {
                 console.error("Ошибка при получении новых релизов:", error);
                 return [];
@@ -394,32 +413,33 @@ const Home = () => {
                 </div>
             ) : (
                 <div style={{ display: "flex", flexWrap: "wrap" }}>
-                    {artists.map((artist) => (
-                        <CardStyled
-                            key={artist.id}
-                            onClick={() => navigate(`/artist/${artist.id}`)}
-                            style={{
-                                flex: "0 0 calc(16.666% - 20px)",
-                                margin: "10px",
-                                backgroundColor: "#222222",
-                                height: "220px",
-                                cursor: "pointer",
-                                color: "white",
-                            }}
-                        >
-                            {artist.images.length > 0 && (
+                    {artists
+                        .slice(artistIndex, artistIndex + 6)
+                        .map((artist) => (
+                            <CardStyled
+                                key={artist.id}
+                                onClick={() => navigate(`/artist/${artist.id}`)}
+                                style={{
+                                    flex: "0 0 calc(16.666% - 20px)",
+                                    margin: "10px",
+                                    backgroundColor: "#222222",
+                                    height: "220px",
+                                    cursor: "pointer",
+                                    color: "white",
+                                }}
+                            >
                                 <CardMediaStyled
                                     image={artist.images[0].url}
                                     title={artist.name}
                                 />
-                            )}
-                            <CardContent>
-                                <Typography variant="h6" component="div">
-                                    {artist.name}
-                                </Typography>
-                            </CardContent>
-                        </CardStyled>
-                    ))}
+
+                                <CardContent>
+                                    <Typography variant="h6" component="div">
+                                        {artist.name}
+                                    </Typography>
+                                </CardContent>
+                            </CardStyled>
+                        ))}
                 </div>
             )}
             <div
@@ -512,32 +532,34 @@ const Home = () => {
                 </div>
             ) : (
                 <div style={{ display: "flex", flexWrap: "wrap" }}>
-                    {newReleases.map((release) => (
-                        <CardStyled
-                            key={release.id}
-                            onClick={() => navigate(`/album/${release.id}`)}
-                            style={{
-                                flex: "0 0 calc(16.666% - 20px)",
-                                margin: "10px",
-                                backgroundColor: "#222222",
-                                height: "220px",
-                                cursor: "pointer",
-                                color: "white",
-                            }}
-                        >
-                            {release.images.length > 0 && (
-                                <CardMediaStyled
-                                    image={release.images[0].url}
-                                    title={release.name}
-                                />
-                            )}
-                            <CardContent>
-                                <Typography variant="h6" component="div">
-                                    {release.name}
-                                </Typography>
-                            </CardContent>
-                        </CardStyled>
-                    ))}
+                    {newReleases
+                        .slice(releaseIndex, releaseIndex + 6)
+                        .map((release) => (
+                            <CardStyled
+                                key={release.id}
+                                onClick={() => navigate(`/album/${release.id}`)}
+                                style={{
+                                    flex: "0 0 calc(16.666% - 20px)",
+                                    margin: "10px",
+                                    backgroundColor: "#222222",
+                                    height: "220px",
+                                    cursor: "pointer",
+                                    color: "white",
+                                }}
+                            >
+                                {release.images.length > 0 && (
+                                    <CardMediaStyled
+                                        image={release.images[0].url}
+                                        title={release.name}
+                                    />
+                                )}
+                                <CardContent>
+                                    <Typography variant="h6" component="div">
+                                        {release.name}
+                                    </Typography>
+                                </CardContent>
+                            </CardStyled>
+                        ))}
                 </div>
             )}
         </ContainerStyled>
