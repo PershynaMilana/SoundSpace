@@ -12,16 +12,34 @@ const createPlaylist = async (req, res) => {
 };
 
 const getPlaylists = async (req, res) => {
-    try {
-      const playlists = await Playlist.find();
-      res.json(playlists);
-    } catch (error) {
-      console.error('Error getting playlists:', error);
-      res.status(500).json({ error: 'Error getting playlists' });
+  try {
+    const playlists = await Playlist.find();
+    res.json(playlists);
+  } catch (error) {
+    console.error('Error getting playlists:', error);
+    res.status(500).json({ error: 'Error getting playlists' });
+  }
+};
+
+const getPlaylistById = async (req, res) => {
+  const playlistId = req.params.playlistId;
+
+  try {
+    const playlist = await Playlist.findById(playlistId);
+
+    if (!playlist) {
+      return res.status(404).json({ error: 'Playlist not found' });
     }
-  };
-  
-  module.exports = {
-    createPlaylist,
-    getPlaylists, 
-  };
+
+    res.json(playlist);
+  } catch (error) {
+    console.error('Error getting playlist by id:', error);
+    res.status(500).json({ error: 'Error getting playlist by id' });
+  }
+};
+
+module.exports = {
+  createPlaylist,
+  getPlaylists,
+  getPlaylistById,
+};

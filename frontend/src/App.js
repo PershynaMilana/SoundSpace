@@ -13,6 +13,7 @@ import Library from "./components/Library";
 import Account from "./pages/account";
 import PasswordResetRequest from "./pages/PasswordResetRequest";
 import PasswordReset from "./pages/PasswordReset";
+import NewUserPlaylist from "./pages/NewUserPlaylist";
 import Author from "./pages/Author";
 import Playlist from "./pages/Playlist";
 import Section from "./pages/Section";
@@ -49,6 +50,7 @@ function App() {
                     <Route path="/library/likes" element={<Likes />} />
                     <Route path="/library/overview" element={<Overview />} />
                     {isLoggedIn && <Route path="/user" element={<Welcome />} />}
+
                     <Route
                         path="/reset-password"
                         element={<PasswordResetRequest />}
@@ -57,16 +59,28 @@ function App() {
                         path="/reset-password/:token"
                         element={<PasswordReset />}
                     />{" "}
-                    <Route path="/author/:authorName" element={<Author />} />
+                    
+                    <Route 
+                      path="/author/:authorName" 
+                      element={<Author />} />
+
                     <Route
                         path="/author/:playlistName"
                         element={<Playlist />}
                     />
-                    <Route path="/artist/:artistId" element={<Author />} />
+                    <Route 
+                    path="/artist/:artistId" 
+                    element={<Author />} />
+
                     <Route
                         path="/playlist/:playlistId"
                         element={<Playlist />}
                     />
+
+                        <Route 
+                        path="/newplaylist/:playlistId"
+                        element={<NewUserPlaylist/>}/>
+
                 </Routes>
             </main>
             <footer>{isLoggedIn ? <Player /> : false}</footer>

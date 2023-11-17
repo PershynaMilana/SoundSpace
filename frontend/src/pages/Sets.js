@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { Container, Grid, Card, CardMedia, CardContent, Typography, IconButton, Modal, Paper, TextField, Button } from "@mui/material";
 import { styled } from "@mui/system";
 import AddIcon from '@mui/icons-material/Add';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { app } from '../services/fairbaseConfig';
 import LibraryNav from "../components/LibraryNav";
-import CreatePlaylistModal from '../components/CreatePlaylistModal'; // Импортируйте компонент CreatePlaylistModal
+import CreatePlaylistModal from '../components/CreatePlaylistModal'; 
 
 const Sets = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [playlists, setPlaylists] = useState([]);
   const [token] = useState(localStorage.getItem("token"));
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadPlaylists();
@@ -53,6 +53,10 @@ const Sets = () => {
     } catch (error) {
       console.error("Error creating playlist:", error);
     }
+  };
+
+  const handlePlaylistClick = (playlistId) => {
+    navigate(`/newplaylist/${playlistId}`);
   };
 
   const getUserIdFromToken = () => {
@@ -131,20 +135,21 @@ const Sets = () => {
         )}
       </div>
       <div>
-        <Grid container spacing={3} style={{marginTop:'0px', marginLeft:'3px'}}>
-          {playlists.map((playlist) => (
-            <div key={playlist._id}
-              className="playlist-item"
-              style={{
-                width: "270px",
-                height: "280px",
-                margin: "10px",
-                background: "gray",
-                borderRadius: "10px",
-                alignItems: "center",
-
-              }}
-            >
+      <Grid container spacing={3} style={{ marginTop: '0px', marginLeft: '3px' }}>
+            {playlists.map((playlist) => (
+              <div
+                key={playlist._id}
+                className="playlist-item"
+                style={{
+                  width: "270px",
+                  height: "280px",
+                  margin: "10px",
+                  background: "gray",
+                  borderRadius: "10px",
+                  alignItems: "center",
+                }}
+                onClick={() => handlePlaylistClick(playlist._id)} 
+              >
               <CardStyled>
                 <CardMediaStyled
                   image={playlist.imageUrl} 
