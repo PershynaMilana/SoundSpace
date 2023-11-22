@@ -1,7 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
-import getToken from "../../services/spotifyAuth";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import PlayArrowIcon from "@mui/icons-material/PlayArrowRounded";
 
@@ -37,7 +35,6 @@ const CardStyled = styled(Card)(({ theme }) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-
     height: "100%",
     width: "105%",
     backgroundColor: "#333333",
@@ -139,7 +136,6 @@ const AuthorContent = ({
     artists,
     handleAlbumClick,
     handleArtistClick,
-    handleTabChange,
     handleClick,
 }) => (
     <Container>

@@ -1,14 +1,15 @@
 import React, { createContext, useContext, useState } from "react";
-
 const PlayerContext = createContext();
 
 export const PlayerProvider = ({ children }) => {
     const [currentTrack, setCurrentTrack] = useState(null);
-    const playPauseHandler = () => {
-        setCurrentTrack(null);
+
+    const setTrack = (trackUrl) => {
+        setCurrentTrack(trackUrl);
     };
+
     return (
-        <PlayerContext.Provider value={{ currentTrack, playPauseHandler }}>
+        <PlayerContext.Provider value={{ currentTrack, setTrack }}>
             {children}
         </PlayerContext.Provider>
     );

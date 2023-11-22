@@ -43,31 +43,33 @@ const PasswordResetRequest = () => {
     return (
         <section className="container forms" style={{ marginTop: "20%", left: "50%", width: "100%", height: "100%" }}>
             <div className="form2">
-            <header className="header-login" style={{ marginBottom: "50px" }}>
+                <header className="header-login" style={{ marginBottom: "50px" }}>
                     Password Reset
                 </header>
                 {isRequestSent ? (
                     <form style={{ Maxwidth: "300px", width: "100%", alignItems: "center", verticalAlign: "top" }}>
-                    <div className="field input-field" style={{ textAlign: "left", marginLeft: "70px" }}>
-                    <h2 className="labels-inputs" style={{ color: "grey", fontSize: "17px" }}>
-                        Check your email for password reset instructions.
-                    </h2>
-                    </div>
-                        </form>
+                        <div className="field input-field" style={{ textAlign: "left", marginLeft: "70px" }}>
+                            <h2 className="labels-inputs" style={{ color: "grey", fontSize: "17px" }}>
+                                Check your email for password reset instructions.
+                            </h2>
+                        </div>
+                    </form>
                 ) : (
-                    
-                    <div>                        
+
+                    <div>
                         <h4 className="labels-inputs" style={{ color: "grey", fontSize: "17px" }}>
                             Enter the Sound Space email address you provided when registering.
                             <br />
                             We will send you an email with a link to reset your password.
                         </h4>
                         <form style={{ Maxwidth: "300px", width: "100%", alignItems: "center", verticalAlign: "top" }}>
-                        {emailError && (
-                                        <p className="error-message" style={{height:"10px", alignItems: "center",
-                                        display: "flex",
-                                        justifyContent: "center", marginTop:"30px"}}>{emailError}</p>
-                                    )}
+                            {emailError && (
+                                <p className="error-message" style={{
+                                    height: "10px", alignItems: "center",
+                                    display: "flex",
+                                    justifyContent: "center", marginTop: "30px"
+                                }}>{emailError}</p>
+                            )}
                             <div className="field input-field" style={{ textAlign: "left", marginLeft: "70px" }}>
                                 <div style={{ display: "flex", flexDirection: "column" }}>
                                     <label className="labels-inputs" htmlFor="email">
@@ -81,12 +83,12 @@ const PasswordResetRequest = () => {
                                         name="email"
                                         value={email}
                                         onChange={handleEmailChange}
-                                    />                                   
+                                    />
                                 </div>
                             </div>
-                            
+
                             <div className="field">
-                                <button onClick={handleResetRequest} style={{ marginTop: "30px", maxHeight:"50px", height:"100px" }}>
+                                <button onClick={handleResetRequest} style={{ marginTop: "30px", maxHeight: "50px", height: "100px" }}>
                                     Send
                                 </button>
                             </div>

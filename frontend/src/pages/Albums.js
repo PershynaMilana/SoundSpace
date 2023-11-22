@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { useParams} from "react-router-dom";
+import React, { useState, useEffect, useRef } from "react";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 import { clientId, clientSecret } from "../services/spotifyAuth";
-import AlbumContent from "../assets/content/AlbumContent"; 
+import AlbumContent from "../content/AlbumContent";
+import { usePlayer } from "../services/PlayerContext";
 
 const Album = () => {
   const { albumId } = useParams();
@@ -10,6 +11,8 @@ const Album = () => {
   const [tracks, setTracks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentTrack, setCurrentTrack] = useState(null);
+  const { setTrack } = usePlayer();
+  const audioPlayerRef = useRef(null);
 
   useEffect(() => {
     if (albumId) {
@@ -91,17 +94,15 @@ const Album = () => {
   }, [albumId]);
 
   const playTrack = (track) => {
-    const audioPlayer = document.getElementById("audio-player");
-    if (currentTrack === track) {
-      audioPlayer.pause();
-      setCurrentTrack(null);
-    } else {
-      audioPlayer.src = track.preview_url;
-      audioPlayer.play();
-      setCurrentTrack(track);
+    setTrack(track);
+};
+
+useEffect(() => {
+    if (audioPlayerRef && audioPlayerRef.current) {
+        audioPlayerRef.current.src = currentTrack?.preview_url || "";
     }
-  };
- 
+}, [currentTrack, audioPlayerRef]);
+
   const handleRowHover = (index) => {
     const playIcons = document.getElementsByClassName("playIcon");
     const customTableCells =
@@ -112,7 +113,7 @@ const Album = () => {
         i === index ? "hidden" : "visible";
     }
   };
- 
+
   return (
     <AlbumContent
       loading={loading}
@@ -124,6 +125,5 @@ const Album = () => {
   );
 };
 
- 
+
 export default Album;
- 

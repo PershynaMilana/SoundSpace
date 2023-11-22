@@ -1,54 +1,42 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { clientId, clientSecret } from "../services/spotifyAuth";
-import PlaylistContent from "../assets/content/PlaylistContent";
+import PlaylistContent from "../content/PlaylistContent";
+import { usePlayer } from "../services/PlayerContext";
 
 const Playlist = () => {
-  const { playlistId } = useParams();
-  const [playlist, setPlaylist] = useState(null);
-  const [tracks, setTracks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [currentTrack, setCurrentTrack] = useState(null);
-  const navigate = useNavigate();
+    const { playlistId } = useParams();
+    const [playlist, setPlaylist] = useState(null);
+    const [tracks, setTracks] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [currentTrack, setCurrentTrack] = useState(null);
+    const navigate = useNavigate();
+    const { setTrack } = usePlayer();
+    const audioPlayerRef = useRef(null);
 
-  const playPauseTrack = (track) => {
-    const audioPlayer = document.getElementById("audio-player");
-    if (currentTrack === track) {
-      audioPlayer.pause();
-      setCurrentTrack(null);
-    } else {
-      audioPlayer.src = track.preview_url;
-      audioPlayer.play();
-      setCurrentTrack(track);
-    }
-  };
-
-  useEffect(() => {
-    const audioPlayer = document.getElementById("audio-player");
-    audioPlayer.addEventListener("ended", () => {
-      setCurrentTrack(null);
-    });
-
-    return () => {
-      audioPlayer.removeEventListener("ended", () => {
-        setCurrentTrack(null);
-      });
+    const playTrack = (track) => {
+        setTrack(track);
     };
-  }, []);
 
-  const goBack = () => {
-    navigate(-1);
-  };
+    useEffect(() => {
+        if (audioPlayerRef && audioPlayerRef.current) {
+            audioPlayerRef.current.src = currentTrack?.preview_url || "";
+        }
+    }, [currentTrack, audioPlayerRef]);
 
-  const handleRowHover = (index) => {
-    const playIcons = document.getElementsByClassName("playIcon");
-    const customTableCells = document.getElementsByClassName("customTableCell");
-    for (let i = 0; i < playIcons.length; i++) {
-      playIcons[i].style.visibility = i === index ? "visible" : "hidden";
-      customTableCells[i].style.visibility = i === index ? "hidden" : "visible";
-    }
-  };
+    const goBack = () => {
+        navigate(-1);
+    };
+
+    const handleRowHover = (index) => {
+        const playIcons = document.getElementsByClassName("playIcon");
+        const customTableCells = document.getElementsByClassName("customTableCell");
+        for (let i = 0; i < playIcons.length; i++) {
+            playIcons[i].style.visibility = i === index ? "visible" : "hidden";
+            customTableCells[i].style.visibility = i === index ? "hidden" : "visible";
+        }
+    };
 
     useEffect(() => {
         if (playlistId) {
@@ -136,14 +124,14 @@ const Playlist = () => {
 
     return (
         <PlaylistContent
-          loading={loading}
-          playlist={playlist}
-          tracks={tracks}
-          playPauseTrack={playPauseTrack}
-          handleRowHover={handleRowHover}
-          goBack={goBack}
+            loading={loading}
+            playlist={playlist}
+            tracks={tracks}
+            playPauseTrack={playTrack}
+            handleRowHover={handleRowHover}
+            goBack={goBack}
         />
-      );
-    };
-    
-    export default Playlist;
+    );
+};
+
+export default Playlist;

@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef} from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import getToken from "../services/spotifyAuth";
-import AuthorContent from "../assets/content/AuthorContent";
-
+import AuthorContent from "../content/AuthorContent";
+import { usePlayer } from "../services/PlayerContext";
 const Author = () => {
     const { artistId } = useParams();
     const [artist, setArtist] = useState(null);
@@ -15,7 +15,8 @@ const Author = () => {
     const navigate = useNavigate();
     const [albums, setAlbums] = useState([]);
     const [artists, setArtists] = useState([]);
-
+    const { setTrack } = usePlayer();
+    const audioPlayerRef = useRef(null);
     const [selectedTab, setSelectedTab] = useState("albums");
 
     const handleTabChange = (event, newValue) => {
@@ -37,7 +38,6 @@ const Author = () => {
                         withCredentials: false,
                     }
                 );
-                console.log(response.data.artists);
                 return response.data.artists;
             } else {
                 return [];
@@ -64,7 +64,6 @@ const Author = () => {
                         withCredentials: false,
                     }
                 );
-                console.log(response.data.items);
                 return response.data.items;
             } else {
                 return [];
@@ -180,29 +179,14 @@ const Author = () => {
     };
 
     const playTrack = (track) => {
-        const audioPlayer = document.getElementById("audio-player");
-        if (currentTrack === track) {
-            audioPlayer.pause();
-            setCurrentTrack(null);
-        } else {
-            audioPlayer.src = track.preview_url;
-            audioPlayer.play();
-            setCurrentTrack(track);
-        }
+        setTrack(track);
     };
 
     useEffect(() => {
-        const audioPlayer = document.getElementById("audio-player");
-        audioPlayer.addEventListener("ended", () => {
-            setCurrentTrack(null);
-        });
-
-        return () => {
-            audioPlayer.removeEventListener("ended", () => {
-                setCurrentTrack(null);
-            });
-        };
-    }, []);
+        if (audioPlayerRef && audioPlayerRef.current) {
+            audioPlayerRef.current.src = currentTrack?.preview_url || "";
+        }
+    }, [currentTrack, audioPlayerRef]);
 
     const handleRowHover = (index) => {
         const playIcons = document.getElementsByClassName("playIcon");

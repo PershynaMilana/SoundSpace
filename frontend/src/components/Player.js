@@ -1,83 +1,115 @@
-import React, { useEffect } from "react";
+import React, { useEffect, forwardRef, useState } from "react";
+import AudioPlayer from "react-h5-audio-player";
+import "react-h5-audio-player/lib/styles.css";
 import { usePlayer } from "../services/PlayerContext";
 
-const Player = () => {
-    const { currentTrack, playPauseHandler } = usePlayer();
+const Player = forwardRef(({ audioPlayerRef }, ref) => {
+    const { currentTrack } = usePlayer();
+    const [trackInfo, setTrackInfo] = useState({
+        imageUrl: localStorage.getItem("imageUrl") || "",
+        trackName: localStorage.getItem("trackName") || "",
+        artistName: localStorage.getItem("artistName") || "",
+        preview_url: localStorage.getItem("preview_url") || "",
+    });
 
     useEffect(() => {
-        const audioPlayer = document.getElementById("audio-player");
-
-        if (!audioPlayer) {
-            console.error("Audio player not found");
-            return;
+        if (audioPlayerRef && audioPlayerRef.current) {
+            audioPlayerRef.current.src = currentTrack?.preview_url || "";
         }
 
-        if (currentTrack && currentTrack.preview_url) {
-            audioPlayer.src = currentTrack.preview_url;
-            const playPromise = audioPlayer.play();
+        if (currentTrack) {
+            const imageUrl = currentTrack?.album.images[0]?.url || "";
+            const trackName = currentTrack?.name || "";
+            const artistName = currentTrack?.artists[0]?.name || "";
+            const preview_url = currentTrack?.preview_url || "";
 
-            if (playPromise !== undefined) {
-                playPromise.catch((error) => {
-                    console.error("Failed to play audio:", error);
-                });
-            }
-        } else {
-            audioPlayer.pause();
+            localStorage.setItem("imageUrl", imageUrl);
+            localStorage.setItem("trackName", trackName);
+            localStorage.setItem("artistName", artistName);
+            localStorage.setItem("preview_url", preview_url);
+
+            setTrackInfo({
+                imageUrl,
+                trackName,
+                artistName,
+                preview_url,
+            });
         }
+    }, [currentTrack, audioPlayerRef]);
 
-        const handleEnded = () => {
-            playPauseHandler();
-        };
-
-        audioPlayer.addEventListener("ended", handleEnded);
-
-        return () => {
-            audioPlayer.removeEventListener("ended", handleEnded);
-        };
-    }, [currentTrack, playPauseHandler]);
+    const customStyles = {
+        "--rhap-time-color": "#fff",
+        background: "#0d0d0d",
+        width: "90%",
+        height: "100%",
+        paddingRight: "50px",
+        boxShadow: "none",
+    };
 
     return (
-        <audio
-            id="audio-player"
-            controls
+        <div
+            className="custom-audio-player"
             style={{
                 position: "fixed",
                 bottom: 0,
                 left: 0,
                 width: "100%",
+                backgroundColor: "#0d0d0d",
+                display: "flex",
+                alignItems: "center",
+                height: "10%",
             }}
-        />
+        >
+            <div
+                style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginLeft: "25px",
+                    color: "#868686",
+                }}
+            >
+                {trackInfo.imageUrl && (
+                    <img
+                        src={trackInfo.imageUrl}
+                        alt="Track"
+                        style={{
+                            width: "70px",
+                            height: "70px",
+                            borderRadius: "5px",
+                        }}
+                    />
+                )}
+                <div style={{ marginLeft: "10px", width: "200px" }}>
+                    <p style={{ margin: 0, color: "#afafaf" }}>
+                        {trackInfo.trackName}
+                    </p>
+                    <p
+                        style={{
+                            margin: 0,
+                            fontSize: "0.8em",
+                            color: "#868686",
+                        }}
+                    >
+                        {trackInfo.artistName}
+                    </p>
+                </div>
+            </div>
+            <AudioPlayer
+                ref={audioPlayerRef}
+                src={trackInfo.preview_url}
+                autoPlay={false}
+                loop={false}
+                volume={1.0}
+                muted={false}
+                preload="auto"
+                listenInterval={1}
+                style={customStyles}
+                showFilledProgress={true}
+                autoPlayAfterSrcChange={true}
+                showFilledVolume={true}
+            />
+        </div>
     );
-};
-
-document.styleSheets[0].insertRule(`
-    #audio-player::-webkit-media-controls-panel,
-    #audio-player::-webkit-media-controls-mute-button,
-    #audio-player::-webkit-media-controls-play-button,
-    #audio-player::-webkit-media-controls-timeline-container,
-    #audio-player::-webkit-media-controls-current-time-display,
-    #audio-player::-webkit-media-controls-time-remaining-display,
-    #audio-player::-webkit-media-controls-timeline,
-    #audio-player::-webkit-media-controls-volume-slider-container,
-    #audio-player::-webkit-media-controls-volume-slider,
-    #audio-player::-webkit-media-controls-seek-back-button,
-    #audio-player::-webkit-media-controls-seek-forward-button,
-    #audio-player::-webkit-media-controls-fullscreen-button,
-    #audio-player::-webkit-media-controls-rewind-button,
-    #audio-player::-webkit-media-controls-return-to-realtime-button,
-    #audio-player::-webkit-media-controls-toggle-closed-captions-button {
-        background-color: #333333 !important;
-        border-radius: 5px !important;
-    }
-`, 0);
-
-document.styleSheets[0].insertRule(`
-    #audio-player::-webkit-media-controls-button,
-    #audio-player::-webkit-media-controls-slider,
-    #audio-player::-webkit-media-controls-slider-thumb {
-        color: green !important;
-        border-radius: 5px !important;
-    }
-`, 1);
+});
 
 export default Player;

@@ -22,12 +22,14 @@ const CardStyled = styled(Card)(({ theme }) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
+    textAlign:"center",
     height: "100%",
     transition: "transform 0.2s",
+    flex: "1 1 auto",
     "&:hover": {
-        transform: "scale(1.05)",
+      transform: "scale(1.05)",
     },
-}));
+  }));
 
 const CardMediaStyled = styled(CardMedia)(({ theme }) => ({
     width: "100%",
@@ -120,10 +122,12 @@ const Section = () => {
                             <CardStyled
                                 key={playlist.id}
                                 style={{
-                                    flex: "0 0 calc(20% - 20px)",
+                                    flex: "0 0 calc(16.666% - 20px)",
                                     margin: "10px",
                                     backgroundColor: "#222222",
                                     height: "220px",
+                                    cursor: "pointer",
+                                    color: "white",
                                 }}
                                 onClick={() => handlePlaylistClick(playlist.id)}
                             >
@@ -131,27 +135,11 @@ const Section = () => {
                                     image={playlist.images[0].url}
                                     title={playlist.name}
                                 />
-                                <CardContent>
+                               <CardContent>
                                 <Typography variant="h6" component="div">
-                                <Link
-                                    style={{
-                                        order: "2",
-                                        textDecoration: "none",
-                                        color: "white",
-                                        textAlign: "center",
-                                        verticalAlign: "middle",
-                                        fontSize: "18px",
-                                        fontWeight: "550",
-                                        "&:hover": {
-                                            textDecoration: "underline",
-                                        },
-                                    }}
-                                >
                                     {playlist.name}
-                                </Link>
-                            </Typography>
-
-                                </CardContent>
+                                </Typography>
+                            </CardContent>
                             </CardStyled>
                         </Grid>
                     ))}

@@ -1,5 +1,5 @@
 import "./App.css";
-import React from "react";
+import React, { useRef } from "react";
 import { Route, Routes } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Header from "./components/Header";
@@ -24,6 +24,7 @@ import Overview from "./pages/Overview";
 
 function App() {
     const isLoggedIn = useSelector((state) => state.isLoggedIn);
+    const audioPlayerRef = useRef(null);
     console.log(isLoggedIn);
     return (
         <React.Fragment>
@@ -83,7 +84,9 @@ function App() {
 
                 </Routes>
             </main>
-            <footer>{isLoggedIn ? <Player /> : false}</footer>
+            <footer>
+                {isLoggedIn ? <Player ref={audioPlayerRef} /> : false}
+            </footer>
         </React.Fragment>
     );
 }

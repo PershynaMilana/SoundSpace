@@ -2,17 +2,17 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { clientId, clientSecret } from "../services/spotifyAuth";
-import HomeContent from "../assets/content/HomeContent";
+import HomeContent from "../content/HomeContent";
 
 const Home = () => {
-  const [popularPlaylists, setPopularPlaylists] = useState([]);
-  const [artists, setArtists] = useState([]);
-  const [newReleases, setNewReleases] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [playlistIndex, setPlaylistIndex] = useState(0);
-  const navigate = useNavigate();
-  const [artistIndex, setArtistIndex] = useState(0);
-  const [releaseIndex, setReleaseIndex] = useState(0);
+    const [popularPlaylists, setPopularPlaylists] = useState([]);
+    const [artists, setArtists] = useState([]);
+    const [newReleases, setNewReleases] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [playlistIndex, setPlaylistIndex] = useState(0);
+    const navigate = useNavigate();
+    const [artistIndex, setArtistIndex] = useState(0);
+    const [releaseIndex, setReleaseIndex] = useState(0);
 
     const handleNextArtist = () => {
         if (artistIndex + 6 < artists.length) {
@@ -171,21 +171,21 @@ const Home = () => {
 
     return (
         <HomeContent
-        loading={loading}
-        popularPlaylists={popularPlaylists}
-        playlistIndex={playlistIndex}
-        artists={artists}
-        artistIndex={artistIndex}
-        newReleases={newReleases}
-        releaseIndex={releaseIndex}
-        handlePrevPlaylist={handlePrevPlaylist}
-        handleNextPlaylist={handleNextPlaylist}
-        handlePrevArtist={handlePrevArtist}
-        handleNextArtist={handleNextArtist}
-        handlePrevRelease={handlePrevRelease}
-        handleNextRelease={handleNextRelease}
-        navigate={navigate}
-      />
+            loading={loading}
+            popularPlaylists={popularPlaylists}
+            playlistIndex={playlistIndex}
+            artists={artists}
+            artistIndex={artistIndex}
+            newReleases={newReleases}
+            releaseIndex={releaseIndex}
+            handlePrevPlaylist={handlePrevPlaylist}
+            handleNextPlaylist={handleNextPlaylist}
+            handlePrevArtist={handlePrevArtist}
+            handleNextArtist={handleNextArtist}
+            handlePrevRelease={handlePrevRelease}
+            handleNextRelease={handleNextRelease}
+            navigate={navigate}
+        />
     );
 };
 

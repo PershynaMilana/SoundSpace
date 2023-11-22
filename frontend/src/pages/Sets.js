@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
-import { Container, Grid, Card, CardMedia, CardContent, Typography, IconButton, Modal, Paper, TextField, Button } from "@mui/material";
+import { Container, Grid, Card, CardMedia, CardContent, Typography, IconButton} from "@mui/material";
 import { styled } from "@mui/system";
 import AddIcon from '@mui/icons-material/Add';
 import LibraryNav from "../components/LibraryNav";
-import CreatePlaylistModal from '../components/CreatePlaylistModal'; 
+import CreatePlaylistModal from '../components/CreatePlaylistModal';
 
 const Sets = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -111,31 +111,31 @@ const Sets = () => {
   };
 
   return (
-    <div style={{marginLeft:"40px"}}>
-    <div className="library-container">
-      <div className="library-nav">
-        <LibraryNav/>
+    <div style={{ marginLeft: "40px" }}>
+      <div className="library-container">
+        <div className="library-nav">
+          <LibraryNav />
+        </div>
       </div>
-    </div>
-    <Grid container spacing={3}>
-      <div style={{ position: 'relative', display: 'inline-block' }}>
-        <IconButton
-          className="playlist-item"
-          onClick={() => setShowCreateModal(true)}
-          style={createPlaylistButtonStyle}
-        >
-          <AddIcon />
-        </IconButton>
-        {showCreateModal && (
-          <CreatePlaylistModal
-            open={showCreateModal}
-            onClose={() => setShowCreateModal(false)}
-            onCreatePlaylist={handleCreatePlaylist}
-          />
-        )}
-      </div>
-      <div>
-      <Grid container spacing={3} style={{ marginTop: '0px', marginLeft: '3px' }}>
+      <Grid container spacing={3}>
+        <div style={{ position: 'relative', display: 'inline-block' }}>
+          <IconButton
+            className="playlist-item"
+            onClick={() => setShowCreateModal(true)}
+            style={createPlaylistButtonStyle}
+          >
+            <AddIcon />
+          </IconButton>
+          {showCreateModal && (
+            <CreatePlaylistModal
+              open={showCreateModal}
+              onClose={() => setShowCreateModal(false)}
+              onCreatePlaylist={handleCreatePlaylist}
+            />
+          )}
+        </div>
+        <div>
+          <Grid container spacing={3} style={{ marginTop: '0px', marginLeft: '3px' }}>
             {playlists.map((playlist) => (
               <div
                 key={playlist._id}
@@ -148,25 +148,25 @@ const Sets = () => {
                   borderRadius: "10px",
                   alignItems: "center",
                 }}
-                onClick={() => handlePlaylistClick(playlist._id)} 
+                onClick={() => handlePlaylistClick(playlist._id)}
               >
-              <CardStyled>
-                <CardMediaStyled
-                  image={playlist.imageUrl} 
-                  title={playlist.name}
-                />
-                <CardContent>
-                  <Typography variant="h6" component="div" style={{ textAlign: "center" }}>
-                    {playlist.name}
-                  </Typography>
-                </CardContent>
-              </CardStyled>
-            </div>
-          ))}
-        </Grid>
-      </div>
-    </Grid>
-  </div>
+                <CardStyled>
+                  <CardMediaStyled
+                    image={playlist.imageUrl}
+                    title={playlist.name}
+                  />
+                  <CardContent>
+                    <Typography variant="h6" component="div" style={{ textAlign: "center" }}>
+                      {playlist.name}
+                    </Typography>
+                  </CardContent>
+                </CardStyled>
+              </div>
+            ))}
+          </Grid>
+        </div>
+      </Grid>
+    </div>
   );
 };
 

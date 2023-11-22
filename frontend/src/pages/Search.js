@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { usePlayer } from "../services/PlayerContext";
 import axios from "axios";
 import getToken from "../services/spotifyAuth";
 import { useParams, useNavigate } from "react-router-dom";
@@ -8,21 +9,29 @@ import {
     CardMedia,
     CardContent,
     Typography,
+    Tabs,
+    Tab,
+    Divider
 } from "@mui/material";
 import { styled } from "@mui/system";
+import PlaylistTab from "../assets/tabs/SearchPageTabs/PlaylistTab"
+import AlbumTab from "../assets/tabs/SearchPageTabs/AlbumTab";
+import TrackTab from "../assets/tabs/SearchPageTabs/TrackTab";
+import ArrowBackIosNewRoundedIcon from "@mui/icons-material/ArrowBackIosNewRounded";
+import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
 
 const ContainerStyled = styled(Container)(({ theme }) => ({
     paddingTop: theme.spacing(3),
     paddingBottom: theme.spacing(4),
+   
 }));
 
 const CardStyled = styled(Card)(({ theme }) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-
     height: "100%",
-    width: "105%",
+    width: "100%",
     backgroundColor: "#333333",
     color: "white",
     transition: "transform 0.2s",
@@ -49,7 +58,11 @@ const Search = () => {
     const [authorImage, setAuthorImage] = useState("");
     const [authorTracks, setAuthorTracks] = useState([]);
     const [currentTrack, setCurrentTrack] = useState(null);
+    const [currentTab, setCurrentTab] = useState(0);
+    const [selectedTab, setSelectedTab] = useState("albums");
     const navigate = useNavigate();
+    const { setTrack } = usePlayer();
+    const audioPlayerRef = useRef(null);
 
     const searchTracks = async (query, accessToken) => {
         const response = await axios.get("https://api.spotify.com/v1/search", {
@@ -160,35 +173,51 @@ const Search = () => {
     };
 
     const playTrack = (track) => {
-        const audioPlayer = document.getElementById("audio-player");
-        if (currentTrack === track) {
-            audioPlayer.pause();
-            setCurrentTrack(null);
-        } else {
-            audioPlayer.src = track.preview_url;
-            audioPlayer.play();
-            setCurrentTrack(track);
-        }
+        setTrack(track);
     };
 
     useEffect(() => {
-        const audioPlayer = document.getElementById("audio-player");
-        if (audioPlayer) {
-            audioPlayer.addEventListener("ended", () => {
-                setCurrentTrack(null);
-            });
-
-            return () => {
-                audioPlayer.removeEventListener("ended", () => {
-                    setCurrentTrack(null);
-                });
-            };
+        if (audioPlayerRef && audioPlayerRef.current) {
+            audioPlayerRef.current.src = currentTrack?.preview_url || "";
         }
-    }, []);
+    }, [currentTrack, audioPlayerRef]);
 
-    return (
+    return (       
         <ContainerStyled style={{ marginLeft: "150px" }}>
-            {query && (
+            <Tabs
+                value={currentTab}
+                onChange={(event, newValue) => setCurrentTab(newValue)}
+                variant="fullWidth"
+                textColor="primary"
+                indicatorColor="primary"
+                sx={{
+                    justifyContent: "flex-start",
+                    marginLeft: "80px",
+                    "& .MuiTabs-indicator": {
+                        backgroundColor: "transparent",
+                    },
+                    "& .MuiTab-root": {
+                        textTransform: "none",
+                        fontFamily: "Verdana",
+                        color: "white",
+                        borderRadius: "50px",
+                        padding: "10px 20px",
+                        margin: "5px",
+                        fontWeight: "600",
+                    },
+                    "& .Mui-selected": {
+                        backgroundColor: "#333333",
+                        color: "white",
+                    },
+                }}
+            >
+                <Tab label="Контент страницы" />
+                <Tab label="Плейлисты исполнителя" />
+                <Tab label="Альбомы исполнителя" />
+                <Tab label="Треки исполнителя" />
+            </Tabs>
+            <Divider style={{ margin: "15px 0", background: "#555" }}/>
+            {currentTab === 0 && query && (
                 <div
                     style={{
                         fontWeight: "500",
@@ -392,26 +421,24 @@ const Search = () => {
                             Плейлисты
                         </Typography>
                         <div
-                            className="playlist-list"
-                            style={{ display: "flex", flexWrap: "wrap" }}
-                        >
-                            {playlistResults.map((playlist) => (
-                                <div
-                                    key={playlist.id}
-                                    className="playlist-item"
-                                    style={{
-                                        width: "230px",
-                                        height: "250px",
-                                        borderRadius: "10px",
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        alignItems: "center",
-                                        margin: "10px",
-                                    }}
-                                    onClick={() =>
-                                        handlePlaylistClick(playlist.id)
-                                    }
-                                >
+                        className="playlist-list"
+                        style={{ display: "flex", flexWrap: "wrap" }}
+                    >
+                        {playlistResults.slice(0, 5).map((playlist) => (
+                            <div
+                                key={playlist.id}
+                                className="playlist-item"
+                                style={{
+                                    width: "200px",
+                                    height: "250px",
+                                    borderRadius: "10px",
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    alignItems: "center",
+                                    margin: "10px",
+                                }}
+                                onClick={() => handlePlaylistClick(playlist.id)}
+                            >
                                     {playlist.images[0] && (
                                         <CardStyled>
                                             <CardMediaStyled
@@ -477,12 +504,12 @@ const Search = () => {
                             className="album-list"
                             style={{ display: "flex", flexWrap: "wrap" }}
                         >
-                            {albumResults.map((album) => (
+                            {albumResults.slice(0,5).map((album) => (
                                 <div
                                     key={album.id}
                                     className="album-item"
                                     style={{
-                                        width: "230px",
+                                        width: "200px",
                                         height: "250px",
                                         borderRadius: "10px",
                                         display: "flex",
@@ -525,6 +552,17 @@ const Search = () => {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {currentTab === 1 && (
+                <PlaylistTab playlistResults={playlistResults} handlePlaylistClick={handlePlaylistClick} />
+            )}
+            {currentTab === 2 && (
+                <AlbumTab albumResults={albumResults} handleAlbumClick={handleAlbumClick} />
+            )}
+
+            {currentTab === 3 && (
+            <TrackTab trackResults={searchResults} />
             )}
         </ContainerStyled>
     );
