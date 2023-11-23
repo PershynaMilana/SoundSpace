@@ -41,7 +41,8 @@ const Player = forwardRef(({ audioPlayerRef }, ref) => {
         "--rhap-time-color": "#fff",
         background: "#0d0d0d",
         width: "90%",
-        height: "100%",
+        height: "30%",
+        marginBottom: "60px",
         paddingRight: "50px",
         boxShadow: "none",
     };
@@ -57,7 +58,7 @@ const Player = forwardRef(({ audioPlayerRef }, ref) => {
                 backgroundColor: "#0d0d0d",
                 display: "flex",
                 alignItems: "center",
-                height: "10%",
+                height: "9%",
             }}
         >
             <div
@@ -73,8 +74,8 @@ const Player = forwardRef(({ audioPlayerRef }, ref) => {
                         src={trackInfo.imageUrl}
                         alt="Track"
                         style={{
-                            width: "70px",
-                            height: "70px",
+                            width: "60px",
+                            height: "60px",
                             borderRadius: "5px",
                         }}
                     />

@@ -11,10 +11,12 @@ import {
     Typography,
     Tabs,
     Tab,
-    Divider
+    Divider,
+    IconButton,
+    CircularProgress,
 } from "@mui/material";
 import { styled } from "@mui/system";
-import PlaylistTab from "../assets/tabs/SearchPageTabs/PlaylistTab"
+import PlaylistTab from "../assets/tabs/SearchPageTabs/PlaylistTab";
 import AlbumTab from "../assets/tabs/SearchPageTabs/AlbumTab";
 import TrackTab from "../assets/tabs/SearchPageTabs/TrackTab";
 import ArrowBackIosNewRoundedIcon from "@mui/icons-material/ArrowBackIosNewRounded";
@@ -23,7 +25,6 @@ import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRound
 const ContainerStyled = styled(Container)(({ theme }) => ({
     paddingTop: theme.spacing(3),
     paddingBottom: theme.spacing(4),
-   
 }));
 
 const CardStyled = styled(Card)(({ theme }) => ({
@@ -63,6 +64,9 @@ const Search = () => {
     const navigate = useNavigate();
     const { setTrack } = usePlayer();
     const audioPlayerRef = useRef(null);
+    const [playlistIndex, setPlaylistIndex] = useState(0);
+    const [albumIndex, setAlbumIndex] = useState(0);
+    const [loading, setLoading] = useState(true);
 
     const searchTracks = async (query, accessToken) => {
         const response = await axios.get("https://api.spotify.com/v1/search", {
@@ -153,7 +157,24 @@ const Search = () => {
                 const trackNames = trackResults.map((track) => track.name);
                 setAuthorTracks(trackNames);
             }
+            setLoading(false);
         }
+    };
+
+    const handleNextPlaylist = () => {
+        setPlaylistIndex((prevIndex) => prevIndex + 6);
+    };
+
+    const handlePrevPlaylist = () => {
+        setPlaylistIndex((prevIndex) => Math.max(0, prevIndex - 6));
+    };
+
+    const handleNextAlbum = () => {
+        setAlbumIndex((prevIndex) => prevIndex + 6);
+    };
+
+    const handlePrevAlbum = () => {
+        setAlbumIndex((prevIndex) => Math.max(0, prevIndex - 6));
     };
 
     useEffect(() => {
@@ -182,7 +203,7 @@ const Search = () => {
         }
     }, [currentTrack, audioPlayerRef]);
 
-    return (       
+    return (
         <ContainerStyled style={{ marginLeft: "150px" }}>
             <Tabs
                 value={currentTab}
@@ -193,6 +214,7 @@ const Search = () => {
                 sx={{
                     justifyContent: "flex-start",
                     marginLeft: "80px",
+                    color: "white",
                     "& .MuiTabs-indicator": {
                         backgroundColor: "transparent",
                     },
@@ -211,12 +233,12 @@ const Search = () => {
                     },
                 }}
             >
-                <Tab label="Контент страницы" />
-                <Tab label="Плейлисты исполнителя" />
-                <Tab label="Альбомы исполнителя" />
-                <Tab label="Треки исполнителя" />
+                <Tab label="Контент страницы" style={{ color: "white",}} />
+                <Tab label="Плейлисты исполнителя" style={{ color: "white",}} />
+                <Tab label="Альбомы исполнителя" style={{ color: "white",}} />
+                <Tab label="Треки исполнителя" style={{ color: "white",}} />
             </Tabs>
-            <Divider style={{ margin: "15px 0", background: "#555" }}/>
+            <Divider style={{ margin: "15px 0", background: "#555" }} />
             {currentTab === 0 && query && (
                 <div
                     style={{
@@ -289,13 +311,14 @@ const Search = () => {
                                                         borderRadius: "100px",
                                                         marginRight: "60px",
                                                         marginTop: "15px",
+                                                        textAlign: "left",
                                                     }}
                                                 />
                                             )}
                                             <Typography
                                                 variant="h4"
                                                 style={{
-                                                    textAlign: "center",
+                                                    textAlign: "left",
                                                     fontWeight: "700",
                                                     display: "flex",
                                                     flexWrap: "wrap",
@@ -407,73 +430,121 @@ const Search = () => {
                             margin: "0 auto",
                         }}
                     >
-                        <Typography
-                            variant="h5"
+                        <div
                             style={{
-                                color: "white",
-                                fontWeight: "600",
-                                marginBottom: "30px",
-                                padding: "0",
-                                width: "1300px",
-                                marginTop: "30px",
+                                display: "flex",
+                                justifyContent: "space-between",
+                                marginBottom: "10px",
                             }}
                         >
-                            Плейлисты
-                        </Typography>
-                        <div
-                        className="playlist-list"
-                        style={{ display: "flex", flexWrap: "wrap" }}
-                    >
-                        {playlistResults.slice(0, 5).map((playlist) => (
-                            <div
-                                key={playlist.id}
-                                className="playlist-item"
+                            <Typography
+                                variant="h5"
                                 style={{
-                                    width: "200px",
-                                    height: "250px",
-                                    borderRadius: "10px",
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    alignItems: "center",
-                                    margin: "10px",
+                                    color: "white",
+                                    fontWeight: "600",
+                                    marginBottom: "30px",
+                                    padding: "0",
+                                    width: "1200px",
+                                    marginTop: "30px",
                                 }}
-                                onClick={() => handlePlaylistClick(playlist.id)}
                             >
-                                    {playlist.images[0] && (
-                                        <CardStyled>
-                                            <CardMediaStyled
-                                                image={playlist.images[0].url}
-                                                title={playlist.name}
-                                            />
+                                Плейлисты
+                            </Typography>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    order: "2",
+                                }}
+                            >
+                                <IconButton
+                                    style={{
+                                        color: "white",
+                                        cursor: "pointer",
+                                        marginTop: "25px",
+                                    }}
+                                    onClick={handlePrevPlaylist}
+                                    disabled={playlistIndex === 0}
+                                >
+                                    <ArrowBackIosNewRoundedIcon />
+                                </IconButton>
+
+                                <IconButton
+                                    style={{
+                                        color: "white",
+                                        marginTop: "25px",
+                                        cursor:
+                                            playlistIndex + 6 >=
+                                            playlistResults.length
+                                                ? "not-allowed"
+                                                : "pointer",
+                                        opacity:
+                                            playlistIndex + 6 >=
+                                            playlistResults.length
+                                                ? 0.5
+                                                : 1,
+                                    }}
+                                    onClick={handleNextPlaylist}
+                                    disabled={
+                                        playlistIndex + 6 >=
+                                        playlistResults.length
+                                    }
+                                >
+                                    <ArrowForwardIosRoundedIcon />
+                                </IconButton>
+                            </div>
+                        </div>
+
+                        {loading ? (
+                            <div
+                                style={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    margin: "15px",
+                                }}
+                            >
+                                <CircularProgress style={{ color: "gray" }} />
+                            </div>
+                        ) : (
+                            <div style={{ display: "flex", flexWrap: "wrap" }}>
+                                {playlistResults
+                                    .slice(playlistIndex, playlistIndex + 6)
+                                    .map((release) => (
+                                        <CardStyled
+                                            key={release.id}
+                                            onClick={() =>
+                                                handlePlaylistClick(release.id)
+                                            }
+                                            style={{
+                                                flex: "0 0 calc(16.666% - 20px)",
+                                                margin: "10px",
+                                                backgroundColor: "#222222",
+                                                height: "220px",
+                                                cursor: "pointer",
+                                                color: "white",
+                                            }}
+                                        >
+                                            {release.images.length > 0 && (
+                                                <CardMediaStyled
+                                                    image={
+                                                        release.images[0].url
+                                                    }
+                                                    title={release.name}
+                                                />
+                                            )}
                                             <CardContent>
                                                 <Typography
                                                     variant="h6"
                                                     component="div"
-                                                    style={{
-                                                        textAlign: "center",
-                                                    }}
                                                 >
-                                                    {playlist.name}
-                                                </Typography>
-                                                <Typography
-                                                    variant="body2"
-                                                    component="div"
-                                                    style={{
-                                                        textAlign: "center",
-                                                    }}
-                                                >
-                                                    by{" "}
-                                                    {
-                                                        playlist.owner
-                                                            .display_name
-                                                    }
+                                                    {release.name}
                                                 </Typography>
                                             </CardContent>
                                         </CardStyled>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
+                                    ))}
+                            </div>
+                        )}
                     </div>
                     <div
                         style={{
@@ -487,83 +558,142 @@ const Search = () => {
                             margin: "0 auto",
                         }}
                     >
-                        <Typography
-                            variant="h5"
+                        <div
                             style={{
-                                color: "white",
-                                fontWeight: "600",
-                                marginBottom: "30px",
-                                padding: "0",
-                                width: "1300px",
-                                marginTop: "30px",
+                                display: "flex",
+                                justifyContent: "space-between",
+                                marginBottom: "10px",
                             }}
                         >
-                            Альбомы
-                        </Typography>
-                        <div
-                            className="album-list"
-                            style={{ display: "flex", flexWrap: "wrap" }}
-                        >
-                            {albumResults.slice(0,5).map((album) => (
-                                <div
-                                    key={album.id}
-                                    className="album-item"
+                            <Typography
+                                variant="h5"
+                                style={{
+                                    color: "white",
+                                    fontWeight: "600",
+                                    marginBottom: "30px",
+                                    padding: "0",
+                                    width: "1200px",
+                                    marginTop: "30px",
+                                }}
+                            >
+                                Альбомы
+                            </Typography>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    order: "2",
+                                }}
+                            >
+                                <IconButton
                                     style={{
-                                        width: "200px",
-                                        height: "250px",
-                                        borderRadius: "10px",
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        alignItems: "center",
-                                        margin: "10px",
+                                        color: "white",
+                                        cursor: "pointer",
+                                        marginTop: "25px",
                                     }}
-                                    onClick={() => handleAlbumClick(album.id)}
+                                    onClick={handlePrevAlbum}
+                                    disabled={albumIndex === 0}
                                 >
-                                    {album.images[0] && (
-                                        <CardStyled>
-                                            <CardMediaStyled
-                                                image={album.images[0].url}
-                                                title={album.name}
-                                            />
-                                            <CardContent>
-                                                <Typography
-                                                    variant="h6"
-                                                    component="div"
-                                                    style={{
-                                                        textAlign: "center",
-                                                    }}
-                                                >
-                                                    {album.name}
-                                                </Typography>
-                                                <Typography
-                                                    variant="body2"
-                                                    component="div"
-                                                    style={{
-                                                        textAlign: "center",
-                                                    }}
-                                                >
-                                                    by {album.artists[0].name}
-                                                </Typography>
-                                            </CardContent>
-                                        </CardStyled>
-                                    )}
-                                </div>
-                            ))}
+                                    <ArrowBackIosNewRoundedIcon />
+                                </IconButton>
+
+                                <IconButton
+                                    style={{
+                                        color: "white",
+                                        marginTop: "25px",
+                                        cursor:
+                                            albumIndex + 6 >=
+                                            albumResults.length
+                                                ? "not-allowed"
+                                                : "pointer",
+                                        opacity:
+                                            albumIndex + 6 >=
+                                            albumResults.length
+                                                ? 0.5
+                                                : 1,
+                                    }}
+                                    onClick={handleNextAlbum}
+                                    disabled={
+                                        albumIndex + 6 >= albumResults.length
+                                    }
+                                >
+                                    <ArrowForwardIosRoundedIcon />
+                                </IconButton>
+                            </div>
                         </div>
+
+                        {loading ? (
+                            <div
+                                style={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    margin: "15px",
+                                }}
+                            >
+                                <CircularProgress style={{ color: "gray" }} />
+                            </div>
+                        ) : (
+                            <div style={{ display: "flex", flexWrap: "wrap" }}>
+                                {albumResults
+                                    .slice(albumIndex, albumIndex + 6)
+                                    .map(
+                                        (album) =>
+                                            album?.images?.length > 0 && (
+                                                <CardStyled
+                                                    key={album?.id}
+                                                    onClick={() =>
+                                                        handleAlbumClick(
+                                                            album?.id
+                                                        )
+                                                    }
+                                                    style={{
+                                                        flex: "0 0 calc(16.666% - 20px)",
+                                                        margin: "10px",
+                                                        backgroundColor:
+                                                            "#222222",
+                                                        height: "220px",
+                                                        cursor: "pointer",
+                                                        color: "white",
+                                                    }}
+                                                >
+                                                    <CardMediaStyled
+                                                        image={
+                                                            album?.images[0].url
+                                                        }
+                                                        title={album?.name}
+                                                    />
+                                                    <CardContent>
+                                                        <Typography
+                                                            variant="h6"
+                                                            component="div"
+                                                        >
+                                                            {album?.name}
+                                                        </Typography>
+                                                    </CardContent>
+                                                </CardStyled>
+                                            )
+                                    )}
+                            </div>
+                        )}
                     </div>
                 </div>
             )}
 
             {currentTab === 1 && (
-                <PlaylistTab playlistResults={playlistResults} handlePlaylistClick={handlePlaylistClick} />
+                <PlaylistTab
+                    playlistResults={playlistResults}
+                    handlePlaylistClick={handlePlaylistClick}
+                />
             )}
             {currentTab === 2 && (
-                <AlbumTab albumResults={albumResults} handleAlbumClick={handleAlbumClick} />
+                <AlbumTab
+                    albumResults={albumResults}
+                    handleAlbumClick={handleAlbumClick}
+                />
             )}
 
-            {currentTab === 3 && (
-            <TrackTab trackResults={searchResults} />
-            )}
+            {currentTab === 3 && <TrackTab trackResults={searchResults} />}
         </ContainerStyled>
     );
 };

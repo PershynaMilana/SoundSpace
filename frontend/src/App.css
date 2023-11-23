@@ -8,7 +8,7 @@
 
 .main-loggedin {
     padding-top: 75px;
-    padding-bottom: 70px;    
+    padding-bottom: 100px;
     margin-left: 0px;
 }
 
@@ -22,5 +22,5 @@
 
 .main-notloggedin {
     padding-top: 0px;
-    padding-bottom: 0px;   
+    padding-bottom: 0px;
 }

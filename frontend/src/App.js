@@ -51,7 +51,6 @@ function App() {
                     <Route path="/library/likes" element={<Likes />} />
                     <Route path="/library/overview" element={<Overview />} />
                     {isLoggedIn && <Route path="/user" element={<Welcome />} />}
-
                     <Route
                         path="/reset-password"
                         element={<PasswordResetRequest />}
@@ -60,28 +59,20 @@ function App() {
                         path="/reset-password/:token"
                         element={<PasswordReset />}
                     />{" "}
-                    
-                    <Route 
-                      path="/author/:authorName" 
-                      element={<Author />} />
-
+                    <Route path="/author/:authorName" element={<Author />} />
                     <Route
                         path="/author/:playlistName"
                         element={<Playlist />}
                     />
-                    <Route 
-                    path="/artist/:artistId" 
-                    element={<Author />} />
-
+                    <Route path="/artist/:artistId" element={<Author />} />
                     <Route
                         path="/playlist/:playlistId"
                         element={<Playlist />}
                     />
-
-                        <Route 
+                    <Route
                         path="/newplaylist/:playlistId"
-                        element={<NewUserPlaylist/>}/>
-
+                        element={<NewUserPlaylist />}
+                    />
                 </Routes>
             </main>
             <footer>
