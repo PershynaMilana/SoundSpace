@@ -225,7 +225,7 @@ const Search = () => {
                         borderRadius: "50px",
                         padding: "10px 20px",
                         margin: "5px",
-                        fontWeight: "600",
+                        fontWeight: "400",
                     },
                     "& .Mui-selected": {
                         backgroundColor: "#333333",
@@ -242,7 +242,7 @@ const Search = () => {
             {currentTab === 0 && query && (
                 <div
                     style={{
-                        fontWeight: "500",
+                        fontWeight: "400",
                         display: "flex",
                         flexWrap: "wrap",
                         color: "white",
@@ -253,7 +253,7 @@ const Search = () => {
                         <Typography
                             variant="h5"
                             gutterBottom
-                            style={{ color: "white", fontWeight: "600" }}
+                            style={{ color: "white", fontWeight: "400" }}
                         >
                             Лучший результат
                         </Typography>

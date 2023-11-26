@@ -1,33 +1,34 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Typography,
   Grid,
   styled,
   Input,
   CircularProgress,
-  Container
+  Container,
+  Divider
 } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
-
 
 const TrackContainer = styled(Grid)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   padding: "10px",
-  borderBottom: "1px solid #333",
+  borderRadius:"5px",
+  boxShadow:"none",
   cursor: "pointer",
   "&:hover": {
     backgroundColor: "#333",
   },
   width: "100%",
+  margin: "0 auto",
 }));
 
 const PlaylistImage = styled("img")({
   marginBottom: "20px",
-  maxWidth: "300px",
-  maxHeight: "300px",
-  width: "100%",
-  height: "100%",
+  width: "300px",
+  height: "300px",
   marginLeft: "40px",
   marginTop: "70px",
 });
@@ -83,6 +84,20 @@ const AlbumName = styled(Typography)({
   textOverflow: "ellipsis",
 });
 
+const PlaylistName = styled(Typography)({
+  marginTop: "0px",
+  fontWeight: "700",
+  color: "white",
+  marginLeft: "20px",
+});
+
+const SearchInput = styled(Input)({
+  width: "100%",
+  border: "none",
+  outline: "none",
+  background: "transparent",
+});
+
 const NewPlaylistContent = ({
   loading,
   playlist,
@@ -100,23 +115,31 @@ const NewPlaylistContent = ({
       searchTracks();
     }
   };
+  const BackToArtists = () => {
+    const navigate = useNavigate();
 
-  const BackToPlaylist = ({ goBack }) => {
+    const goBack = () => {
+        navigate(-1);
+    };
+
     return (
-      <ArrowBackIosNewIcon
-        onClick={goBack}
-        style={{
-          color: "white",
-          cursor: "pointer",
-          position: "absolute",
-          top: "137px",
-          left: "20px",
-          marginRight: "20px",
-          zIndex: 1,
-        }}
-      />
+        <ArrowBackIosNewIcon
+            onClick={goBack}
+            style={{
+                color: "white",
+                cursor: "pointer",
+                position: "absolute",
+                top: "150px",
+                left: "170px",
+                marginRight: "20px",
+                zIndex: 1,
+            }}
+        />
     );
-  };
+};
+
+
+  
 
   return (
     <Container>
@@ -125,40 +148,33 @@ const NewPlaylistContent = ({
       ) : (
         <Grid container spacing={2} style={{ width: "93%" }}>
           <Grid item xs={12}>
-            <BackToPlaylist
-              onClick={goBack}
-              style={{ height: "50px", width: "25px" }}
-            />
-            <PlaylistImage
+            <Grid container alignItems="center" style={{marginBottom:"20px"}}>
+              <BackToArtists
+                style={{ height: "50px", width: "35px", marginLeft: "170px"}}
+              />
+                <PlaylistImage
               src={playlist.imageUrl}
               alt={playlist.name}
               style={{ marginLeft: "40px" }}
             />
-          </Grid>
-          <Grid item xs={12}>
-            <InfoContainer>
-              <Typography
+                <Typography
                 variant="h1"
-                style={{
-                  marginTop: "170px",
+                style={{                  
                   fontWeight: "700",
-                  color: "white"
+                  color: "white", 
+                  marginTop: "280px",
+                  marginLeft: "20px"
                 }}
               >
                 {playlist.name}
               </Typography>
-              <Typography
-                variant="body1"
-                style={{ fontWeight: "600" }}
-              ></Typography>
-            </InfoContainer>
-            <div style={{ marginTop: "20px", border: "1px solid white", borderRadius: "5px", background: "white", padding: "5px" }}>
-              <Input
+            </Grid>
+            <div style={{ marginTop: "20px", marginBottom: "20px", border: "1px solid white", borderRadius: "5px", background: "white", padding: "5px" }}>
+              <SearchInput
                 type="text"
                 value={searchTerm}
                 onChange={handleInputChange}
                 placeholder="Поиск треков"
-                style={{ width: "100%", border: "none", outline: "none", background: "transparent" }}
               />
             </div>
             {searchLoading ? (
@@ -166,7 +182,8 @@ const NewPlaylistContent = ({
             ) : (
               <div>
                 {searchResults.map((track) => (
-                  <TrackContainer key={track.id} container>
+                  <>
+                  <TrackContainer key={track.id} container style={{marginTop:"0px"}}>
                     <Grid item xs={2}>
                       <TrackImage src={track.album.images[0].url} alt={track.name} />
                     </Grid>
@@ -182,8 +199,12 @@ const NewPlaylistContent = ({
                       </TrackDetails>
                     </Grid>
                   </TrackContainer>
+                  <Divider style={{ margin: "10px", background: "#555" }} />
+                  </>
                 ))}
+                
               </div>
+              
             )}
           </Grid>
         </Grid>

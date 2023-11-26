@@ -1,6 +1,7 @@
 // Likes.js
 import React from "react";
 import { useLikes } from "../services/LikesContext";
+import { useNavigate } from "react-router-dom";
 import {
   Table,
   TableBody,
@@ -14,6 +15,7 @@ import {
   Grid
 } from "@mui/material";
 import likeImage from "../assets/images/like.jpg";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 
 const Container = styled("div")(({ theme }) => ({
   display: "flex",
@@ -67,11 +69,38 @@ const LikeButton = styled("button")({
   cursor: "pointer",
 });
 
+const BackToArtists = () => {
+  const navigate = useNavigate();
+
+  const goBack = () => {
+      navigate(-1);
+  };
+
+  return (
+      <ArrowBackIosNewIcon
+          onClick={goBack}
+          style={{
+              color: "white",
+              cursor: "pointer",
+              position: "absolute",
+              top: "150px",
+              left: "30px",
+              marginRight: "20px",
+              zIndex: 1,
+          }}
+      />
+  );
+};
+
+
 const Likes = () => {
   const { likedTracks, removeFromLikes } = useLikes();
 
   return (
     <Container>
+       <BackToArtists
+                style={{ height: "50px", width: "35px"}}
+              />
       <Grid container spacing={2} style={{ width: "93%" }}>
         <LikedTrackImage src={likeImage} alt="Liked Tracks" style={{ marginLeft: "40px" }}/>
         <InfoContainer>

@@ -50,7 +50,7 @@ const NewUserPlaylist = () => {
 
   const goBack = () => {
     navigate(-1);
-  };
+};
 
   const searchTracks = async () => {
     try {
@@ -82,7 +82,6 @@ const NewUserPlaylist = () => {
     <PlaylistContent
       loading={loading}
       playlist={playlist}
-      goBack={goBack}
       searchTerm={searchTerm}
       setSearchTerm={setSearchTerm}
       searchResults={searchResults}

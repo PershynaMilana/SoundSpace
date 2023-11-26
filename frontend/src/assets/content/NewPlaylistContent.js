@@ -67,7 +67,7 @@ const NewPlaylistContent = ({ loading, playlist, goBack }) => {
                   fontWeight: "700",
                 }}
               >
-                {playlist.name}
+                fdghjgbdds{playlist.name}
               </Typography>
               <Typography
                 variant="body1"
