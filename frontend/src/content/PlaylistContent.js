@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import PlayArrowIcon from "@mui/icons-material/PlayArrowRounded";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 
 import {
   Table,
@@ -96,7 +97,27 @@ const PlaylistContent = ({
   playPauseTrack,
   handleRowHover,
   goBack,
+  addToLikes
 }) => {
+  const [likedTracks, setLikedTracks] = useState([]);
+
+  const handleLikeClick = (e, track) => {
+    e.stopPropagation();
+    track.isLiked = !track.isLiked;
+
+    if (track.isLiked) {
+      setLikedTracks((prevLikedTracks) => [...prevLikedTracks, track]);
+      addToLikes(track); 
+      
+    } else {
+      setLikedTracks((prevLikedTracks) =>
+        prevLikedTracks.filter((likedTrack) => likedTrack.id !== track.id)
+      );
+    }
+  };
+
+
+
   return (
     <Container>
       {loading ? (
@@ -165,7 +186,16 @@ const PlaylistContent = ({
                       textAlign: "center",
                     }}
                   >
-                    Время трека
+                    Длительность
+                  </CustomTableCell>
+                  <CustomTableCell
+                    style={{
+                      fontSize: "14px",
+                      fontWeight: "700",
+                      color: "#b5b5b5",
+                    }}
+                  >
+                    Лайк
                   </CustomTableCell>
                 </TableRow>
               </TableHead>
@@ -210,6 +240,19 @@ const PlaylistContent = ({
                       }}
                     >
                       {msToTime(track.track.duration_ms)}
+                    </CustomTableCell>
+                    <CustomTableCell>
+                      <FavoriteIcon
+                        style={{
+                          color: likedTracks.some(
+                            (likedTrack) => likedTrack.id === track.track.id
+                          )
+                            ? "red"
+                            : "white",
+                          cursor: "pointer",
+                        }}
+                        onClick={(e) => handleLikeClick(e, track.track)}
+                      />
                     </CustomTableCell>
                   </CustomTableRow>
                 ))}

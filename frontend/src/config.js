@@ -1,3 +1,4 @@
 export const config = {
-    language: "en",
-};
+    language: 'en', 
+  };
+  

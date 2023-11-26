@@ -1,18 +1,44 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useParams,useNavigate } from "react-router-dom";
 import axios from "axios";
 import { clientId, clientSecret } from "../services/spotifyAuth";
 import AlbumContent from "../content/AlbumContent";
 import { usePlayer } from "../services/PlayerContext";
+import { useLikes } from "../services/LikesContext";
+
 
 const Album = () => {
   const { albumId } = useParams();
   const [album, setAlbum] = useState(null);
   const [tracks, setTracks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [currentTrack, setCurrentTrack] = useState(null);
-  const { setTrack } = usePlayer();
+  const { setTrack, currentTrack } = usePlayer();
+  const { addToLikes } = useLikes(); 
   const audioPlayerRef = useRef(null);
+  const navigate = useNavigate();
+
+  const playTrack = (track) => {
+    setTrack(track);
+  };
+
+  useEffect(() => {
+    if (audioPlayerRef && audioPlayerRef.current) {
+      audioPlayerRef.current.src = currentTrack?.preview_url || "";
+    }
+  }, [currentTrack, audioPlayerRef]);
+
+  const goBack = () => {
+    navigate(-1);
+  };
+
+  const handleRowHover = (index) => {
+    const playIcons = document.getElementsByClassName("playIcon");
+    const customTableCells = document.getElementsByClassName("customTableCell");
+    for (let i = 0; i < playIcons.length; i++) {
+      playIcons[i].style.visibility = i === index ? "visible" : "hidden";
+      customTableCells[i].style.visibility = i === index ? "hidden" : "visible";
+    }
+  };
 
   useEffect(() => {
     if (albumId) {
@@ -93,34 +119,15 @@ const Album = () => {
     };
   }, [albumId]);
 
-  const playTrack = (track) => {
-    setTrack(track);
-};
-
-useEffect(() => {
-    if (audioPlayerRef && audioPlayerRef.current) {
-        audioPlayerRef.current.src = currentTrack?.preview_url || "";
-    }
-}, [currentTrack, audioPlayerRef]);
-
-  const handleRowHover = (index) => {
-    const playIcons = document.getElementsByClassName("playIcon");
-    const customTableCells =
-      document.getElementsByClassName("customTableCell");
-    for (let i = 0; i < playIcons.length; i++) {
-      playIcons[i].style.visibility = i === index ? "visible" : "hidden";
-      customTableCells[i].style.visibility =
-        i === index ? "hidden" : "visible";
-    }
-  };
-
   return (
     <AlbumContent
       loading={loading}
       album={album}
       tracks={tracks}
       handleRowHover={handleRowHover}
-      playTrack={playTrack}
+      playPauseTrack={playTrack}
+      goBack={goBack}
+      addToLikes={addToLikes} 
     />
   );
 };

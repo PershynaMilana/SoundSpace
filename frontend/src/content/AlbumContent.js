@@ -1,6 +1,9 @@
 
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import PlayArrowIcon from "@mui/icons-material/PlayArrowRounded";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+
 import {
   Table,
   TableBody,
@@ -13,8 +16,7 @@ import {
   Grid,
   styled,
 } from "@mui/material";
-import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
-import PlayArrowIcon from "@mui/icons-material/PlayArrowRounded";
+
 
 const Container = styled("div")(({ theme }) => ({
   display: "flex",
@@ -72,13 +74,7 @@ const PlayIcon = styled(PlayArrowIcon)({
   visibility: "hidden",
 });
 
-const BackToAlbums = () => {
-  const navigate = useNavigate();
-
-  const goBack = () => {
-    navigate(-1);
-  };
-
+const BackToAlbums = ({ goBack }) => {
   return (
     <ArrowBackIosNewIcon
       onClick={goBack}
@@ -95,13 +91,36 @@ const BackToAlbums = () => {
   );
 };
 
+
 const AlbumContent = ({
   loading,
   album,
   tracks,
+  playPauseTrack,
   handleRowHover,
-  playTrack,
-}) => (
+  goBack,
+  addToLikes
+}) => {
+
+  const [likedTracks, setLikedTracks] = useState([]);
+
+  const handleLikeClick = (e, track) => {
+    e.stopPropagation();
+    track.isLiked = !track.isLiked;
+
+    if (track.isLiked) {
+      setLikedTracks((prevLikedTracks) => [...prevLikedTracks, track]);
+      addToLikes(track); 
+      
+    } else {
+      setLikedTracks((prevLikedTracks) =>
+        prevLikedTracks.filter((likedTrack) => likedTrack.id !== track.id)
+      );
+    }
+  };
+
+
+  return (
   <Container>
     {loading ? (
       <Typography variant="h5">Загрузка...</Typography>
@@ -109,8 +128,11 @@ const AlbumContent = ({
       <>
         <Grid container spacing={2} style={{ width: "93%" }}>
           <Grid>
-            <BackToAlbums style={{ height: "100px", width: "100px" }} />
-            <AlbumImage src={album.images[0].url} alt={album.name} style={{ marginLeft: "40px" }} />
+            <BackToAlbums goBack={goBack} style={{ height: "100px", width: "100px" }} />
+            <AlbumImage 
+            src={album.images[0].url} 
+            alt={album.name} 
+            style={{ marginLeft: "40px" }} />
           </Grid>
           <Grid>
             <InfoContainer>
@@ -165,6 +187,15 @@ const AlbumContent = ({
                 >
                   Длительность
                 </CustomTableCell>
+                <CustomTableCell
+                    style={{
+                      fontSize: "14px",
+                      fontWeight: "700",
+                      color: "#b5b5b5",
+                    }}
+                  >
+                    Лайк
+                  </CustomTableCell>
               </TableRow>
             </TableHead>
             <br />
@@ -172,11 +203,9 @@ const AlbumContent = ({
               {tracks.map((track, index) => (
                 <CustomTableRow
                   key={track.id}
-                  onMouseEnter={() =>
-                    handleRowHover(index)
-                  }
+                  onMouseEnter={() => handleRowHover(index)}
                   onMouseLeave={() => handleRowHover(-1)}
-                  onClick={() => playTrack(track)}
+                  onClick={() => playPauseTrack(track)}
                 >
                   <CustomTableCell
                     className="customTableCell"
@@ -204,8 +233,21 @@ const AlbumContent = ({
                       textAlign: "center",
                     }}
                   >
-                    {formatDuration(track.duration_ms)}
+                    {msToTime(track.duration_ms)}
                   </CustomTableCell>
+                  <CustomTableCell>
+                      <FavoriteIcon
+                        style={{
+                          color: likedTracks.some(
+                            (likedTrack) => likedTrack.id === track.id
+                          )
+                            ? "red"
+                            : "white",
+                          cursor: "pointer",
+                        }}
+                        onClick={(e) => handleLikeClick(e,track)}
+                      />
+                    </CustomTableCell>
                 </CustomTableRow>
               ))}
             </TableBody>
@@ -214,12 +256,13 @@ const AlbumContent = ({
       </>
     )}
   </Container>
-);
-
-const formatDuration = (ms) => {
-  const minutes = Math.floor(ms / 60000);
-  const seconds = ((ms % 60000) / 1000).toFixed(0);
-  return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  );
 };
+
+function msToTime(duration) {
+  const minutes = Math.floor(duration / 60000);
+  const seconds = ((duration % 60000) / 1000).toFixed(0);
+  return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+}
 
 export default AlbumContent;

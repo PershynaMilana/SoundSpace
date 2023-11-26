@@ -204,7 +204,7 @@ const Search = () => {
     }, [currentTrack, audioPlayerRef]);
 
     return (
-        <ContainerStyled style={{ marginLeft: "150px" }}>
+        <ContainerStyled>
             <Tabs
                 value={currentTab}
                 onChange={(event, newValue) => setCurrentTab(newValue)}
@@ -377,7 +377,7 @@ const Search = () => {
                             className="track-list"
                             style={{
                                 paddingLeft: "0",
-                                width: "620px",
+                                width: "550px",
                                 marginLeft: "30px",
                             }}
                         >

@@ -19,6 +19,7 @@ import {
     CardContent,
     Tab,
     Tabs,
+    Divider
 } from "@mui/material";
 
 const Container = styled("div")(({ theme }) => ({
@@ -329,16 +330,16 @@ const AuthorContent = ({
                         <Tab
                             label="Альбомы"
                             value="albums"
-                            style={{ fontWeight: "500" }}
+                            style={{ fontWeight: "500", color: "white" }}
                         />
                         <Tab
                             label="Похожие исполнители"
                             value="artists"
-                            style={{ fontWeight: "500" }}
+                            style={{ fontWeight: "500", color: "white" }}
                         />
                     </Tabs>
                 </div>
-
+                <Divider style={{ margin: "15px 0", background: "#555" }} />
                 <div
                     style={{
                         color: "white",
@@ -365,19 +366,6 @@ const AuthorContent = ({
                             >
                                 {albums && (
                                     <div>
-                                        <Typography
-                                            variant="h5"
-                                            style={{
-                                                color: "white",
-                                                fontWeight: "600",
-                                                marginBottom: "30px",
-                                                padding: "0",
-                                                width: "500px",
-                                                marginTop: "30px",
-                                            }}
-                                        >
-                                            Альбомы
-                                        </Typography>
                                         <div
                                             style={{
                                                 display: "flex",
@@ -454,20 +442,7 @@ const AuthorContent = ({
                     )}
 
                     {selectedTab === "artists" && (
-                        <div>
-                            <Typography
-                                variant="h5"
-                                style={{
-                                    color: "white",
-                                    fontWeight: "600",
-                                    marginBottom: "30px",
-                                    padding: "0",
-                                    width: "500px",
-                                    marginTop: "30px",
-                                }}
-                            >
-                                Похожие исполнители
-                            </Typography>
+                        <div>                            
                             <div
                                 style={{
                                     display: "flex",

@@ -63,7 +63,7 @@ const NewPlaylistContent = ({ loading, playlist, goBack }) => {
               <Typography
                 variant="h1"
                 style={{
-                  marginTop: "170px",
+                  marginTop: "100px",
                   fontWeight: "700",
                 }}
               >

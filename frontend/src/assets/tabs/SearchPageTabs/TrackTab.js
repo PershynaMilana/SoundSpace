@@ -18,7 +18,7 @@ const Container = styled("div")(({ theme }) => ({
   width: "100%",
   height: "100%",
   color: "white",
-  background: `transperent`,
+  background: `linear-gradient(#04009A -70%, #1d1d1d, black)`,
 }));
 
 const CustomTableContainer = styled(TableContainer)(({ theme }) => ({
