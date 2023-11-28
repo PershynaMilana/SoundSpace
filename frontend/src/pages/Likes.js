@@ -1,7 +1,10 @@
-// Likes.js
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { useLikes } from "../services/LikesContext";
-import { useNavigate } from "react-router-dom";
+import { usePlayer } from "../services/PlayerContext";
+import PlayArrowIcon from "@mui/icons-material/PlayArrowRounded";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import likeImage from "../assets/images/like.jpg";
 import {
   Table,
   TableBody,
@@ -14,8 +17,6 @@ import {
   TableContainer,
   Grid
 } from "@mui/material";
-import likeImage from "../assets/images/like.jpg";
-import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 
 const Container = styled("div")(({ theme }) => ({
   display: "flex",
@@ -69,39 +70,73 @@ const LikeButton = styled("button")({
   cursor: "pointer",
 });
 
-const BackToArtists = () => {
-  const navigate = useNavigate();
+const PlayIcon = styled(PlayArrowIcon)({
+  position: "absolute",
+  height: "25px",
+  width: "25px",
+  color: "white",
+  marginRight: "50px",
 
-  const goBack = () => {
-      navigate(-1);
-  };
+  transform: "translate(-57%, -15%)",
+  cursor: "pointer",
+  visibility: "hidden",
+});
 
+const BackToLike = ({ goBack }) => {
   return (
-      <ArrowBackIosNewIcon
-          onClick={goBack}
-          style={{
-              color: "white",
-              cursor: "pointer",
-              position: "absolute",
-              top: "150px",
-              left: "30px",
-              marginRight: "20px",
-              zIndex: 1,
-          }}
-      />
+    <ArrowBackIosNewIcon
+      onClick={goBack}
+      style={{
+        color: "white",
+        cursor: "pointer",
+        position: "absolute",
+        top: "137px",
+        left: "20px",
+        marginRight: "20px",
+        zIndex: 1,
+      }}
+    />
   );
 };
 
 
+
+
 const Likes = () => {
   const { likedTracks, removeFromLikes } = useLikes();
+  const { setTrack, currentTrack } = usePlayer();
+  const audioPlayerRef = useRef(null);
+  const navigate = useNavigate();
+
+
+  const playTrack = (track) => {
+    setTrack(track);
+  };
+
+  useEffect(() => {
+    if (audioPlayerRef && audioPlayerRef.current) {
+      audioPlayerRef.current.src = currentTrack?.preview_url || "";
+    }
+  }, [currentTrack, audioPlayerRef]);
+
+  const goBack = () => {
+    navigate(-1);
+  };
+
+  const handleRowHover = (index) => {
+    const playIcons = document.getElementsByClassName("playIcon");
+    const customTableCells = document.getElementsByClassName("customTableCell");
+    for (let i = 0; i < playIcons.length; i++) {
+      playIcons[i].style.visibility = i === index ? "visible" : "hidden";
+      customTableCells[i].style.visibility = i === index ? "hidden" : "visible";
+    }
+  };
+
 
   return (
     <Container>
-       <BackToArtists
-                style={{ height: "50px", width: "35px"}}
-              />
       <Grid container spacing={2} style={{ width: "93%" }}>
+      <BackToLike goBack={goBack} style={{ height: "100px", width: "100px" }} />
         <LikedTrackImage src={likeImage} alt="Liked Tracks" style={{ marginLeft: "40px" }}/>
         <InfoContainer>
           <Typography variant="h1"
@@ -153,8 +188,29 @@ const Likes = () => {
             <br />
             <TableBody>
               {likedTracks.map((track, index) => (
-                <CustomTableRow key={track.id}>
-                  <CustomTableCell>{index + 1}</CustomTableCell>
+                <CustomTableRow 
+                key={track.id}
+                onMouseEnter={() => handleRowHover(index)}
+                onMouseLeave={() => handleRowHover(-1)}
+                onClick={() => playTrack(track)}
+                >
+                  <CustomTableCell
+                      className="customTableCell"
+                      style={{
+                        borderRadius: "5px 0px 0px 5px",
+                        color: "#b5b5b5",
+                        padding: "0px",
+                      }}
+                    >
+                      {index + 1}
+                      <PlayIcon
+                        className="playIcon"
+                        style={{
+                          marginRight: "80px",
+                          padding: "0px",
+                        }}
+                      />
+                    </CustomTableCell>
                   <CustomTableCell style={{textAlign:"center"}}>{track.name}</CustomTableCell>
                   <CustomTableCell style={{textAlign:"center"}}>{msToTime(track.duration_ms)}</CustomTableCell>
                   <CustomTableCell style={{textAlign:"center"}}>

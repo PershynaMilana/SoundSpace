@@ -18,7 +18,7 @@ const Player = forwardRef(({ audioPlayerRef }, ref) => {
         }
 
         if (currentTrack) {
-            const imageUrl = currentTrack?.album.images[0]?.url || "";
+            const imageUrl = currentTrack?.album?.images[0]?.url || "";
             const trackName = currentTrack?.name || "";
             const artistName = currentTrack?.artists[0]?.name || "";
             const preview_url = currentTrack?.preview_url || "";

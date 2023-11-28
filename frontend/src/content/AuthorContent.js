@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import PlayArrowIcon from "@mui/icons-material/PlayArrowRounded";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 
 import {
     Table,
@@ -100,28 +101,23 @@ const PlayIcon = styled(PlayArrowIcon)({
     visibility: "hidden",
 });
 
-const BackToArtists = () => {
-    const navigate = useNavigate();
-
-    const goBack = () => {
-        navigate(-1);
-    };
-
+const BackToArtists = ({ goBack }) => {
     return (
-        <ArrowBackIosNewIcon
-            onClick={goBack}
-            style={{
-                color: "white",
-                cursor: "pointer",
-                position: "absolute",
-                top: "137px",
-                left: "20px",
-                marginRight: "20px",
-                zIndex: 1,
-            }}
-        />
+      <ArrowBackIosNewIcon
+        onClick={goBack}
+        style={{
+          color: "white",
+          cursor: "pointer",
+          position: "absolute",
+          top: "137px",
+          left: "20px",
+          marginRight: "20px",
+          zIndex: 1,
+        }}
+      />
     );
-};
+  };
+  
 
 const AuthorContent = ({
     loading,
@@ -138,7 +134,29 @@ const AuthorContent = ({
     handleAlbumClick,
     handleArtistClick,
     handleClick,
-}) => (
+    goBack,
+    addToLikes
+}) => {
+
+    const [likedTracks, setLikedTracks] = useState([]);
+
+    const handleLikeClick = (e, track) => {
+      e.stopPropagation();
+      track.isLiked = !track.isLiked;
+  
+      if (track.isLiked) {
+        setLikedTracks((prevLikedTracks) => [...prevLikedTracks, track]);
+        addToLikes(track); 
+        
+      } else {
+        setLikedTracks((prevLikedTracks) =>
+          prevLikedTracks.filter((likedTrack) => likedTrack.id !== track.id)
+        );
+      }
+    };
+  
+
+  return (
     <Container>
         {loading ? (
             <Typography variant="h5">Загрузка...</Typography>
@@ -147,7 +165,7 @@ const AuthorContent = ({
                 <Grid container spacing={2} style={{ width: "93%" }}>
                     <Grid item>
                         <BackToArtists
-                            style={{ height: "100px", width: "100px" }}
+                          goBack={goBack} style={{ height: "100px", width: "100px" }}
                         />
                         <ArtistImage
                             src={artist.images[0].url}
@@ -211,6 +229,15 @@ const AuthorContent = ({
                                 >
                                     Популярность
                                 </CustomTableCell>
+                                <CustomTableCell
+                                style={{
+                                fontSize: "14px",
+                                fontWeight: "700",
+                                color: "#b5b5b5",
+                                }}
+                                >
+                                Лайк
+                            </CustomTableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -253,6 +280,19 @@ const AuthorContent = ({
                                         >
                                             {track.popularity}
                                         </CustomTableCell>
+                                        <CustomTableCell>
+                                    <FavoriteIcon
+                                        style={{
+                                        color: likedTracks.some(
+                                            (likedTrack) => likedTrack.id === track.id
+                                        )
+                                            ? "red"
+                                            : "white",
+                                        cursor: "pointer",
+                                        }}
+                                        onClick={(e) => handleLikeClick(e, track)}
+                                    />
+                                    </CustomTableCell>
                                     </CustomTableRow>
                                 ))}
                         </TableBody>
@@ -504,5 +544,7 @@ const AuthorContent = ({
             </>
         )}
     </Container>
-);
+  );
+};
+
 export default AuthorContent;

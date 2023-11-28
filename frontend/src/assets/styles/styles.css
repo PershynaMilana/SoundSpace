@@ -428,8 +428,8 @@ input[type=range] {
     display: flex;
     align-items: center;
     text-align: left;
-    max-width: 1700px;
-    width: 110%;
+    max-width: 1900px;
+    width: 140%;
     margin-left: 0;
     max-height: 40px;
     height: 100%;

@@ -16,6 +16,7 @@ import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRound
 const ContainerStyled = styled(Container)(({ theme }) => ({
   paddingTop: theme.spacing(5),
   paddingBottom: theme.spacing(5),
+  width:"100%",
 }));
 
 const CardStyled = styled(Card)(({ theme }) => ({
@@ -37,6 +38,18 @@ const CardMediaStyled = styled(CardMedia)(({ theme }) => ({
   paddingTop: "56.25%",
 }));
 
+const SectionContainer = styled('div')({
+  width: '100%', // Для занимания всей ширины контейнера
+  display: 'flex',
+  flexWrap: 'wrap',
+  justifyContent: 'flex-start',
+  margin: '0 auto', // Для центрирования содержимого
+  '& > *': {
+    flex: '0 0 calc(14.285% - 20px)',
+    margin: '10px',
+  },
+});
+
 const HomeContent = ({
   loading,
   popularPlaylists,
@@ -53,7 +66,7 @@ const HomeContent = ({
   handleNextRelease,
   navigate,
 }) => (
-  <ContainerStyled>
+  <ContainerStyled style={{maxWidth: "1500px", width:"100%"}}>
     {/* Популярные плейлисты */}
     <div
       style={{
@@ -117,14 +130,14 @@ const HomeContent = ({
             color: "white",
             marginTop: "25px",
             cursor:
-              playlistIndex + 6 >= popularPlaylists.length
+              playlistIndex + 7 >= popularPlaylists.length
                 ? "not-allowed"
                 : "pointer",
             opacity:
-              playlistIndex + 6 >= popularPlaylists.length ? 0.5 : 1,
+              playlistIndex + 7 >= popularPlaylists.length ? 0.5 : 1,
           }}
           onClick={handleNextPlaylist}
-          disabled={playlistIndex + 6 >= popularPlaylists.length}
+          disabled={playlistIndex + 7 >= popularPlaylists.length}
         >
           <ArrowForwardIosRoundedIcon />
         </IconButton>
@@ -142,20 +155,22 @@ const HomeContent = ({
         <CircularProgress style={{ color: "gray" }} />
       </div>
     ) : (
-      <div style={{ display: "flex", flexWrap: "wrap" }}>
+      <SectionContainer style={{ display: "flex", flexWrap: "wrap" }}>
         {popularPlaylists
-          .slice(playlistIndex, playlistIndex + 6)
+          .slice(playlistIndex, playlistIndex + 7)
           .map((playlist) => (
             <CardStyled
               key={playlist.id}
               onClick={() => navigate(`/playlist/${playlist.id}`)}
               style={{
-                flex: "0 0 calc(16.666% - 20px)",
+                flex: '0 0 calc(14.285% - 20px)',
                 margin: "10px",
                 backgroundColor: "#222222",
                 height: "220px",
                 cursor: "pointer",
                 color: "white",
+                width: "1700px",
+                
               }}
             >
               <CardMediaStyled
@@ -169,7 +184,7 @@ const HomeContent = ({
               </CardContent>
             </CardStyled>
           ))}
-      </div>
+      </SectionContainer>
     )}
 
     <div
@@ -234,13 +249,13 @@ const HomeContent = ({
             color: "white",
             marginTop: "25px",
             cursor:
-              releaseIndex + 6 >= newReleases.length
+              releaseIndex + 7 >= newReleases.length
                 ? "not-allowed"
                 : "pointer",
-            opacity: releaseIndex + 6 >= newReleases.length ? 0.5 : 1,
+            opacity: releaseIndex + 7 >= newReleases.length ? 0.5 : 1,
           }}
           onClick={handleNextRelease}
-          disabled={releaseIndex + 6 >= newReleases.length}
+          disabled={releaseIndex + 7 >= newReleases.length}
         >
           <ArrowForwardIosRoundedIcon />
         </IconButton>
@@ -258,15 +273,15 @@ const HomeContent = ({
         <CircularProgress style={{ color: "gray" }} />
       </div>
     ) : (
-      <div style={{ display: "flex", flexWrap: "wrap" }}>
+      <SectionContainer style={{ display: "flex", flexWrap: "wrap" }}>
         {newReleases
-          .slice(releaseIndex, releaseIndex + 6)
+          .slice(releaseIndex, releaseIndex + 7)
           .map((release) => (
             <CardStyled
               key={release.id}
               onClick={() => navigate(`/album/${release.id}`)}
               style={{
-                flex: "0 0 calc(16.666% - 20px)",
+                flex: '0 0 calc(14.285% - 20px)',
                 margin: "10px",
                 backgroundColor: "#222222",
                 height: "220px",
@@ -287,7 +302,7 @@ const HomeContent = ({
               </CardContent>
             </CardStyled>
           ))}
-      </div>
+      </SectionContainer>
     )}
 
     {/* Популярные артисты */}
@@ -353,13 +368,13 @@ const HomeContent = ({
             color: "white",
             marginTop: "25px",
             cursor:
-              artistIndex + 6 >= artists.length
+              artistIndex + 7 >= artists.length
                 ? "not-allowed"
                 : "pointer",
-            opacity: artistIndex + 6 >= artists.length ? 0.5 : 1,
+            opacity: artistIndex + 7 >= artists.length ? 0.5 : 1,
           }}
           onClick={handleNextArtist}
-          disabled={artistIndex + 6 >= artists.length}
+          disabled={artistIndex + 7 >= artists.length}
         >
           <ArrowForwardIosRoundedIcon />
         </IconButton>
@@ -377,18 +392,18 @@ const HomeContent = ({
         <CircularProgress style={{ color: "gray" }} />
       </div>
     ) : (
-      <div style={{ display: "flex", flexWrap: "wrap" }}>
+      <SectionContainer style={{ display: "flex", flexWrap: "wrap" }}>
         {artists
-          .slice(artistIndex, artistIndex + 6)
+          .slice(artistIndex, artistIndex + 7)
           .map((artist) => (
             <CardStyled
               key={artist.id}
               onClick={() => navigate(`/artist/${artist.id}`)}
               style={{
-                flex: "0 0 calc(16.666% - 20px)",
+                flex: '0 0 calc(14.285% - 20px)',
                 margin: "10px",
                 backgroundColor: "#222222",
-                height: "180px",
+                height: "190px",
                 cursor: "pointer",
                 color: "white",
                 borderRadius: "50%"
@@ -406,7 +421,7 @@ const HomeContent = ({
               </CardContent>
             </CardStyled>
           ))}
-      </div>
+      </SectionContainer>
     )}
 
 

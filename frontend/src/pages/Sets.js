@@ -1,24 +1,34 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
-import { Container, Grid, Card, CardMedia, CardContent, Typography, IconButton} from "@mui/material";
+import {  Grid, Card, CardMedia, CardContent, Typography, IconButton} from "@mui/material";
 import { styled } from "@mui/system";
 import AddIcon from '@mui/icons-material/Add';
 import LibraryNav from "../components/LibraryNav";
 import CreatePlaylistModal from '../components/CreatePlaylistModal';
-
+ 
 const Sets = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [playlists, setPlaylists] = useState([]);
-  const [token] = useState(localStorage.getItem("token"));
+  const [token, setToken] = useState("");
   const navigate = useNavigate();
-
+ 
   useEffect(() => {
-    loadPlaylists();
+    const storedToken = getCookie("auth_token");
+    setToken(storedToken);
   }, []);
-
+ 
+  useEffect(() => {
+    if (token) {
+      loadPlaylists();
+    }
+  }, [token]);
+ 
   const loadPlaylists = async () => {
     try {
+      const decodedToken = parseJwt(token);
+      console.log("Decoded Token:", decodedToken);
+      console.log("Token:", token);
       const response = await axios.get("http://localhost:8080/api/playlists", {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -29,15 +39,31 @@ const Sets = () => {
       console.error("Error loading playlists:", error);
     }
   };
-
-  const handleCreatePlaylist = async (name, imageUrl) => {
+ 
+  const getCookie = (name) => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(";").shift();
+  };
+ 
+ 
+  const handleCreatePlaylist = async (name, imageUrl,description) => {
     try {
+      const decodedToken = parseJwt(token);
+      const userId = decodedToken ? decodedToken.id : null;
+  
+      if (!userId) {
+        console.error("User ID not found in the decoded token.");
+        return;
+      }
+  
       const response = await axios.post(
         "http://localhost:8080/api/playlists",
         {
+          userId: userId,
           name: name,
-          userId: getUserIdFromToken(),
           imageUrl: imageUrl,
+          description:description,
         },
         {
           headers: {
@@ -45,34 +71,14 @@ const Sets = () => {
           },
         }
       );
-
-      console.log("Playlist created successfully:", response.data);
-
+    
       setShowCreateModal(false);
       loadPlaylists();
     } catch (error) {
       console.error("Error creating playlist:", error);
     }
   };
-
-  const handlePlaylistClick = (playlistId) => {
-    navigate(`/newplaylist/${playlistId}`);
-  };
-
-  const getUserIdFromToken = () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      return null;
-    }
-
-    const decodedToken = parseJwt(token);
-    if (decodedToken) {
-      return decodedToken.id;
-    }
-
-    return null;
-  };
-
+  
   const parseJwt = (token) => {
     try {
       return JSON.parse(atob(token.split(".")[1]));
@@ -80,7 +86,11 @@ const Sets = () => {
       return null;
     }
   };
-
+ 
+  const handlePlaylistClick = (playlistId) => {
+    navigate(`/newplaylist/${playlistId}`);
+  };
+ 
   const CardStyled = styled(Card)(({ theme }) => ({
     display: "flex",
     flexDirection: "column",
@@ -92,13 +102,13 @@ const Sets = () => {
     },
     cursor: "pointer",
   }));
-
+ 
   const CardMediaStyled = styled(CardMedia)(({ theme }) => ({
     width: "100%",
     height: 0,
     paddingTop: "56.25%",
   }));
-
+ 
   const createPlaylistButtonStyle = {
     width: "270px",
     height: "280px",
@@ -109,7 +119,7 @@ const Sets = () => {
     justifyContent: "center",
     alignItems: "center",
   };
-
+ 
   return (
     <div style={{ marginLeft: "40px" }}>
       <div className="library-container">
@@ -139,25 +149,27 @@ const Sets = () => {
             {playlists.map((playlist) => (
               <div
                 key={playlist._id}
-                className="playlist-item"
-                style={{
-                  width: "270px",
-                  height: "280px",
-                  margin: "10px",
-                  background: "gray",
-                  borderRadius: "10px",
-                  alignItems: "center",
-                }}
                 onClick={() => handlePlaylistClick(playlist._id)}
               >
-                <CardStyled>
+                <CardStyled
+                style={{
+                background:'#222222',
+                color:'white',  
+                width: "270px",
+                height: "280px",
+                margin: "10px",
+                alignItems: "center",}}>
                   <CardMediaStyled
                     image={playlist.imageUrl}
                     title={playlist.name}
+                    description={playlist.description}
                   />
                   <CardContent>
                     <Typography variant="h6" component="div" style={{ textAlign: "center" }}>
                       {playlist.name}
+                    </Typography>
+                    <Typography variant="h6" component="div" style={{ textAlign: "center" }}>
+                      {playlist.description}
                     </Typography>
                   </CardContent>
                 </CardStyled>
@@ -169,5 +181,5 @@ const Sets = () => {
     </div>
   );
 };
-
+ 
 export default Sets;

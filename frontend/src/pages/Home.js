@@ -15,31 +15,31 @@ const Home = () => {
     const [releaseIndex, setReleaseIndex] = useState(0);
 
     const handleNextArtist = () => {
-        if (artistIndex + 6 < artists.length) {
-            setArtistIndex((prevIndex) => prevIndex + 6);
+        if (artistIndex + 7 < artists.length) {
+            setArtistIndex((prevIndex) => prevIndex + 7);
         }
     };
 
     const handlePrevArtist = () => {
-        if (artistIndex - 6 >= 0) {
-            setArtistIndex((prevIndex) => prevIndex - 6);
+        if (artistIndex - 7 >= 0) {
+            setArtistIndex((prevIndex) => prevIndex - 7);
         }
     };
 
     const handleNextRelease = () => {
-        setReleaseIndex((prevIndex) => prevIndex + 6);
+        setReleaseIndex((prevIndex) => prevIndex + 7);
     };
 
     const handlePrevRelease = () => {
-        setReleaseIndex((prevIndex) => Math.max(0, prevIndex - 6));
+        setReleaseIndex((prevIndex) => Math.max(0, prevIndex - 7));
     };
 
     const handleNextPlaylist = () => {
-        setPlaylistIndex((prevIndex) => prevIndex + 6);
+        setPlaylistIndex((prevIndex) => prevIndex + 7);
     };
 
     const handlePrevPlaylist = () => {
-        setPlaylistIndex((prevIndex) => Math.max(0, prevIndex - 6));
+        setPlaylistIndex((prevIndex) => Math.max(0, prevIndex - 7));
     };
 
     useEffect(() => {

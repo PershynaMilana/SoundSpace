@@ -14,6 +14,7 @@ import Account from "./pages/account";
 import PasswordResetRequest from "./pages/PasswordResetRequest";
 import PasswordReset from "./pages/PasswordReset";
 import NewUserPlaylist from "./pages/NewUserPlaylist";
+import Welcome from "./pages/Welcome";
 import Author from "./pages/Author";
 import Playlist from "./pages/Playlist";
 import Section from "./pages/Section";
@@ -53,7 +54,7 @@ function App() {
                         <Route path="/album/:albumId" element={<Albums />} />
                         <Route path="/library/likes" element={<Likes />} />
                         <Route path="/library/overview" element={<Overview />} />
-
+                        {isLoggedIn && <Route path="/user" element={<Welcome />} />}
 
                         <Route
                             path="/reset-password"

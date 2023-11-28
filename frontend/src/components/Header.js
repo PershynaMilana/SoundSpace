@@ -118,7 +118,7 @@ const Header = () => {
                         {props.label === "Library" ? (
                             <>
                                 <HeadsetIcon
-                                    style={{ fontSize: 24, marginRight: "4px"}}
+                                    style={{ fontSize: 24, marginRight: "4px", marginTop: "7px", }}
                                 />{" "}
                                 {props.label}
                             </>

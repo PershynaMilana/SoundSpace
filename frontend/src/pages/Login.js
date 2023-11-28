@@ -57,6 +57,10 @@ const Login = () => {
         sendRequest()
             .then((data) => {
                 document.cookie = `auth_token=${data.token}; path=/`;
+                console.log("Received token:", data.token);
+
+                const decodedToken = JSON.parse(atob(data.token.split('.')[1]));
+                console.log("Decoded Token:", decodedToken);
                 dispatch(authActions.login());
                 history("/home");
             })

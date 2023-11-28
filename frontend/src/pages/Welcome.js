@@ -1,32 +1,32 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+import axios from 'axios';
 
-axios.defaults.withCredentials = true;
+import React, { useEffect, useState } from 'react';
+axios.defaults.withCredentials = true
+let firstRender = true;
 
 const Welcome = () => {
-    const [user, setUser] = useState(null);
-
+    const [user,setUser] = useState();
     const refreshToken = async () => {
         try {
             const res = await axios.get("http://localhost:8080/api/refresh", {
-                withCredentials: true,
+                withCredentials: true
             });
-
+            
             if (res.data) {
                 return res.data;
-            } else {
-                throw new Error("Empty response from refreshToken");
+            } else {              
+                console.error("Empty response from refreshToken");
+                throw new Error("Empty response");
             }
         } catch (error) {
-            console.error(error);
+            console.error(error);         
             throw error;
         }
-    };
-
-    const sendRequest = async () => {
+    }
+    const sednRequest = async() => {
         try {
-            const res = await axios.get("http://localhost:8080/api/user", {
-                withCredentials: true,
+            const res = await axios.get('http://localhost:8008/api/user', {
+                withCredentials: true
             });
             const data = res.data;
             return data;
@@ -35,23 +35,16 @@ const Welcome = () => {
             throw error;
         }
     };
-
     useEffect(() => {
-        if (!user) {
-            sendRequest()
-                .then((data) => setUser(data.user))
-                .catch((error) => console.error(error));
+        if(firstRender) {
+            firstRender = false
+            sednRequest().then((data) => setUser(data.user))
         }
-
         let interval = setInterval(() => {
-            refreshToken()
-                .then((data) => setUser(data.user))
-                .catch((error) => console.error(error));
-        }, 1000 * 29);
+            refreshToken().then(data=>setUser(data.user))
+        },1000 * 29);
+        return () => clearInterval(interval)
+    },[])
+}
 
-        return () => clearInterval(interval);
-    }, [user]);
-    return <div></div>;
-};
-
-export default Welcome;
+export default Welcome 

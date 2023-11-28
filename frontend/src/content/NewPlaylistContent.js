@@ -1,35 +1,47 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import {
   Typography,
   Grid,
   styled,
   Input,
   CircularProgress,
-  Container,
   Divider
 } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
+import ClearIcon from "@mui/icons-material/Clear";
+
+const Container = styled("div")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  width: "100%",
+  height: "100%",
+  color: "white",
+  background: `linear-gradient(#0266b3 -70%, #1d1d1d, black)`,
+}));
 
 const TrackContainer = styled(Grid)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   padding: "10px",
-  borderRadius:"5px",
-  boxShadow:"none",
+  borderRadius: "5px",
   cursor: "pointer",
   "&:hover": {
     backgroundColor: "#333",
   },
   width: "100%",
-  margin: "0 auto",
+  height: "100%",
+  maxHeight: "70px",
 }));
 
 const PlaylistImage = styled("img")({
   marginBottom: "20px",
-  width: "300px",
-  height: "300px",
-  marginLeft: "40px",
+  maxWidth: "300px",
+  maxHeight: "300px",
+  width: "100%",
+  height: "100%",
+  marginLeft: "10px",
   marginTop: "70px",
 });
 
@@ -37,9 +49,32 @@ const InfoContainer = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   alignItems: "flex-start",
-  marginLeft: "20px",
   marginTop: "70px",
+  marginLeft: "20px",
+  [theme.breakpoints.up("sm")]: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: "20px",
+    marginLeft: "0",
+  },
 }));
+
+const PlaylistDetails = styled("div")(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  marginLeft: "20px",
+  [theme.breakpoints.up("sm")]: {
+    flexDirection: "column",
+    marginLeft: "40px",
+    alignItems: "flex-start",
+  },
+}));
+
+const PlaylistDescription = styled(Typography)({
+  fontWeight: "600",
+  fontSize: "14px",
+  color: "#b5b5b5",
+});
 
 const TrackImage = styled("img")({
   width: "50px",
@@ -84,19 +119,90 @@ const AlbumName = styled(Typography)({
   textOverflow: "ellipsis",
 });
 
-const PlaylistName = styled(Typography)({
+const AlbumDescription = styled(Typography)({
+  fontWeight: "600",
+  fontSize: "14px",
+  color: "#b5b5b5",
   marginTop: "0px",
-  fontWeight: "700",
-  color: "white",
-  marginLeft: "20px",
+});
+
+const SearchContainer = styled("div")({
+  position: "relative",
+  display: "inline-block",
+  margin: "16px",
 });
 
 const SearchInput = styled(Input)({
-  width: "100%",
-  border: "none",
-  outline: "none",
-  background: "transparent",
+  backgroundColor: "#646464",
+  decoration: "none",
+  opacity: "0.5",
+  color: "#c2c2c2",
+  paddingLeft: "40px",
+  cursor: "pointer",
+  width: "500px",
+  borderRadius: "5px",
+  height: "40px",
+  position: "relative",
+  transition: "all 0.3s ease-in-out",
+  "&:focus": {
+    width: "700px",
+    borderRadius: "0px",
+    borderBottom: "none",
+    color: "transparent",
+    opacity: "0",
+  },
+  "&:hover": {
+    textDecoration: "none",
+    color: "transparent",
+  },
+  "& .MuiInput-underline:after": {
+    borderBottom: "none",
+  },
+  "& .MuiInputBase-input": {
+    "&:hover": {
+      textDecoration: "none",
+    },
+  },
 });
+
+const SearchIcon = styled(SearchRoundedIcon)({
+  color: "#9b9b9b",
+  fontSize: 24,
+  position: "absolute",
+  left: "12px",
+  top: "50%",
+  transform: "translateY(-50%)",
+});
+
+const ClearIconCustom = styled(ClearIcon)({
+  color: "#9b9b9b",
+  fontSize: 20,
+  position: "absolute",
+  right: "12px",
+  top: "50%",
+  transform: "translateY(-50%)",
+  cursor: "pointer",
+});
+
+
+
+const BackToPlaylist = ({ goBack }) => {
+  return (
+    <ArrowBackIosNewIcon
+      onClick={goBack}
+      style={{
+        color: "white",
+        cursor: "pointer",
+        position: "absolute",
+        top: "167px",
+        left: "20px",
+        marginRight: "20px",
+        zIndex: 1,
+      }}
+    />
+  );
+};
+
 
 const NewPlaylistContent = ({
   loading,
@@ -115,67 +221,61 @@ const NewPlaylistContent = ({
       searchTracks();
     }
   };
-  const BackToArtists = () => {
-    const navigate = useNavigate();
-
-    const goBack = () => {
-        navigate(-1);
-    };
-
-    return (
-        <ArrowBackIosNewIcon
-            onClick={goBack}
-            style={{
-                color: "white",
-                cursor: "pointer",
-                position: "absolute",
-                top: "150px",
-                left: "170px",
-                marginRight: "20px",
-                zIndex: 1,
-            }}
-        />
-    );
-};
-
+  
+  const handleClearSearch = () => {
+    setSearchTerm("");
+  };
 
   
-
   return (
     <Container>
       {loading ? (
-        <Typography variant="h5">Загрузка...</Typography>
+        <Typography variant="h5">Loading...</Typography>
       ) : (
         <Grid container spacing={2} style={{ width: "93%" }}>
           <Grid item xs={12}>
-            <Grid container alignItems="center" style={{marginBottom:"20px"}}>
-              <BackToArtists
-                style={{ height: "50px", width: "35px", marginLeft: "170px"}}
-              />
-                <PlaylistImage
-              src={playlist.imageUrl}
-              alt={playlist.name}
-              style={{ marginLeft: "40px" }}
+            <BackToPlaylist
+              goBack={goBack}
+              style={{ height: "50px", width: "25px" }}
             />
-                <Typography
-                variant="h1"
-                style={{                  
-                  fontWeight: "700",
-                  color: "white", 
-                  marginTop: "280px",
-                  marginLeft: "20px"
-                }}
-              >
-                {playlist.name}
-              </Typography>
-            </Grid>
-            <div style={{ marginTop: "20px", marginBottom: "20px", border: "1px solid white", borderRadius: "5px", background: "white", padding: "5px" }}>
-              <SearchInput
-                type="text"
-                value={searchTerm}
-                onChange={handleInputChange}
-                placeholder="Поиск треков"
+            <InfoContainer>
+              <PlaylistImage
+                src={playlist.imageUrl}
+                alt={playlist.name}
+                style={{ marginRight: "0px" }}
               />
+              <PlaylistDetails>
+                <Typography
+                  variant="h1"
+                  style={{
+                    marginTop: "220px",
+                    fontWeight: "700",
+                    color: "white",
+                  }}
+                >
+                  {playlist.name}
+                </Typography>
+                <PlaylistDescription>
+                  {playlist.description}
+                </PlaylistDescription>
+              </PlaylistDetails>
+            </InfoContainer>
+          </Grid>
+          <Grid item xs={12}>
+            <div style={{ marginTop: "20px" }}>
+              <SearchContainer>
+                <SearchInput
+                  type="text"
+                  value={searchTerm}
+                  onChange={handleInputChange}
+                  placeholder="Search tracks"
+                  style={{ color: "#FFFFFF" }}
+                />
+                <SearchIcon />
+                {searchTerm && (
+                  <ClearIconCustom onClick={handleClearSearch} />
+                )}
+              </SearchContainer>
             </div>
             {searchLoading ? (
               <CircularProgress style={{ marginTop: "20px" }} />
@@ -183,9 +283,12 @@ const NewPlaylistContent = ({
               <div>
                 {searchResults.map((track) => (
                   <>
-                  <TrackContainer key={track.id} container style={{marginTop:"0px"}}>
+                  <TrackContainer key={track.id} container>
                     <Grid item xs={2}>
-                      <TrackImage src={track.album.images[0].url} alt={track.name} />
+                      <TrackImage
+                        src={track.album.images[0].url}
+                        alt={track.name}
+                      />
                     </Grid>
                     <Grid item xs={6}>
                       <TrackInfo>
@@ -196,15 +299,17 @@ const NewPlaylistContent = ({
                     <Grid item xs={4}>
                       <TrackDetails>
                         <AlbumName>{track.album.name}</AlbumName>
+                        <AlbumDescription>
+                          {track.album.description}
+                        </AlbumDescription>
                       </TrackDetails>
                     </Grid>
                   </TrackContainer>
-                  <Divider style={{ margin: "10px", background: "#555" }} />
+                  <Divider style={{ margin: "15px 0", background: "#555" }} />
                   </>
                 ))}
                 
               </div>
-              
             )}
           </Grid>
         </Grid>

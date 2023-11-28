@@ -1,12 +1,23 @@
 const Playlist = require('../model/Playlist');
+const User = require('../model/User'); 
 
 const createPlaylist = async (req, res) => {
   try {
-    const { name, userId, imageUrl } = req.body;
-    const playlist = new Playlist({ name, userId, imageUrl });
+    const { name, description , imageUrl } = req.body;
+    const userId = req.body.userId; 
+
+    if (!userId) {
+      return res.status(400).json({ error: 'userId is required' });
+    }
+
+    const playlist = new Playlist({ name, description, userId, imageUrl });
     await playlist.save();
+
+    await User.findByIdAndUpdate(userId, { $push: { playlists: playlist._id } });
+
     res.status(201).json({ message: 'Playlist created successfully' });
   } catch (error) {
+    console.error('Error creating playlist:', error);
     res.status(500).json({ error: 'Unable to create playlist' });
   }
 };

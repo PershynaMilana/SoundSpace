@@ -162,19 +162,19 @@ const Search = () => {
     };
 
     const handleNextPlaylist = () => {
-        setPlaylistIndex((prevIndex) => prevIndex + 6);
+        setPlaylistIndex((prevIndex) => prevIndex + 7);
     };
 
     const handlePrevPlaylist = () => {
-        setPlaylistIndex((prevIndex) => Math.max(0, prevIndex - 6));
+        setPlaylistIndex((prevIndex) => Math.max(0, prevIndex - 7));
     };
 
     const handleNextAlbum = () => {
-        setAlbumIndex((prevIndex) => prevIndex + 6);
+        setAlbumIndex((prevIndex) => prevIndex + 7);
     };
 
     const handlePrevAlbum = () => {
-        setAlbumIndex((prevIndex) => Math.max(0, prevIndex - 6));
+        setAlbumIndex((prevIndex) => Math.max(0, prevIndex - 7));
     };
 
     useEffect(() => {
@@ -204,7 +204,7 @@ const Search = () => {
     }, [currentTrack, audioPlayerRef]);
 
     return (
-        <ContainerStyled>
+        <ContainerStyled style={{maxWidth: "1400px", width:"100%"}}>
             <Tabs
                 value={currentTab}
                 onChange={(event, newValue) => setCurrentTab(newValue)}
@@ -242,7 +242,7 @@ const Search = () => {
             {currentTab === 0 && query && (
                 <div
                     style={{
-                        fontWeight: "400",
+                        fontWeight: "500",
                         display: "flex",
                         flexWrap: "wrap",
                         color: "white",
@@ -253,7 +253,7 @@ const Search = () => {
                         <Typography
                             variant="h5"
                             gutterBottom
-                            style={{ color: "white", fontWeight: "400" }}
+                            style={{ color: "white", fontWeight: "600" }}
                         >
                             Лучший результат
                         </Typography>
@@ -474,19 +474,19 @@ const Search = () => {
                                         color: "white",
                                         marginTop: "25px",
                                         cursor:
-                                            playlistIndex + 6 >=
+                                            playlistIndex + 7 >=
                                             playlistResults.length
                                                 ? "not-allowed"
                                                 : "pointer",
                                         opacity:
-                                            playlistIndex + 6 >=
+                                            playlistIndex + 7 >=
                                             playlistResults.length
                                                 ? 0.5
                                                 : 1,
                                     }}
                                     onClick={handleNextPlaylist}
                                     disabled={
-                                        playlistIndex + 6 >=
+                                        playlistIndex + 7 >=
                                         playlistResults.length
                                     }
                                 >
@@ -509,7 +509,7 @@ const Search = () => {
                         ) : (
                             <div style={{ display: "flex", flexWrap: "wrap" }}>
                                 {playlistResults
-                                    .slice(playlistIndex, playlistIndex + 6)
+                                    .slice(playlistIndex, playlistIndex + 7)
                                     .map((release) => (
                                         <CardStyled
                                             key={release.id}
@@ -517,7 +517,7 @@ const Search = () => {
                                                 handlePlaylistClick(release.id)
                                             }
                                             style={{
-                                                flex: "0 0 calc(16.666% - 20px)",
+                                                flex: '0 0 calc(14.285% - 20px)',
                                                 margin: "10px",
                                                 backgroundColor: "#222222",
                                                 height: "220px",
@@ -602,19 +602,19 @@ const Search = () => {
                                         color: "white",
                                         marginTop: "25px",
                                         cursor:
-                                            albumIndex + 6 >=
+                                            albumIndex + 7 >=
                                             albumResults.length
                                                 ? "not-allowed"
                                                 : "pointer",
                                         opacity:
-                                            albumIndex + 6 >=
+                                            albumIndex + 7 >=
                                             albumResults.length
                                                 ? 0.5
                                                 : 1,
                                     }}
                                     onClick={handleNextAlbum}
                                     disabled={
-                                        albumIndex + 6 >= albumResults.length
+                                        albumIndex + 7 >= albumResults.length
                                     }
                                 >
                                     <ArrowForwardIosRoundedIcon />
@@ -636,7 +636,7 @@ const Search = () => {
                         ) : (
                             <div style={{ display: "flex", flexWrap: "wrap" }}>
                                 {albumResults
-                                    .slice(albumIndex, albumIndex + 6)
+                                    .slice(albumIndex, albumIndex + 7)
                                     .map(
                                         (album) =>
                                             album?.images?.length > 0 && (
@@ -648,7 +648,7 @@ const Search = () => {
                                                         )
                                                     }
                                                     style={{
-                                                        flex: "0 0 calc(16.666% - 20px)",
+                                                        flex: '0 0 calc(14.285% - 20px)',
                                                         margin: "10px",
                                                         backgroundColor:
                                                             "#222222",

@@ -4,6 +4,8 @@ import axios from "axios";
 import getToken from "../services/spotifyAuth";
 import AuthorContent from "../content/AuthorContent";
 import { usePlayer } from "../services/PlayerContext";
+import { useLikes } from "../services/LikesContext";
+
 const Author = () => {
     const { artistId } = useParams();
     const [artist, setArtist] = useState(null);
@@ -12,16 +14,21 @@ const Author = () => {
     const [currentTrack, setCurrentTrack] = useState(null);
     const [displayedTracks, setDisplayedTracks] = useState(5);
     const [expanded, setExpanded] = useState(false);
-    const navigate = useNavigate();
+    const { addToLikes } = useLikes(); 
     const [albums, setAlbums] = useState([]);
     const [artists, setArtists] = useState([]);
     const { setTrack } = usePlayer();
     const audioPlayerRef = useRef(null);
     const [selectedTab, setSelectedTab] = useState("albums");
+    const navigate = useNavigate();
 
     const handleTabChange = (event, newValue) => {
         setSelectedTab(newValue);
     };
+
+    const goBack = () => {
+        navigate(-1);
+      };
 
     const searchRelatedArtists = async (artistId, token) => {
         try {
@@ -199,10 +206,6 @@ const Author = () => {
         }
     };
 
-    const loadMoreTracks = () => {
-        setDisplayedTracks(displayedTracks + 5);
-    };
-
     const toggleTracks = () => {
         setExpanded(!expanded);
         if (expanded) {
@@ -229,6 +232,8 @@ const Author = () => {
             handleArtistClick={handleArtistClick}
             handleTabChange={handleTabChange}
             handleClick={handleClick}
+            goBack={goBack}
+            addToLikes={addToLikes} 
         />
     );
 };

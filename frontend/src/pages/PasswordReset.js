@@ -10,7 +10,7 @@ const PasswordReset = () => {
     const [isPasswordReset, setIsPasswordReset] = useState(false);
     const [passwordError, setPasswordError] = useState("");
     const [confirmPasswordError, setConfirmPasswordError] = useState("");
-
+    console.log(token);
     const handlePasswordChange = (e) => {
         setPassword(e.target.value);
         validatePassword(e.target.value);
@@ -41,11 +41,13 @@ const PasswordReset = () => {
     };
 
     const handleResetPassword = async () => {
+        console.log(token);
         if (passwordError || confirmPasswordError) {
             return;
         }
 
         try {
+            console.log(token);
             const response = await axios.post(
                 `http://localhost:8080/api/password-reset`,
                 {

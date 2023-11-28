@@ -1,13 +1,14 @@
 import { app } from "../services/fairbaseConfig";
 import { getFirestore, collection, getDocs, addDoc, deleteDoc, query, where } from 'firebase/firestore';
 import { createContext, useContext, useState, useEffect } from "react";
-
+import LikesNotification from "../components/LikesNotification";
 const db = getFirestore(app);
 
 const LikesContext = createContext();
 
 export const LikesProvider = ({ children }) => {
   const [likedTracks, setLikedTracks] = useState([]);
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -24,11 +25,18 @@ export const LikesProvider = ({ children }) => {
     fetchData();
   }, []);
 
+   const showNitification = (message) => {
+    setNotification(message);
+    setTimeout(() => {
+      setNotification(null);
+    },3000);
+   }
+
   const addToLikes = async (track) => {
     setLikedTracks((prevLikedTracks) => [...prevLikedTracks, track]);
-
     const tracksCollection = collection(db, "likedTracks");
     await addDoc(tracksCollection, track);
+    setNotification("Like added!");
   };
 
   const removeFromLikes = async (trackId) => {
@@ -48,6 +56,7 @@ export const LikesProvider = ({ children }) => {
   return (
     <LikesContext.Provider value={{ likedTracks, addToLikes, removeFromLikes }}>
       {children}
+      {notification && <LikesNotification message={notification} onClose={() => setNotification(null)}/>}
     </LikesContext.Provider>
   );
 };
