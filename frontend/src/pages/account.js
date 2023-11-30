@@ -138,15 +138,18 @@ function Account() {
       name: updatedName,
       email: updatedEmail,
     };
+
     if (day && month && year) {
       const monthIndex =
         new Date(Date.parse(`${month} 1, 2000`)).getMonth() + 1;
       const formattedDate = `${year}-${monthIndex}-${day}`;
       updatedFields.birthDate = formattedDate;
     }
+
     if (country) {
       updatedFields.country = country;
     }
+    
     if (isNameValid && isEmailValid && isDayValid && isYearValid) {
       axios
         .post("http://localhost:8080/api/update-profile", updatedFields, {
