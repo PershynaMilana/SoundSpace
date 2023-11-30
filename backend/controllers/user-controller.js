@@ -64,10 +64,27 @@ const login = async (req, res) => {
 
 const updateProfile = async (req, res, next) => {
   const userId = req.id;
-  const { name, email } = req.body;
+  const { name, email, birthDate, country } = req.body;
 
   try {
-    const user = await User.findByIdAndUpdate(userId, { name, email }, { new: true });
+    const updateFields = {
+      name,
+      email,
+    };
+
+    if (birthDate) {
+      updateFields.birthDate = birthDate;
+    }
+
+    if (country) {
+      updateFields.country = country;
+    }
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      updateFields,
+      { new: true }
+    );
 
     return res.status(200).json({ user });
   } catch (err) {
@@ -75,7 +92,6 @@ const updateProfile = async (req, res, next) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
-
 const getUser = async (req, res, next) => {
   const userId = req.id;
   let user;

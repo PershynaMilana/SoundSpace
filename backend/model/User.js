@@ -18,6 +18,16 @@ const userSchema = new Schema({
     required: true,
     minlength: 6,
   },
+  birthDate: {
+    type: String,
+    required: false,
+    default: '1900-01-01',
+  },
+  country: {
+    type: String,
+    required: false,
+    default: "Ukraine",
+  },
   playlists: [
     {
       type: mongoose.Types.ObjectId,

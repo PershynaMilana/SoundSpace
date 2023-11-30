@@ -265,6 +265,7 @@ const NewPlaylistContent = ({
             <div style={{ marginTop: "20px" }}>
               <SearchContainer>
                 <SearchInput
+                color="success"
                   type="text"
                   value={searchTerm}
                   onChange={handleInputChange}

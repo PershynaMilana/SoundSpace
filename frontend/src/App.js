@@ -10,7 +10,7 @@ import Signup from "./pages/Signup";
 import Home from "./pages/Home";
 import Search from "./pages/Search";
 import Library from "./components/Library";
-import Account from "./pages/account";
+import Account from "./pages/Account";
 import PasswordResetRequest from "./pages/PasswordResetRequest";
 import PasswordReset from "./pages/PasswordReset";
 import NewUserPlaylist from "./pages/NewUserPlaylist";

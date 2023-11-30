@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
-import {  Grid, Card, CardMedia, CardContent, Typography, IconButton} from "@mui/material";
+import {  Grid, Card, CardMedia, CardContent, Typography, IconButton, Divider} from "@mui/material";
 import { styled } from "@mui/system";
 import AddIcon from '@mui/icons-material/Add';
 import LibraryNav from "../components/LibraryNav";
@@ -126,7 +126,9 @@ const Sets = () => {
         <div className="library-nav">
           <LibraryNav />
         </div>
+
       </div>
+      <Divider style={{ marginBottom: "50px",marginRight:"40px", background: "#555" }} />
       <Grid container spacing={3}>
         <div style={{ position: 'relative', display: 'inline-block' }}>
           <IconButton

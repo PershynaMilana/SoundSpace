@@ -152,6 +152,47 @@ body {
 
 }
 
+.fieldspecial {
+    display: flex;
+
+
+}
+
+.fieldspecial .save {
+    color: black;
+    font-weight: bold;
+    background-color: #1DB954;
+    transition: all 0.3s ease;
+    cursor: pointer;
+
+    border: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+}
+
+.fieldspecial .cancel {
+    color: #afafaf;
+    font-weight: bold;
+    background-color: transparent;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+    padding: 10px 20px;
+    margin-right: 20px;
+    border-radius: 50px;
+}
+
+.fieldspecial .cancel:hover {
+    color: #afafaf;
+    font-weight: bold;
+    background-color: #333333;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+}
+
 .field button {
     color: black;
     font-weight: bold;
@@ -162,6 +203,10 @@ body {
 }
 
 .field button:hover {
+    background-color: #1DB954;
+}
+
+.fieldspecial button:hover {
     background-color: #1DB954;
 }
 
@@ -350,6 +395,24 @@ a.google span {
     transition: transform 0.3s ease-in-out;
 }
 
+
+.success-message {
+    background-color: #1DB954;
+    color: #fff;
+    padding: 15px 15px;
+    border-radius: 5px;
+    border: 1px solid #3b9b2a;
+    font-size: 16px;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+}
+
+.success-message:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease-in-out;
+}
+
 /* --- styles for player --- */
 
 .player-panel {
@@ -466,7 +529,7 @@ input[type=range] {
 /* --- scroll bar --- */
 ::-webkit-scrollbar {
     width: 7px;
-    background-color: #888;
+    background-color: #333333;
     border-radius: 6px;
 }
 
@@ -484,7 +547,15 @@ input[type=range] {
     transition: transform 0.3s ease;
 }
 
+.fieldspecial button {
+    transition: transform 0.3s ease;
+}
+
 .field button:hover {
+    transform: scale(1.05);
+}
+
+.fieldspecial button:hover {
     transform: scale(1.05);
 }
 
