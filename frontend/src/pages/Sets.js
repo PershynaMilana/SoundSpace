@@ -121,67 +121,67 @@ const Sets = () => {
   };
  
   return (
-    <div style={{ marginLeft: "40px" }}>
+    <div style={{ marginLeft: "40px", maxWidth: "1640px" }}>
       <div className="library-container">
         <div className="library-nav">
           <LibraryNav />
         </div>
-
       </div>
-      <Divider style={{ marginBottom: "50px",marginRight:"40px", background: "#555" }} />
+      <Divider style={{ marginBottom: "50px", marginRight: "40px", background: "#555" }} />
       <Grid container spacing={3}>
-        <div style={{ position: 'relative', display: 'inline-block' }}>
-          <IconButton
-            className="playlist-item"
-            onClick={() => setShowCreateModal(true)}
-            style={createPlaylistButtonStyle}
-          >
-            <AddIcon />
-          </IconButton>
-          {showCreateModal && (
-            <CreatePlaylistModal
-              open={showCreateModal}
-              onClose={() => setShowCreateModal(false)}
-              onCreatePlaylist={handleCreatePlaylist}
-            />
-          )}
-        </div>
-        <div>
-          <Grid container spacing={3} style={{ marginTop: '0px', marginLeft: '3px' }}>
-            {playlists.map((playlist) => (
-              <div
-                key={playlist._id}
-                onClick={() => handlePlaylistClick(playlist._id)}
+        <Grid item xs={12}>
+          <Grid container spacing={3} style={{ display: 'flex', flexWrap: 'wrap' }}>
+            <Grid item>
+              <IconButton
+                className="playlist-item"
+                onClick={() => setShowCreateModal(true)}
+                style={createPlaylistButtonStyle}
               >
-                <CardStyled
-                style={{
-                background:'#222222',
-                color:'white',  
-                width: "270px",
-                height: "280px",
-                margin: "10px",
-                alignItems: "center",}}>
-                  <CardMediaStyled
-                    image={playlist.imageUrl}
-                    title={playlist.name}
-                    description={playlist.description}
-                  />
-                  <CardContent>
-                    <Typography variant="h6" component="div" style={{ textAlign: "center" }}>
-                      {playlist.name}
-                    </Typography>
-                    <Typography variant="h6" component="div" style={{ textAlign: "center" }}>
-                      {playlist.description}
-                    </Typography>
-                  </CardContent>
-                </CardStyled>
-              </div>
+                <AddIcon />
+              </IconButton>
+              {showCreateModal && (
+                <CreatePlaylistModal
+                  open={showCreateModal}
+                  onClose={() => setShowCreateModal(false)}
+                  onCreatePlaylist={handleCreatePlaylist}
+                />
+              )}
+            </Grid>
+            {playlists.map((playlist) => (
+              <Grid key={playlist._id} item xs={12} sm={6} md={4} lg={3} style={{ maxWidth: "260px" }}>
+                <div onClick={() => handlePlaylistClick(playlist._id)}>
+                  <CardStyled
+                    style={{
+                      background: '#222222',
+                      color: 'white',
+                      width: "100%",
+                      height: "280px",
+                      margin: "10px",
+                      alignItems: "center",
+                    }}
+                  >
+                    <CardMediaStyled
+                      image={playlist.imageUrl}
+                      title={playlist.name}
+                      description={playlist.description}
+                    />
+                    <CardContent>
+                      <Typography variant="h6" component="div" style={{ textAlign: "center" }}>
+                        {playlist.name}
+                      </Typography>
+                      <Typography variant="h6" component="div" style={{ textAlign: "center" }}>
+                        {playlist.description}
+                      </Typography>
+                    </CardContent>
+                  </CardStyled>
+                </div>
+              </Grid>
             ))}
           </Grid>
-        </div>
+        </Grid>
       </Grid>
     </div>
   );
 };
- 
+
 export default Sets;

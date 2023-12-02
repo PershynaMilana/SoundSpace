@@ -1,15 +1,25 @@
-import React from "react";
+import React, { useEffect, useState } from 'react';
 import {
   Typography,
   Grid,
   styled,
   Input,
   CircularProgress,
-  Divider
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Divider,
 } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
+import PlayArrowIcon from "@mui/icons-material/PlayArrowRounded";
 import ClearIcon from "@mui/icons-material/Clear";
+import { app } from '../services/fairbaseConfig';
+import { getFirestore, collection, addDoc, getDocs } from 'firebase/firestore';
 
 const Container = styled("div")(({ theme }) => ({
   display: "flex",
@@ -18,7 +28,7 @@ const Container = styled("div")(({ theme }) => ({
   width: "100%",
   height: "100%",
   color: "white",
-  background: `linear-gradient(#0266b3 -70%, #1d1d1d, black)`,
+  background: `linear-gradient(#04009A -70%, #1d1d1d, black)`,
 }));
 
 const TrackContainer = styled(Grid)(({ theme }) => ({
@@ -41,9 +51,10 @@ const PlaylistImage = styled("img")({
   maxHeight: "300px",
   width: "100%",
   height: "100%",
-  marginLeft: "10px",
+  marginLeft: "40px",
   marginTop: "70px",
 });
+
 
 const InfoContainer = styled("div")(({ theme }) => ({
   display: "flex",
@@ -57,6 +68,23 @@ const InfoContainer = styled("div")(({ theme }) => ({
     marginTop: "20px",
     marginLeft: "0",
   },
+}));
+
+const TrackTable = styled(TableContainer)(({ theme }) => ({
+  width: "90%",
+  backgroundColor: "transparent",
+  boxShadow: "none",
+}));
+
+const CustomTableRow = styled(TableRow)({
+  "&:hover": {
+    backgroundColor: "#333",
+  },
+});
+
+const CustomTableCell = styled(TableCell)(({ theme }) => ({
+  color: "white",
+  borderBottom: "none",
 }));
 
 const PlaylistDetails = styled("div")(({ theme }) => ({
@@ -184,6 +212,17 @@ const ClearIconCustom = styled(ClearIcon)({
   cursor: "pointer",
 });
 
+const PlayIcon = styled(PlayArrowIcon)({
+  position: "absolute",
+  height: "25px",
+  width: "25px",
+  color: "white",
+  marginRight: "50px",
+  transform: "translate(-57%, -15%)",
+  cursor: "pointer",
+  visibility: "hidden",
+});
+
 
 
 const BackToPlaylist = ({ goBack }) => {
@@ -203,7 +242,6 @@ const BackToPlaylist = ({ goBack }) => {
   );
 };
 
-
 const NewPlaylistContent = ({
   loading,
   playlist,
@@ -213,7 +251,23 @@ const NewPlaylistContent = ({
   searchResults,
   searchLoading,
   searchTracks,
+  handleRowHover,
+  playPauseTrack
 }) => {
+  const [playlistTracks, setPlaylistTracks] = useState([]);
+
+  const fetchPlaylistTracks = async () => {
+    const db = getFirestore(app);
+    const tracksCollection = collection(db, 'playlistTracks');
+    const tracksSnapshot = await getDocs(tracksCollection);
+    const tracksData = tracksSnapshot.docs.map((doc) => doc.data());
+    setPlaylistTracks(tracksData);
+  };
+
+  useEffect(() => {
+    fetchPlaylistTracks();
+  }, []);
+
   const handleInputChange = (e) => {
     const term = e.target.value;
     setSearchTerm(term);
@@ -225,7 +279,26 @@ const NewPlaylistContent = ({
   const handleClearSearch = () => {
     setSearchTerm("");
   };
+ 
+  const handleAddTrack = async (track) => {
+    const db = getFirestore(app);
 
+    try {
+      await addDoc(collection(db, 'playlistTracks'), {
+        name: track.name,
+        artist: track.artists[0].name,
+        album: track.album.name,
+        imageUrl: track.album.images[0].url,
+      });
+      setPlaylistTracks(prevTracks => [...prevTracks, {
+        name: track.name,
+        artist: track.artists[0].name,
+        album: track.album.name,
+      }]);
+    } catch (error) {
+      console.error('Error adding track to Firestore:', error);
+    }
+  };
   
   return (
     <Container>
@@ -261,6 +334,77 @@ const NewPlaylistContent = ({
               </PlaylistDetails>
             </InfoContainer>
           </Grid>
+          <TrackTable component={Paper}>
+              <Table>
+                <TableHead style={{ borderBottom: "1px solid #333" }}>
+                  <TableRow>
+                  <CustomTableCell
+                    style={{
+                      fontSize: "14px",
+                      fontWeight: "700",
+                      color: "#b5b5b5",
+                    }}
+                  >
+                    Name
+                  </CustomTableCell>
+                  <CustomTableCell
+                    style={{
+                      fontSize: "14px",
+                      fontWeight: "700",
+                      color: "#b5b5b5",
+                      textAlign: "center",
+                    }}
+                  >
+                    Artist
+                  </CustomTableCell>
+                  <CustomTableCell
+                    style={{
+                      fontSize: "14px",
+                      fontWeight: "700",
+                      color: "#b5b5b5",
+                      textAlign: "center",
+                    }}
+                  >
+                    Album
+                  </CustomTableCell>
+                  <CustomTableCell
+                    style={{
+                      fontSize: "14px",
+                      fontWeight: "700",
+                      color: "#b5b5b5",
+                      textAlign: "center",
+                    }}
+                  >
+                    duration
+                  </CustomTableCell>
+                  </TableRow>
+                </TableHead>
+                  <br/>
+                  <TableBody>
+                  {playlistTracks.map((track, index) => (
+                    <CustomTableRow 
+                    key={track.id}
+          
+                    onClick={() => playPauseTrack(track)}
+                    >
+                      <CustomTableCell
+                      className="customTableCell"
+                      style={{
+                        borderRadius: "5px 0px 0px 5px",
+                        color: "#b5b5b5",
+                        padding: "0px",
+                      }}
+                      >
+                        {index + 1}
+                      </CustomTableCell>
+                      <CustomTableCell style={{textAlign:"center"}}>{track.name}</CustomTableCell>
+                      <CustomTableCell style={{textAlign:"center"}}>{track.artist}</CustomTableCell>
+                      <CustomTableCell style={{textAlign:"center"}}>{track.album}</CustomTableCell>
+                    </CustomTableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TrackTable>
           <Grid item xs={12}>
             <div style={{ marginTop: "20px" }}>
               <SearchContainer>
@@ -303,6 +447,9 @@ const NewPlaylistContent = ({
                         <AlbumDescription>
                           {track.album.description}
                         </AlbumDescription>
+                        <button onClick={() => handleAddTrack(track)}>
+                  Add to Playlist
+                </button>
                       </TrackDetails>
                     </Grid>
                   </TrackContainer>
@@ -318,5 +465,11 @@ const NewPlaylistContent = ({
     </Container>
   );
 };
+
+function msToTime(duration) {
+  const minutes = Math.floor(duration / 60000);
+  const seconds = ((duration % 60000) / 1000).toFixed(0);
+  return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+}
 
 export default NewPlaylistContent;

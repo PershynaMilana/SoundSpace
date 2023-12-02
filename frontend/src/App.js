@@ -11,6 +11,7 @@ import Home from "./pages/Home";
 import Search from "./pages/Search";
 import Library from "./components/Library";
 import Account from "./pages/Account";
+import Profile from "./pages/Profile";
 import PasswordResetRequest from "./pages/PasswordResetRequest";
 import PasswordReset from "./pages/PasswordReset";
 import NewUserPlaylist from "./pages/NewUserPlaylist";
@@ -46,6 +47,7 @@ function App() {
                         {<Route path="/home" element={<Home />} />}
                         <Route path="/search/:query" element={<Search />} />
                         <Route path="/search" element={<Search />} />
+                        <Route path="/profile" element={<Profile />} />
                         <Route path="/account" element={<Account />} />
                         <Route path="/section" element={<Section />} />
                         <Route path="/library" element={<Library />} />
