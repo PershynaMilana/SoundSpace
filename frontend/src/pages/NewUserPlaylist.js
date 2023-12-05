@@ -1,9 +1,10 @@
-// NewUserPlaylist.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import PlaylistContent from "../content/NewPlaylistContent";
 import getToken from "../services/spotifyAuth";
+import { usePlayer } from "../services/PlayerContext";
+import { useLikes } from "../services/LikesContext";
 
 const NewUserPlaylist = () => {
   const { playlistId } = useParams();
@@ -13,7 +14,34 @@ const NewUserPlaylist = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
+  const { setTrack, currentTrack } = usePlayer();
+  const [likedTracks, setLikedTracks] = useState([]);
+  const { addToLikes } = useLikes(); 
+  const audioPlayerRef = useRef(null);
   const navigate = useNavigate();
+
+  const playTrack = (track) => {
+    setTrack(track);
+  };
+
+  useEffect(() => {
+    if (audioPlayerRef && audioPlayerRef.current) {
+      audioPlayerRef.current.src = currentTrack?.preview_url || "";
+    }
+  }, [currentTrack, audioPlayerRef]);
+
+  const goBack = () => {
+    navigate(-1);
+  };
+
+  const handleRowHover = (index) => {
+    const playIcons = document.getElementsByClassName("playIcon");
+    const customTableCells = document.getElementsByClassName("customTableCell");
+    for (let i = 0; i < playIcons.length; i++) {
+      playIcons[i].style.visibility = i === index ? "visible" : "hidden";
+      customTableCells[i].style.visibility = i === index ? "hidden" : "visible";
+    }
+  };
 
   useEffect(() => {
     const fetchPlaylist = async () => {
@@ -48,9 +76,6 @@ const NewUserPlaylist = () => {
     fetchToken();
   }, [playlistId, token]);
 
-  const goBack = () => {
-    navigate(-1);
-  };
 
   const searchTracks = async () => {
     try {
@@ -82,12 +107,15 @@ const NewUserPlaylist = () => {
     <PlaylistContent
       loading={loading}
       playlist={playlist}
-      goBack={goBack}
       searchTerm={searchTerm}
-      setSearchTerm={setSearchTerm}
       searchResults={searchResults}
       searchLoading={searchLoading}
+      addToLikes={addToLikes} 
+      setSearchTerm={setSearchTerm}
       searchTracks={searchTracks}
+      handleRowHover={handleRowHover}
+      playPauseTrack={playTrack}
+      goBack={goBack}
     />
   );
 };

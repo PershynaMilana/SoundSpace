@@ -15,7 +15,7 @@ import {
   Paper,
   styled,
   TableContainer,
-  Grid
+  Grid,
 } from "@mui/material";
 
 const Container = styled("div")(({ theme }) => ({
@@ -66,18 +66,22 @@ const CustomTableCell = styled(TableCell)(({ theme }) => ({
 const LikeButton = styled("button")({
   background: "none",
   border: "none",
-  color: "white",
   cursor: "pointer",
+  color: "inherit",
+  textDecoration: "none",
+  "&:hover": {
+    textDecoration: "underline",
+    color: "#1DB954",
+  },
 });
 
 const PlayIcon = styled(PlayArrowIcon)({
-  position: "absolute",
+  position: "relative",
+  top: "30%",
+  left: "14%",
   height: "25px",
   width: "25px",
   color: "white",
-  marginRight: "50px",
-
-  transform: "translate(-57%, -15%)",
   cursor: "pointer",
   visibility: "hidden",
 });
@@ -99,15 +103,11 @@ const BackToLike = ({ goBack }) => {
   );
 };
 
-
-
-
 const Likes = () => {
   const { likedTracks, removeFromLikes } = useLikes();
   const { setTrack, currentTrack } = usePlayer();
   const audioPlayerRef = useRef(null);
   const navigate = useNavigate();
-
 
   const playTrack = (track) => {
     setTrack(track);
@@ -132,21 +132,30 @@ const Likes = () => {
     }
   };
 
-
   return (
     <Container>
       <Grid container spacing={2} style={{ width: "93%" }}>
-      <BackToLike goBack={goBack} style={{ height: "100px", width: "100px" }} />
-        <LikedTrackImage src={likeImage} alt="Liked Tracks" style={{ marginLeft: "40px" }}/>
+        <BackToLike
+          goBack={goBack}
+          style={{ height: "100px", width: "100px" }}
+        />
+        <LikedTrackImage
+          src={likeImage}
+          alt="Liked Tracks"
+          style={{ marginLeft: "40px" }}
+        />
         <InfoContainer>
-          <Typography variant="h1"
+          <Typography
+            variant="h1"
             style={{ marginTop: "170px", fontWeight: "700" }}
-          >Любимые треки</Typography>
+          >
+            Favorite tracks
+          </Typography>
         </InfoContainer>
       </Grid>
 
       {likedTracks.length === 0 ? (
-        <p>Список пуст</p>
+        <p>The list is empty</p>
       ) : (
         <TrackTable component={Paper}>
           <Table>
@@ -157,8 +166,11 @@ const Likes = () => {
                     fontSize: "14px",
                     fontWeight: "700",
                     color: "#b5b5b5",
+                    marginLeft: "50px",
                   }}
-                >#</CustomTableCell>
+                >
+                  <div style={{ marginLeft: "40px", fontSize: "14px" }}>#</div>
+                </CustomTableCell>
                 <CustomTableCell
                   style={{
                     fontSize: "14px",
@@ -166,7 +178,9 @@ const Likes = () => {
                     color: "#b5b5b5",
                     textAlign: "center",
                   }}
-                >Трек</CustomTableCell>
+                >
+                  Track
+                </CustomTableCell>
                 <CustomTableCell
                   style={{
                     fontSize: "14px",
@@ -174,7 +188,9 @@ const Likes = () => {
                     color: "#b5b5b5",
                     textAlign: "center",
                   }}
-                >Время</CustomTableCell>
+                >
+                  Album
+                </CustomTableCell>
                 <CustomTableCell
                   style={{
                     fontSize: "14px",
@@ -182,40 +198,76 @@ const Likes = () => {
                     color: "#b5b5b5",
                     textAlign: "center",
                   }}
-                >Действия</CustomTableCell>
+                >
+                  Duration
+                </CustomTableCell>
+                <CustomTableCell
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: "700",
+                    color: "#b5b5b5",
+                    textAlign: "center",
+                  }}
+                >
+                  Actions
+                </CustomTableCell>
               </TableRow>
             </TableHead>
             <br />
             <TableBody>
               {likedTracks.map((track, index) => (
-                <CustomTableRow 
-                key={track.id}
-                onMouseEnter={() => handleRowHover(index)}
-                onMouseLeave={() => handleRowHover(-1)}
-                onClick={() => playTrack(track)}
+                <CustomTableRow
+                  key={track.id}
+                  className="trackRow"
+                  onMouseEnter={() => handleRowHover(index)}
+                  onMouseLeave={() => handleRowHover(-1)}
+                  onClick={() => playTrack(track)}
                 >
                   <CustomTableCell
+                    style={{
+                      borderRadius: "5px 0px 0px 5px",
+                      color: "#b5b5b5",
+                      padding: "0px",
+                      marginLeft: "50px",
+                      position: "relative",
+                    }}
+                  >
+                    <div
                       className="customTableCell"
                       style={{
-                        borderRadius: "5px 0px 0px 5px",
-                        color: "#b5b5b5",
-                        padding: "0px",
+                        marginLeft: "50px",
+                        top: "30%",
+                        position: "absolute",
                       }}
                     >
                       {index + 1}
-                      <PlayIcon
-                        className="playIcon"
-                        style={{
-                          marginRight: "80px",
-                          padding: "0px",
-                        }}
-                      />
-                    </CustomTableCell>
-                  <CustomTableCell style={{textAlign:"center"}}>{track.name}</CustomTableCell>
-                  <CustomTableCell style={{textAlign:"center"}}>{msToTime(track.duration_ms)}</CustomTableCell>
-                  <CustomTableCell style={{textAlign:"center"}}>
+                    </div>
+                    <PlayIcon
+                      className="playIcon"
+                      style={{
+                        marginRight: "60px",
+                        padding: "0px",
+                        position: "absolute",
+                      }}
+                    />
+                  </CustomTableCell>
+                  <CustomTableCell style={{ textAlign: "center" }}>
+                    {track.name}
+                  </CustomTableCell>
+                  <CustomTableCell style={{ textAlign: "center" }}>
+                    {track.album.name}
+                  </CustomTableCell>
+                  <CustomTableCell style={{ textAlign: "center" }}>
+                    {msToTime(track.duration_ms)}
+                  </CustomTableCell>
+                  <CustomTableCell
+                    style={{
+                      textAlign: "center",
+                      borderRadius: "0px 5px 5px 0px",
+                    }}
+                  >
                     <LikeButton onClick={() => removeFromLikes(track.id)}>
-                      Удалить из любимых
+                      Delete from likes
                     </LikeButton>
                   </CustomTableCell>
                 </CustomTableRow>

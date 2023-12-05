@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef} from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import getToken from "../services/spotifyAuth";
@@ -14,7 +14,7 @@ const Author = () => {
     const [currentTrack, setCurrentTrack] = useState(null);
     const [displayedTracks, setDisplayedTracks] = useState(5);
     const [expanded, setExpanded] = useState(false);
-    const { addToLikes } = useLikes(); 
+    const { addToLikes } = useLikes();
     const [albums, setAlbums] = useState([]);
     const [artists, setArtists] = useState([]);
     const { setTrack } = usePlayer();
@@ -28,7 +28,7 @@ const Author = () => {
 
     const goBack = () => {
         navigate(-1);
-      };
+    };
 
     const searchRelatedArtists = async (artistId, token) => {
         try {
@@ -76,10 +76,7 @@ const Author = () => {
                 return [];
             }
         } catch (error) {
-            console.error(
-                "Ошибка при получении альбомов по ID артиста:",
-                error
-            );
+            console.error("Ошибка при получении альбомов по ID артиста:", error);
             return [];
         }
     };
@@ -126,10 +123,7 @@ const Author = () => {
                 setSelectedTab(tabType);
 
                 if (tabType === "albums" && artistId) {
-                    const fetchedAlbums = await searchAlbumsByArtistId(
-                        artistId,
-                        token
-                    );
+                    const fetchedAlbums = await searchAlbumsByArtistId(artistId, token);
                     setAlbums(fetchedAlbums);
                 } else if (tabType === "artists" && artistId) {
                     const fetchedRelatedArtists = await searchRelatedArtists(
@@ -153,10 +147,7 @@ const Author = () => {
                 setTopTracks(artistTopTracks);
                 setLoading(false);
                 if (token && artistId && selectedTab === "albums") {
-                    const fetchedAlbums = await searchAlbumsByArtistId(
-                        artistId,
-                        token
-                    );
+                    const fetchedAlbums = await searchAlbumsByArtistId(artistId, token);
                     setAlbums(fetchedAlbums);
                     const fetchedRelatedArtists = await searchRelatedArtists(
                         artistId,
@@ -197,12 +188,10 @@ const Author = () => {
 
     const handleRowHover = (index) => {
         const playIcons = document.getElementsByClassName("playIcon");
-        const customTableCells =
-            document.getElementsByClassName("customTableCell");
+        const customTableCells = document.getElementsByClassName("customTableCell");
         for (let i = 0; i < playIcons.length; i++) {
             playIcons[i].style.visibility = i === index ? "visible" : "hidden";
-            customTableCells[i].style.visibility =
-                i === index ? "hidden" : "visible";
+            customTableCells[i].style.visibility = i === index ? "hidden" : "visible";
         }
     };
 
@@ -233,7 +222,7 @@ const Author = () => {
             handleTabChange={handleTabChange}
             handleClick={handleClick}
             goBack={goBack}
-            addToLikes={addToLikes} 
+            addToLikes={addToLikes}
         />
     );
 };

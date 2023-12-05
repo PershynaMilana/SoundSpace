@@ -39,11 +39,11 @@ const CardMediaStyled = styled(CardMedia)(({ theme }) => ({
 }));
 
 const SectionContainer = styled('div')({
-  width: '100%', // Для занимания всей ширины контейнера
+  width: '100%',
   display: 'flex',
   flexWrap: 'wrap',
   justifyContent: 'flex-start',
-  margin: '0 auto', // Для центрирования содержимого
+  margin: '0 auto',
   '& > *': {
     flex: '0 0 calc(14.285% - 20px)',
     margin: '10px',
@@ -86,7 +86,7 @@ const HomeContent = ({
           marginTop: "25px",
         }}
       >
-        Популярные плейлисты
+       Popular playlists
       </Typography>
       <div
         style={{
@@ -123,7 +123,7 @@ const HomeContent = ({
             },
           }}
         >
-          Показать все
+        Show all
         </Link>
         <IconButton
           style={{
@@ -205,7 +205,7 @@ const HomeContent = ({
           marginTop: "25px",
         }}
       >
-        Новые релизы
+       New releases
       </Typography>
       <div
         style={{
@@ -242,7 +242,7 @@ const HomeContent = ({
             },
           }}
         >
-          Показать все
+         Show all
         </Link>
         <IconButton
           style={{
@@ -324,7 +324,7 @@ const HomeContent = ({
           marginTop: "25px",
         }}
       >
-        Популярные артисты
+      Popular artists      
       </Typography>
       <div
         style={{
@@ -361,7 +361,7 @@ const HomeContent = ({
             },
           }}
         >
-          Показать все
+          Show all
         </Link>
         <IconButton
           style={{

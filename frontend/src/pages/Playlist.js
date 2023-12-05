@@ -1,7 +1,6 @@
-// Playlist.js
+import axios from "axios";
 import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
 import { clientId, clientSecret } from "../services/spotifyAuth";
 import PlaylistContent from "../content/PlaylistContent";
 import { usePlayer } from "../services/PlayerContext";
@@ -129,10 +128,10 @@ const Playlist = () => {
       loading={loading}
       playlist={playlist}
       tracks={tracks}
+      addToLikes={addToLikes} 
       handleRowHover={handleRowHover}
       playPauseTrack={playTrack}
       goBack={goBack}
-      addToLikes={addToLikes} 
     />
   );
 };

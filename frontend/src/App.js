@@ -10,12 +10,11 @@ import Signup from "./pages/Signup";
 import Home from "./pages/Home";
 import Search from "./pages/Search";
 import Library from "./components/Library";
-import Account from "./pages/Account";
+import Account from "./pages/account";
 import Profile from "./pages/Profile";
 import PasswordResetRequest from "./pages/PasswordResetRequest";
 import PasswordReset from "./pages/PasswordReset";
 import NewUserPlaylist from "./pages/NewUserPlaylist";
-import Welcome from "./pages/Welcome";
 import Author from "./pages/Author";
 import Playlist from "./pages/Playlist";
 import Section from "./pages/Section";
@@ -56,7 +55,7 @@ function App() {
                         <Route path="/album/:albumId" element={<Albums />} />
                         <Route path="/library/likes" element={<Likes />} />
                         <Route path="/library/overview" element={<Overview />} />
-                        {isLoggedIn && <Route path="/user" element={<Welcome />} />}
+                
 
                         <Route
                             path="/reset-password"

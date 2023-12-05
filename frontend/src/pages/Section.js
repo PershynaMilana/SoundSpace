@@ -22,14 +22,14 @@ const CardStyled = styled(Card)(({ theme }) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    textAlign:"center",
+    textAlign: "center",
     height: "100%",
     transition: "transform 0.2s",
     flex: "1 1 auto",
     "&:hover": {
-      transform: "scale(1.05)",
+        transform: "scale(1.05)",
     },
-  }));
+}));
 
 const CardMediaStyled = styled(CardMedia)(({ theme }) => ({
     width: "100%",
@@ -100,25 +100,17 @@ const Section = () => {
         navigate(`/playlist/${playlistId}`);
     };
 
-
     return (
         <ContainerStyled maxWidth="lg">
             <Typography variant="h4" color={"white"} gutterBottom>
-                Все плейлисты
+                All playlists
             </Typography>
             {loading ? (
                 <CircularProgress />
             ) : (
                 <Grid container spacing={3}>
                     {sectionPlaylists.map((playlist) => (
-                        <Grid
-                            item
-                            key={playlist.id}
-                            xs={12}
-                            sm={6}
-                            md={4}
-                            lg={3}
-                        >
+                        <Grid item key={playlist.id} xs={12} sm={6} md={4} lg={3}>
                             <CardStyled
                                 key={playlist.id}
                                 style={{
@@ -135,11 +127,11 @@ const Section = () => {
                                     image={playlist.images[0].url}
                                     title={playlist.name}
                                 />
-                               <CardContent>
-                                <Typography variant="h6" component="div">
-                                    {playlist.name}
-                                </Typography>
-                            </CardContent>
+                                <CardContent>
+                                    <Typography variant="h6" component="div">
+                                        {playlist.name}
+                                    </Typography>
+                                </CardContent>
                             </CardStyled>
                         </Grid>
                     ))}

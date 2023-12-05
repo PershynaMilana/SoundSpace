@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams,useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { clientId, clientSecret } from "../services/spotifyAuth";
 import AlbumContent from "../content/AlbumContent";
 import { usePlayer } from "../services/PlayerContext";
 import { useLikes } from "../services/LikesContext";
-
 
 const Album = () => {
   const { albumId } = useParams();
@@ -13,7 +12,7 @@ const Album = () => {
   const [tracks, setTracks] = useState([]);
   const [loading, setLoading] = useState(true);
   const { setTrack, currentTrack } = usePlayer();
-  const { addToLikes } = useLikes(); 
+  const { addToLikes } = useLikes();
   const audioPlayerRef = useRef(null);
   const navigate = useNavigate();
 
@@ -36,7 +35,7 @@ const Album = () => {
     const customTableCells = document.getElementsByClassName("customTableCell");
     for (let i = 0; i < playIcons.length; i++) {
       playIcons[i].style.visibility = i === index ? "visible" : "hidden";
-      customTableCells[i].style.visibility = i === index ? "hidden" : "visible";
+      customTableCells[i].style.index = i === index ? "hidden" : "visible";
     }
   };
 
@@ -127,10 +126,9 @@ const Album = () => {
       handleRowHover={handleRowHover}
       playPauseTrack={playTrack}
       goBack={goBack}
-      addToLikes={addToLikes} 
+      addToLikes={addToLikes}
     />
   );
 };
-
 
 export default Album;

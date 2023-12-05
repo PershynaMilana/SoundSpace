@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Typography,
   Grid,
@@ -17,9 +17,19 @@ import {
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import PlayArrowIcon from "@mui/icons-material/PlayArrowRounded";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 import ClearIcon from "@mui/icons-material/Clear";
-import { app } from '../services/fairbaseConfig';
-import { getFirestore, collection, addDoc, getDocs } from 'firebase/firestore';
+import { app } from "../services/fairbaseConfig";
+import CustomButton from "../components/CustomButton";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where,
+  deleteDoc,
+} from "firebase/firestore";
 
 const Container = styled("div")(({ theme }) => ({
   display: "flex",
@@ -43,6 +53,7 @@ const TrackContainer = styled(Grid)(({ theme }) => ({
   width: "100%",
   height: "100%",
   maxHeight: "70px",
+  position: "relative",
 }));
 
 const PlaylistImage = styled("img")({
@@ -54,7 +65,6 @@ const PlaylistImage = styled("img")({
   marginLeft: "40px",
   marginTop: "70px",
 });
-
 
 const InfoContainer = styled("div")(({ theme }) => ({
   display: "flex",
@@ -213,17 +223,27 @@ const ClearIconCustom = styled(ClearIcon)({
 });
 
 const PlayIcon = styled(PlayArrowIcon)({
-  position: "absolute",
+  position: "relative",
+  top: "30%",
+  left: "14%",
   height: "25px",
   width: "25px",
   color: "white",
-  marginRight: "50px",
-  transform: "translate(-57%, -15%)",
   cursor: "pointer",
   visibility: "hidden",
 });
 
-
+const LikeButton = styled("button")({
+  background: "none",
+  border: "none",
+  cursor: "pointer",
+  color: "inherit",
+  textDecoration: "none",
+  "&:hover": {
+    textDecoration: "underline",
+    color: "#1DB954",
+  },
+});
 
 const BackToPlaylist = ({ goBack }) => {
   return (
@@ -252,13 +272,16 @@ const NewPlaylistContent = ({
   searchLoading,
   searchTracks,
   handleRowHover,
-  playPauseTrack
+  playPauseTrack,
+  addToLikes,
 }) => {
+  const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [playlistTracks, setPlaylistTracks] = useState([]);
+  const [likedTracks, setLikedTracks] = useState([]);
 
   const fetchPlaylistTracks = async () => {
     const db = getFirestore(app);
-    const tracksCollection = collection(db, 'playlistTracks');
+    const tracksCollection = collection(db, "playlistTracks");
     const tracksSnapshot = await getDocs(tracksCollection);
     const tracksData = tracksSnapshot.docs.map((doc) => doc.data());
     setPlaylistTracks(tracksData);
@@ -275,38 +298,53 @@ const NewPlaylistContent = ({
       searchTracks();
     }
   };
-  
+
   const handleClearSearch = () => {
     setSearchTerm("");
   };
- 
+
   const handleAddTrack = async (track) => {
     const db = getFirestore(app);
+    setPlaylistTracks((prevPlaylistTracks) => [...prevPlaylistTracks, track]);
+    const tracksCollection = collection(db, "playlistTracks");
+    await addDoc(tracksCollection, track);
+  };
 
-    try {
-      await addDoc(collection(db, 'playlistTracks'), {
-        name: track.name,
-        artist: track.artists[0].name,
-        album: track.album.name,
-        imageUrl: track.album.images[0].url,
-      });
-      setPlaylistTracks(prevTracks => [...prevTracks, {
-        name: track.name,
-        artist: track.artists[0].name,
-        album: track.album.name,
-      }]);
-    } catch (error) {
-      console.error('Error adding track to Firestore:', error);
+  const removeFromPlaylist = async (trackId) => {
+    const db = getFirestore(app);
+    setPlaylistTracks((prevLikedTracks) =>
+      prevLikedTracks.filter((likedTrack) => likedTrack.id !== trackId)
+    );
+    const tracksCollection = collection(db, "playlistTracks");
+    const q = query(tracksCollection, where("id", "==", trackId));
+    const querySnapshot = await getDocs(q);
+
+    querySnapshot.forEach(async (doc) => {
+      await deleteDoc(doc.ref);
+    });
+  };
+
+  const handleLikeClick = (e, track) => {
+    e.stopPropagation();
+    track.isLiked = !track.isLiked;
+
+    if (track.isLiked) {
+      setLikedTracks((prevLikedTracks) => [...prevLikedTracks, track]);
+      addToLikes(track);
+    } else {
+      setLikedTracks((prevLikedTracks) =>
+        prevLikedTracks.filter((likedTrack) => likedTrack.id !== track.id)
+      );
     }
   };
-  
+
   return (
     <Container>
       {loading ? (
         <Typography variant="h5">Loading...</Typography>
       ) : (
-        <Grid container spacing={2} style={{ width: "93%" }}>
-          <Grid item xs={12}>
+        <>
+          <Grid container spacing={2} style={{ width: "93%" }}>
             <BackToPlaylist
               goBack={goBack}
               style={{ height: "50px", width: "25px" }}
@@ -315,7 +353,7 @@ const NewPlaylistContent = ({
               <PlaylistImage
                 src={playlist.imageUrl}
                 alt={playlist.name}
-                style={{ marginRight: "0px" }}
+                style={{ marginLeft: "40px" }}
               />
               <PlaylistDetails>
                 <Typography
@@ -335,17 +373,20 @@ const NewPlaylistContent = ({
             </InfoContainer>
           </Grid>
           <TrackTable component={Paper}>
-              <Table>
-                <TableHead style={{ borderBottom: "1px solid #333" }}>
-                  <TableRow>
+            <Table>
+              <TableHead style={{ borderBottom: "1px solid #333" }}>
+                <TableRow>
                   <CustomTableCell
                     style={{
                       fontSize: "14px",
                       fontWeight: "700",
                       color: "#b5b5b5",
+                      marginLeft: "50px",
                     }}
                   >
-                    Name
+                    <div style={{ marginLeft: "40px", fontSize: "14px" }}>
+                      #
+                    </div>
                   </CustomTableCell>
                   <CustomTableCell
                     style={{
@@ -355,7 +396,7 @@ const NewPlaylistContent = ({
                       textAlign: "center",
                     }}
                   >
-                    Artist
+                    Track
                   </CustomTableCell>
                   <CustomTableCell
                     style={{
@@ -375,41 +416,126 @@ const NewPlaylistContent = ({
                       textAlign: "center",
                     }}
                   >
-                    duration
+                    Duration
                   </CustomTableCell>
-                  </TableRow>
-                </TableHead>
-                  <br/>
-                  <TableBody>
-                  {playlistTracks.map((track, index) => (
-                    <CustomTableRow 
+                  <CustomTableCell
+                    style={{
+                      fontSize: "14px",
+                      fontWeight: "700",
+                      color: "#b5b5b5",
+                      textAlign: "center",
+                    }}
+                  >
+                    Like
+                  </CustomTableCell>
+                  <CustomTableCell
+                    style={{
+                      fontSize: "14px",
+                      fontWeight: "700",
+                      color: "#b5b5b5",
+                      textAlign: "center",
+                    }}
+                  >
+                    Actions
+                  </CustomTableCell>
+                </TableRow>
+              </TableHead>
+              <div style={{ height: "20px" }}></div>
+              <TableBody>
+                {playlistTracks.map((track, index) => (
+                  <CustomTableRow
                     key={track.id}
-          
+                    onMouseEnter={() => handleRowHover(index)}
+                    onMouseLeave={() => handleRowHover(-1)}
                     onClick={() => playPauseTrack(track)}
-                    >
-                      <CustomTableCell
-                      className="customTableCell"
+                  >
+                    <CustomTableCell
                       style={{
                         borderRadius: "5px 0px 0px 5px",
                         color: "#b5b5b5",
                         padding: "0px",
+                        marginLeft: "50px",
+                        position: "relative",
                       }}
+                    >
+                      <div
+                        className="customTableCell"
+                        style={{
+                          marginLeft: "50px",
+                          top: "30%",
+                          position: "absolute",
+                        }}
                       >
                         {index + 1}
-                      </CustomTableCell>
-                      <CustomTableCell style={{textAlign:"center"}}>{track.name}</CustomTableCell>
-                      <CustomTableCell style={{textAlign:"center"}}>{track.artist}</CustomTableCell>
-                      <CustomTableCell style={{textAlign:"center"}}>{track.album}</CustomTableCell>
-                    </CustomTableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TrackTable>
-          <Grid item xs={12}>
-            <div style={{ marginTop: "20px" }}>
+                      </div>
+                      <PlayIcon
+                        className="playIcon"
+                        style={{
+                          marginRight: "60px",
+                          padding: "0px",
+                          position: "absolute",
+                        }}
+                      />
+                    </CustomTableCell>
+                    <CustomTableCell style={{ textAlign: "center" }}>
+                      {track.name}
+                    </CustomTableCell>
+                    <CustomTableCell style={{ textAlign: "center" }}>
+                      {track.album.name}
+                    </CustomTableCell>
+                    <CustomTableCell style={{ textAlign: "center" }}>
+                      {msToTime(track.duration_ms)}
+                    </CustomTableCell>
+                    <CustomTableCell style={{ textAlign: "center" }}>
+                      <FavoriteIcon
+                        style={{
+                          color: likedTracks.some(
+                            (likedTrack) => likedTrack.id === track.id
+                          )
+                            ? "red"
+                            : "white",
+                          cursor: "pointer",
+                        }}
+                        onClick={(e) => handleLikeClick(e, track)}
+                      />
+                    </CustomTableCell>
+                    <CustomTableCell
+                      style={{
+                        textAlign: "center",
+                        borderRadius: "0px 5px 5px 0px",
+                      }}
+                    >
+                      <LikeButton onClick={() => removeFromPlaylist(track.id)}>
+                        Delete from playlist
+                      </LikeButton>
+                    </CustomTableCell>
+                  </CustomTableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TrackTable>
+
+          <Grid container spacing={0}>
+            <div
+              style={{
+                marginTop: "20px",
+                display: "flex",
+                alignItems: "center",
+                color: "white",
+                cursor: "pointer",
+                marginLeft: "auto",
+                marginRight: "80px",
+              }}
+              onClick={() => setIsSearchVisible(!isSearchVisible)}
+            >
+              {isSearchVisible ? <>Close</> : "More"}
+            </div>
+          </Grid>
+          <Grid container spacing={2} style={{ width: "93%" }}>
+            {isSearchVisible && (
               <SearchContainer>
                 <SearchInput
-                color="success"
+                  color="success"
                   type="text"
                   value={searchTerm}
                   onChange={handleInputChange}
@@ -417,56 +543,87 @@ const NewPlaylistContent = ({
                   style={{ color: "#FFFFFF" }}
                 />
                 <SearchIcon />
-                {searchTerm && (
-                  <ClearIconCustom onClick={handleClearSearch} />
-                )}
+                {searchTerm && <ClearIconCustom onClick={handleClearSearch} />}
               </SearchContainer>
-            </div>
-            {searchLoading ? (
-              <CircularProgress style={{ marginTop: "20px" }} />
-            ) : (
-              <div>
-                {searchResults.map((track) => (
-                  <>
-                  <TrackContainer key={track.id} container>
-                    <Grid item xs={2}>
-                      <TrackImage
-                        src={track.album.images[0].url}
-                        alt={track.name}
-                      />
-                    </Grid>
-                    <Grid item xs={6}>
-                      <TrackInfo>
-                        <TrackName>{track.name}</TrackName>
-                        <ArtistName>{track.artists[0].name}</ArtistName>
-                      </TrackInfo>
-                    </Grid>
-                    <Grid item xs={4}>
-                      <TrackDetails>
-                        <AlbumName>{track.album.name}</AlbumName>
-                        <AlbumDescription>
-                          {track.album.description}
-                        </AlbumDescription>
-                        <button onClick={() => handleAddTrack(track)}>
-                  Add to Playlist
-                </button>
-                      </TrackDetails>
-                    </Grid>
-                  </TrackContainer>
-                  <Divider style={{ margin: "15px 0", background: "#555" }} />
-                  </>
-                ))}
-                
-              </div>
             )}
           </Grid>
-        </Grid>
+          {searchLoading ? (
+            <CircularProgress style={{ marginTop: "20px" }} />
+          ) : (
+            <TableBody style={{ width: "93%", paddingLeft: "20px" }}>
+              {searchResults.map((track, index) => (
+                <>
+                  <TrackTable component={Paper} style={{ width: "100%" }}>
+                    <Table style={{ tableLayout: "fixed" }}>
+                      <TableBody style={{ width: "100%" }}>
+                        <CustomTableRow
+                          style={{ width: "170%", display: "table-row" }}
+                          key={track.id}
+                          className="trackRow"
+                          onMouseEnter={() => handleRowHover(index)}
+                          onMouseLeave={() => handleRowHover(-1)}
+                          onClick={() => playPauseTrack(track)}
+                        >
+                          <CustomTableCell
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              marginLeft: "30px",
+                            }}
+                          >
+                            <TrackImage
+                              src={track.album.images[0].url}
+                              title={track.name}
+                              style={{ marginRight: "8px" }}
+                            />
+                            <div>
+                              <div
+                                style={{ fontSize: "16px", marginTop: "4px" }}
+                              >
+                                {track.name}
+                              </div>
+                              <div
+                                style={{ color: "#afafaf", fontSize: "14px" }}
+                              >
+                                {track.artists[0].name}
+                              </div>
+                            </div>
+                          </CustomTableCell>
+
+                          <CustomTableCell style={{ paddingLeft: "300px" }}>
+                            <AlbumName>{track.album.name}</AlbumName>
+                          </CustomTableCell>
+
+                          <CustomTableCell
+                            style={{
+                              paddingLeft: "300px",
+                              marginRight: "200px",
+                            }}
+                          >
+                            <CustomButton onClick={() => handleAddTrack(track)}>
+  Add to Playlist
+</CustomButton>
+                          </CustomTableCell>
+                        </CustomTableRow>
+                      </TableBody>
+                    </Table>
+                  </TrackTable>
+
+                  <Divider style={{ margin: "15px 0", background: "#555" }} />
+                </>
+              ))}
+            </TableBody>
+          )}
+        </>
       )}
     </Container>
   );
 };
 
 function msToTime(duration) {
+  if (isNaN(duration) || duration === null || duration === undefined) {
+    return "00:00";
+  }
   const minutes = Math.floor(duration / 60000);
   const seconds = ((duration % 60000) / 1000).toFixed(0);
   return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;

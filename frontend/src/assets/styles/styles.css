@@ -13,6 +13,10 @@ body {
     font-family: 'Lato', sans-serif;
 }
 
+.trackRow:hover .customTableCell:first-child {
+    opacity: 0;
+}
+
 .labels-inputs {
     font-size: 15px;
     font-weight: 600;

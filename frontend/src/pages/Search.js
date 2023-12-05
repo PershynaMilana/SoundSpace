@@ -233,10 +233,10 @@ const Search = () => {
                     },
                 }}
             >
-                <Tab label="Контент страницы" style={{ color: "white",}} />
-                <Tab label="Плейлисты исполнителя" style={{ color: "white",}} />
-                <Tab label="Альбомы исполнителя" style={{ color: "white",}} />
-                <Tab label="Треки исполнителя" style={{ color: "white",}} />
+                <Tab label="Page content" style={{ color: "white",}} />
+                <Tab label="Artist playlists" style={{ color: "white",}} />
+                <Tab label="Artist albums" style={{ color: "white",}} />
+                <Tab label="Artist tracks" style={{ color: "white",}} />
             </Tabs>
             <Divider style={{ margin: "15px 0", background: "#555" }} />
             {currentTab === 0 && query && (
@@ -255,7 +255,7 @@ const Search = () => {
                             gutterBottom
                             style={{ color: "white", fontWeight: "600" }}
                         >
-                            Лучший результат
+                            Best result
                         </Typography>
                         {artistResults.map((artist) => (
                             <div
@@ -351,7 +351,7 @@ const Search = () => {
                                                         fontWeight: "700",
                                                     }}
                                                 >
-                                                    Исполнитель
+                                                    Artist
                                                 </Typography>
                                             </div>
                                         </div>
@@ -371,7 +371,7 @@ const Search = () => {
                                 fontWeight: "600",
                             }}
                         >
-                            Треки
+                            Tracks
                         </Typography>
                         <ul
                             className="track-list"
@@ -448,7 +448,7 @@ const Search = () => {
                                     marginTop: "30px",
                                 }}
                             >
-                                Плейлисты
+                                Playlists
                             </Typography>
                             <div
                                 style={{
@@ -576,7 +576,7 @@ const Search = () => {
                                     marginTop: "30px",
                                 }}
                             >
-                                Альбомы
+                                Albums
                             </Typography>
                             <div
                                 style={{

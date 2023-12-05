@@ -37,7 +37,7 @@ const PlaylistTab = ({ playlistResults, handlePlaylistClick }) => (
         marginTop: "30px",
       }}
     >
-      Плейлисты
+      Playlists
     </Typography>
 
     <div

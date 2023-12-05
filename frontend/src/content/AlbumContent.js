@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import PlayArrowIcon from "@mui/icons-material/PlayArrowRounded";
@@ -16,7 +15,6 @@ import {
   Grid,
   styled,
 } from "@mui/material";
-
 
 const Container = styled("div")(({ theme }) => ({
   display: "flex",
@@ -64,12 +62,12 @@ const CustomTableCell = styled(TableCell)(({ theme }) => ({
 }));
 
 const PlayIcon = styled(PlayArrowIcon)({
-  position: "absolute",
+  position: "relative",
+  top: "30%",
+  left: "14%",
   height: "25px",
   width: "25px",
   color: "white",
-  marginRight: "50px",
-  transform: "translate(-57%, -15%)",
   cursor: "pointer",
   visibility: "hidden",
 });
@@ -91,7 +89,6 @@ const BackToAlbums = ({ goBack }) => {
   );
 };
 
-
 const AlbumContent = ({
   loading,
   album,
@@ -99,9 +96,8 @@ const AlbumContent = ({
   playPauseTrack,
   handleRowHover,
   goBack,
-  addToLikes
+  addToLikes,
 }) => {
-
   const [likedTracks, setLikedTracks] = useState([]);
 
   const handleLikeClick = (e, track) => {
@@ -110,8 +106,7 @@ const AlbumContent = ({
 
     if (track.isLiked) {
       setLikedTracks((prevLikedTracks) => [...prevLikedTracks, track]);
-      addToLikes(track); 
-      
+      addToLikes(track);
     } else {
       setLikedTracks((prevLikedTracks) =>
         prevLikedTracks.filter((likedTrack) => likedTrack.id !== track.id)
@@ -119,125 +114,151 @@ const AlbumContent = ({
     }
   };
 
-
   return (
-  <Container>
-    {loading ? (
-      <Typography variant="h5">Загрузка...</Typography>
-    ) : (
-      <>
-        <Grid container spacing={2} style={{ width: "93%" }}>
-          <Grid>
-            <BackToAlbums goBack={goBack} style={{ height: "100px", width: "100px" }} />
-            <AlbumImage 
-            src={album.images[0].url} 
-            alt={album.name} 
-            style={{ marginLeft: "40px" }} />
+    <Container>
+      {loading ? (
+        <Typography variant="h5" style={{ marginTop: "300px" }}>
+          Loading...
+        </Typography>
+      ) : (
+        <>
+          <Grid container spacing={2} style={{ width: "93%" }}>
+            <Grid>
+              <BackToAlbums
+                goBack={goBack}
+                style={{ height: "100px", width: "100px" }}
+              />
+              <AlbumImage
+                src={album.images[0].url}
+                alt={album.name}
+                style={{ marginLeft: "40px" }}
+              />
+            </Grid>
+            <Grid>
+              <InfoContainer>
+                <Typography
+                  variant="h1"
+                  style={{
+                    marginTop: "170px",
+                    marginLeft: "35px",
+                    fontWeight: "700",
+                  }}
+                >
+                  {album.name}
+                </Typography>
+                <Typography
+                  variant="body1"
+                  style={{ fontWeight: "600", marginLeft: "35px" }}
+                >
+                  Artist:{" "}
+                  {album.artists.map((artist) => artist.name).join(", ")}
+                </Typography>
+              </InfoContainer>
+            </Grid>
           </Grid>
-          <Grid>
-            <InfoContainer>
-              <Typography
-                variant="h1"
-                style={{
-                  marginTop: "170px",
-                  marginLeft: "35px",
-                  fontWeight: "700",
-                }}
-              >
-                {album.name}
-              </Typography>
-              <Typography
-                variant="body1"
-                style={{ fontWeight: "600", marginLeft: "35px" }}
-              >
-                Исполнитель: {album.artists.map((artist) => artist.name).join(", ")}
-              </Typography>
-            </InfoContainer>
-          </Grid>
-        </Grid>
-        <TrackTable component={Paper}>
-          <Table>
-            <TableHead style={{ borderBottom: "1px solid #333" }}>
-              <TableRow>
-                <CustomTableCell
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: "700",
-                    color: "#b5b5b5",
-                  }}
-                >
-                  #
-                </CustomTableCell>
-                <CustomTableCell
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: "700",
-                    color: "#b5b5b5",
-                  }}
-                >
-                  Название трека
-                </CustomTableCell>
-                <CustomTableCell
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: "700",
-                    color: "#b5b5b5",
-                    textAlign: "center",
-                  }}
-                >
-                  Длительность
-                </CustomTableCell>
-                <CustomTableCell
+          <TrackTable component={Paper}>
+            <Table>
+              <TableHead style={{ borderBottom: "1px solid #333" }}>
+                <TableRow>
+                  <CustomTableCell
+                    style={{
+                      fontSize: "14px",
+                      fontWeight: "700",
+                      color: "#b5b5b5",
+                      marginLeft: "50px",
+                    }}
+                  >
+                    <div style={{ marginLeft: "40px", fontSize: "14px" }}>
+                      #
+                    </div>
+                  </CustomTableCell>
+                  <CustomTableCell
                     style={{
                       fontSize: "14px",
                       fontWeight: "700",
                       color: "#b5b5b5",
                     }}
                   >
-                    Лайк
+                    Track
                   </CustomTableCell>
-              </TableRow>
-            </TableHead>
-            <br />
-            <TableBody>
-              {tracks.map((track, index) => (
-                <CustomTableRow
-                  key={track.id}
-                  onMouseEnter={() => handleRowHover(index)}
-                  onMouseLeave={() => handleRowHover(-1)}
-                  onClick={() => playPauseTrack(track)}
-                >
                   <CustomTableCell
-                    className="customTableCell"
                     style={{
-                      borderRadius: "5px 0px 0px 5px",
+                      fontSize: "14px",
+                      fontWeight: "700",
                       color: "#b5b5b5",
-                      padding: "0px",
-                    }}
-                  >
-                    {index + 1}
-                    <PlayIcon
-                      className="playIcon"
-                      style={{
-                        marginRight: "80px",
-                        padding: "0px",
-                      }}
-                    />
-                  </CustomTableCell>
-                  <CustomTableCell>
-                    {track.name}
-                  </CustomTableCell>
-                  <CustomTableCell
-                    style={{
-                      borderRadius: "0px 5px 5px 0px",
                       textAlign: "center",
                     }}
                   >
-                    {msToTime(track.duration_ms)}
+                    Duration
                   </CustomTableCell>
-                  <CustomTableCell>
+                  <CustomTableCell
+                    style={{
+                      fontSize: "14px",
+                      fontWeight: "700",
+                      color: "#b5b5b5",
+                      textAlign: "center",
+                    }}
+                  >
+                    Like
+                  </CustomTableCell>
+                </TableRow>
+              </TableHead>
+              <br />
+              <TableBody>
+                {tracks.map((track, index) => (
+                  <CustomTableRow
+                    key={track.id}
+                    className="trackRow"
+                    onMouseEnter={() => handleRowHover(index)}
+                    onMouseLeave={() => handleRowHover(-1)}
+                    onClick={() => playPauseTrack(track)}
+                  >
+                    <CustomTableCell
+                      style={{
+                        borderRadius: "5px 0px 0px 5px",
+                        color: "#b5b5b5",
+                        padding: "0px",
+                        marginLeft: "50px",
+                        position: "relative",
+                      }}
+                    >
+                      <div
+                        className="customTableCell"
+                        style={{
+                          marginLeft: "50px",
+                          top: "30%",
+                          position: "absolute",
+                        }}
+                      >
+                        {index + 1}
+                      </div>
+                      <PlayIcon
+                        className="playIcon"
+                        style={{
+                          marginRight: "60px",
+                          padding: "0px",
+                          position: "absolute",
+                        }}
+                      />
+                    </CustomTableCell>
+                    <CustomTableCell>{track.name}</CustomTableCell>
+                    <CustomTableCell
+                      style={{
+                        textAlign: "center",
+                      }}
+                    >
+                      {msToTime(track.duration_ms)}
+                    </CustomTableCell>
+                    <CustomTableCell
+                      style={{
+                        textAlign: "center",
+                        borderRadius: "0px 5px 5px 0px",
+                      }}
+                    >
                       <FavoriteIcon
                         style={{
+                          textAlign: "center",
+
                           color: likedTracks.some(
                             (likedTrack) => likedTrack.id === track.id
                           )
@@ -245,17 +266,17 @@ const AlbumContent = ({
                             : "white",
                           cursor: "pointer",
                         }}
-                        onClick={(e) => handleLikeClick(e,track)}
+                        onClick={(e) => handleLikeClick(e, track)}
                       />
                     </CustomTableCell>
-                </CustomTableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TrackTable>
-      </>
-    )}
-  </Container>
+                  </CustomTableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TrackTable>
+        </>
+      )}
+    </Container>
   );
 };
 

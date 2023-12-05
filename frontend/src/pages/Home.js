@@ -61,7 +61,7 @@ const Home = () => {
                 );
                 return response.data.access_token;
             } catch (error) {
-                console.error("Ошибка при получении токена:", error);
+                console.error("Error receiving token:", error);
                 return null;
             }
         };
@@ -79,10 +79,7 @@ const Home = () => {
                 );
                 return response.data.playlists.items.slice(0, 20);
             } catch (error) {
-                console.error(
-                    "Ошибка при получении популярных плейлистов:",
-                    error
-                );
+                console.error("Error getting popular playlists:", error);
                 return [];
             }
         };
@@ -126,10 +123,7 @@ const Home = () => {
                 const artistsInfo = await Promise.all(artistsInfoPromises);
                 return artistsInfo;
             } catch (error) {
-                console.error(
-                    "Ошибка при получении информации об артистах:",
-                    error
-                );
+                console.error("Error when retrieving artist information:", error);
                 return [];
             }
         };
@@ -147,7 +141,7 @@ const Home = () => {
                 );
                 return response.data.albums.items.slice(0, 20);
             } catch (error) {
-                console.error("Ошибка при получении новых релизов:", error);
+                console.error("Error when receiving new releases:", error);
                 return [];
             }
         };

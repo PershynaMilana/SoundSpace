@@ -1,4 +1,3 @@
-// LikesNotification.js
 import React, { useEffect, useState } from "react";
 import { Snackbar, SnackbarContent, styled } from "@mui/material";
 

@@ -62,13 +62,12 @@ const CustomTableCell = styled(TableCell)(({ theme }) => ({
 }));
 
 const PlayIcon = styled(PlayArrowIcon)({
-  position: "absolute",
+  position: "relative", 
+  top: "30%", 
+  left: "40%", 
   height: "25px",
   width: "25px",
   color: "white",
-  marginRight: "50px",
-
-  transform: "translate(-57%, -15%)",
   cursor: "pointer",
   visibility: "hidden",
 });
@@ -116,12 +115,10 @@ const PlaylistContent = ({
     }
   };
 
-
-
   return (
     <Container>
       {loading ? (
-        <Typography variant="h5">Загрузка...</Typography>
+        <Typography variant="h5" style={{marginTop:"300px"}}>Loading...</Typography>
       ) : (
         <>
           <Grid container spacing={2} style={{ width: "93%" }}>
@@ -151,6 +148,17 @@ const PlaylistContent = ({
             <Table>
               <TableHead style={{ borderBottom: "1px solid #333" }}>
                 <TableRow>
+                <CustomTableCell
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: "700",
+                    color: "#b5b5b5",
+                    marginLeft:"50px",
+                  }}
+                >
+                  <div style={{marginLeft:"40px", fontSize: "14px",}}>
+                  #</div>
+                </CustomTableCell>
                   <CustomTableCell
                     style={{
                       fontSize: "14px",
@@ -158,7 +166,7 @@ const PlaylistContent = ({
                       color: "#b5b5b5",
                     }}
                   >
-                    #
+                    Track
                   </CustomTableCell>
                   <CustomTableCell
                     style={{
@@ -167,16 +175,7 @@ const PlaylistContent = ({
                       color: "#b5b5b5",
                     }}
                   >
-                    Название трека
-                  </CustomTableCell>
-                  <CustomTableCell
-                    style={{
-                      fontSize: "14px",
-                      fontWeight: "700",
-                      color: "#b5b5b5",
-                    }}
-                  >
-                    Название альбома
+                    Album
                   </CustomTableCell>
                   <CustomTableCell
                     style={{
@@ -186,7 +185,7 @@ const PlaylistContent = ({
                       textAlign: "center",
                     }}
                   >
-                    Длительность
+                    Duration
                   </CustomTableCell>
                   <CustomTableCell
                     style={{
@@ -195,7 +194,7 @@ const PlaylistContent = ({
                       color: "#b5b5b5",
                     }}
                   >
-                    Лайк
+                    Like
                   </CustomTableCell>
                 </TableRow>
               </TableHead>
@@ -209,39 +208,40 @@ const PlaylistContent = ({
                     onClick={() => playPauseTrack(track.track)}
                   >
                     <CustomTableCell
-                      className="customTableCell"
-                      style={{
-                        borderRadius: "5px 0px 0px 5px",
-                        color: "#b5b5b5",
-                        padding: "0px",
-                      }}
-                    >
-                      {index + 1}
-                      <PlayIcon
-                        className="playIcon"
-                        style={{
-                          marginRight: "80px",
-                          padding: "0px",
-                        }}
-                      />
-                    </CustomTableCell>
-                    <CustomTableCell
-                      style={{
-                        borderRadius: "5px 0px 0px 5px",
-                      }}
-                    >
+                   
+                   style={{
+                     borderRadius: "5px 0px 0px 5px",
+                     color: "#b5b5b5",
+                     padding: "0px",
+                     marginLeft:"50px",
+                     position: "relative",
+                   }}
+                 >
+                   <div className="customTableCell" style={{marginLeft:"50px", top:"30%", position: "absolute"}}>
+                   {index + 1}</div>
+                   <PlayIcon
+                     className="playIcon"
+                     style={{
+                       marginRight: "60px",
+                       padding: "0px",
+                       position: "absolute"
+                     }}
+                   />
+                 </CustomTableCell>
+                    <CustomTableCell>
                       {track.track.name}
                     </CustomTableCell>
                     <CustomTableCell>{track.track.album.name}</CustomTableCell>
                     <CustomTableCell
-                      style={{
-                        borderRadius: "0px 5px 5px 0px",
+                      style={{                      
                         textAlign: "center",
                       }}
                     >
                       {msToTime(track.track.duration_ms)}
                     </CustomTableCell>
-                    <CustomTableCell>
+                    <CustomTableCell style={{
+                        borderRadius: "0px 5px 5px 0px",
+                      }}>
                       <FavoriteIcon
                         style={{
                           color: likedTracks.some(

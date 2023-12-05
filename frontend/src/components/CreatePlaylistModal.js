@@ -142,14 +142,12 @@ const CreatePlaylistModal = ({ open, onClose, onCreatePlaylist }) => {
                                                 zIndex: 2,
                                             }}
                                         >
-                                            <AddAPhotoIcon
-                                                style={addPhotoIconStyle}
-                                            />
+                                            <AddAPhotoIcon style={addPhotoIconStyle} />
                                             <Typography
                                                 style={{ color: "white" }}
                                                 variant="subtitle1"
                                             >
-                                                Выбрать фото
+                                                Select photo
                                             </Typography>
                                         </div>
                                     )}
@@ -164,11 +162,11 @@ const CreatePlaylistModal = ({ open, onClose, onCreatePlaylist }) => {
                             variant="h5"
                             style={{ fontWeight: "500" }}
                         >
-                            Создать плейлист
+                            Create playlist
                         </Typography>
                         <br />
                         <Typography color={"white"} variant="p">
-                            Название плейлиста:
+                            Playlist title:
                         </Typography>
                         <input
                             style={{ marginTop: "10px", marginBottom: "10px" }}
@@ -179,16 +177,14 @@ const CreatePlaylistModal = ({ open, onClose, onCreatePlaylist }) => {
                         />
                         <br />
                         <Typography color={"white"} variant="p">
-                            Описание плейлиста:
+                            Playlist description:
                         </Typography>
                         <input
                             style={{ marginTop: "10px", marginBottom: "10px" }}
                             label="Описание плейлиста"
                             className="input-fields-modal"
                             value={playlistDescription}
-                            onChange={(e) =>
-                                setPlaylistDescription(e.target.value)
-                            }
+                            onChange={(e) => setPlaylistDescription(e.target.value)}
                             fullWidth
                         />
                         <Button
@@ -205,7 +201,7 @@ const CreatePlaylistModal = ({ open, onClose, onCreatePlaylist }) => {
                                 fontWeight: "600",
                             }}
                         >
-                            Создать плейлист
+                            Create playlist
                         </Button>
                     </Grid>
                 </Grid>

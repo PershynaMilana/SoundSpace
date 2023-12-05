@@ -25,13 +25,6 @@ export const LikesProvider = ({ children }) => {
     fetchData();
   }, []);
 
-   const showNitification = (message) => {
-    setNotification(message);
-    setTimeout(() => {
-      setNotification(null);
-    },3000);
-   }
-
   const addToLikes = async (track) => {
     setLikedTracks((prevLikedTracks) => [...prevLikedTracks, track]);
     const tracksCollection = collection(db, "likedTracks");

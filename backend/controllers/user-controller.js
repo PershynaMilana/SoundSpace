@@ -64,12 +64,13 @@ const login = async (req, res) => {
 
 const updateProfile = async (req, res, next) => {
   const userId = req.id;
-  const { name, email, birthDate, country } = req.body;
+  const { name, email, birthDate, country, imageUrl} = req.body;
 
   try {
     const updateFields = {
       name,
       email,
+      imageUrl,
     };
 
     if (birthDate) {

@@ -49,8 +49,27 @@ const getPlaylistById = async (req, res) => {
   }
 };
 
+const deletePlaylist = async (req,res) => {
+  const playlistId = req.params.playlistId;
+
+  try {
+    const playlist = await Playlist.findByIdAndDelete(playlistId);
+
+    if (!playlist) {
+      return res.status(404).json({ error: 'Playlist not found' });
+    }
+
+    await User.findByIdAndUpdate(playlist.userId, {$pull:{playlists:playlistId}});
+    res.json({ message: 'Playlist deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting playlist:', error);
+    res.status(500).json({ error: 'Error deleting playlist' });
+  }
+};
+
 module.exports = {
   createPlaylist,
   getPlaylists,
   getPlaylistById,
+  deletePlaylist,
 };

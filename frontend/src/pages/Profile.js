@@ -1,10 +1,11 @@
+import axios from "axios";
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import DefaultPhoto from "../assets/images/default-image.jpg";
-import axios from "axios";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowBackIosNewRoundedIcon from "@mui/icons-material/ArrowBackIosNewRounded";
 import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRounded";
+import EditProfileInfoModal from "../components/EditProfileInfoModal";
 import PlayArrowIcon from "@mui/icons-material/PlayArrowRounded";
 import { useLikes } from "../services/LikesContext";
 import { usePlayer } from "../services/PlayerContext";
@@ -25,6 +26,7 @@ import {
   TableContainer,
   TableCell,
   Paper,
+  Divider,
 } from "@mui/material";
 
 const Container = styled("div")(() => ({
@@ -57,6 +59,7 @@ const ProfileImage = styled("img")({
   height: "100%",
   marginLeft: "40px",
   marginTop: "70px",
+  borderRadius: "150px",
 });
 
 const InfoContainer = styled("div")(() => ({
@@ -118,6 +121,12 @@ const BackToArtists = ({ goBack }) => {
   );
 };
 
+const TrackImage = styled(CardMedia)(({ theme }) => ({
+  width: "50px",
+  height: "50px",
+  borderRadius: "5px",
+}));
+
 const TrackTable = styled(TableContainer)(({ theme }) => ({
   width: "90%",
   backgroundColor: "transparent",
@@ -125,6 +134,8 @@ const TrackTable = styled(TableContainer)(({ theme }) => ({
 }));
 
 const CustomTableRow = styled(TableRow)({
+  height: "100%",
+  maxHeight: "30px",
   "&:hover": {
     backgroundColor: "#333",
   },
@@ -138,24 +149,30 @@ const CustomTableCell = styled(TableCell)(({ theme }) => ({
 const LikeButton = styled("button")({
   background: "none",
   border: "none",
-  color: "white",
   cursor: "pointer",
+  color: "inherit",
+  textDecoration: "none",
+  "&:hover": {
+    textDecoration: "underline",
+    color: "#1DB954",
+  },
 });
 
 const PlayIcon = styled(PlayArrowIcon)({
-  position: "absolute",
+  position: "relative",
+  top: "30%",
+  left: "17%",
   height: "25px",
   width: "25px",
   color: "white",
-  marginRight: "50px",
-  transform: "translate(-57%, -15%)",
   cursor: "pointer",
   visibility: "hidden",
 });
 
 const Profile = () => {
   const navigate = useNavigate();
-  const [userData, setUserData] = useState({});
+  const [showEditProfileModal, setShowEditProfileModal] = useState(false);
+  const [userData, setUserData] = useState({ name: "" });
   const [token, setToken] = useState("");
   const [playlists, setPlaylists] = useState([]);
   const [updatedName, setUpdatedName] = useState("");
@@ -164,11 +181,20 @@ const Profile = () => {
   const { likedTracks, removeFromLikes } = useLikes();
   const { setTrack, currentTrack } = usePlayer();
   const audioPlayerRef = useRef(null);
-
   const lastFiveLikedTracks = likedTracks.slice(-5).reverse();
-
+  const [dominantColor, setDominantColor] = useState("#04009A");
   const playTrack = (track) => {
     setTrack(track);
+  };
+
+  const handleImageLoad = (colors) => {
+    if (colors && colors.length > 0) {
+      setDominantColor(colors[0]);
+    }
+  };
+
+  const handleImageError = (error) => {
+    console.error("Error loading image:", error);
   };
 
   useEffect(() => {
@@ -254,10 +280,32 @@ const Profile = () => {
       });
       setUpdatedName(response.data.user.name);
       console.log("Updated Name:", response.data.user.name);
-      setUserData(response.data.user.name); // Set user data once
+      setUserData(response.data.user);
     } catch (error) {
       console.error("Error loading user data:", error);
       console.log("Axios Error Details:", error.response);
+    }
+  };
+
+  const handleEditProfile = async (name, imageUrl) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/api/update-profile",
+        {
+          name,
+          imageUrl,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setUserData(response.data.user);
+      setShowEditProfileModal(false);
+    } catch (error) {
+      console.error("Error updating profile:", error);
     }
   };
 
@@ -267,273 +315,321 @@ const Profile = () => {
 
   return (
     <Container>
-      {/* {loading ? (
-        <Typography variant="h5">Загрузка...</Typography>
-      ) : ( */}
-      <>
-        <Grid container spacing={2} style={{ width: "94%" }}>
-          <Grid item>
-            <BackToArtists
-              goBack={goBack}
-              style={{ height: "100px", width: "100px" }}
-            />
-            <ProfileImage
-              src={DefaultPhoto}
-              alt={"username"}
-              style={{ marginLeft: "30px" }}
-            />
+      {loading ? (
+        <Typography variant="h5" style={{ marginTop: "300px" }}>
+          Loading...
+        </Typography>
+      ) : (
+        <>
+          <Grid container spacing={2} style={{ width: "94%" }}>
+            <Grid item>
+              <BackToArtists
+                goBack={goBack}
+                style={{ height: "100px", width: "100px" }}
+              />
+              <ProfileImage
+                src={(userData && userData.imageUrl) || DefaultPhoto}
+                alt={"username"}
+                style={{ marginLeft: "30px" }}
+                onClick={() => setShowEditProfileModal(true)}
+              />
+              {showEditProfileModal && (
+                <EditProfileInfoModal
+                  open={showEditProfileModal}
+                  onClose={() => setShowEditProfileModal(false)}
+                  onEditProfile={handleEditProfile}
+                />
+              )}
+            </Grid>
+            <Grid item>
+              <InfoContainer>
+                <Typography
+                  variant="h1"
+                  style={{
+                    marginTop: "170px",
+                    marginLeft: "11px",
+                    fontWeight: "700",
+                  }}
+                >
+                  {userData && userData.name}
+                </Typography>
+                <Typography
+                  variant="body1"
+                  style={{
+                    fontWeight: "600",
+                    marginLeft: "15px",
+                    color: "#7f7f7f",
+                  }}
+                >
+                  {`${playlists.length} playlists`}
+                </Typography>
+              </InfoContainer>
+            </Grid>
           </Grid>
-          <Grid item>
-            <InfoContainer>
-              <Typography
-                variant="h1"
-                style={{
-                  marginTop: "170px",
-                  marginLeft: "11px",
-                  fontWeight: "700",
-                }}
-              >
-                {userData.name || "Milka"}
-              </Typography>
-              <Typography
-                variant="body1"
-                style={{
-                  fontWeight: "600",
-                  marginLeft: "15px",
-                  color: "#7f7f7f",
-                }}
-              >
-                {`${playlists.length} playlists`}
-              </Typography>
-            </InfoContainer>
-          </Grid>
-        </Grid>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: "10px",
-            marginTop: "20px",
-          }}
-        >
-          <Typography
-            variant="h4"
-            style={{
-              fontWeight: "700",
-              textAlign: "left",
-              marginRight: "1000px",
-            }}
-          >
-            Your playlists
-          </Typography>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <IconButton
+          <Container2>
+            <Typography
+              variant="h4"
               style={{
-                color: "white",
-                cursor: "pointer",
-              }}
-              onClick={handlePrevPlaylist}
-              disabled={playlistIndex === 0}
-            >
-              <ArrowBackIosNewRoundedIcon />
-            </IconButton>
-            <Link
-              onClick={() => navigate("/section")}
-              to="/section"
-              variant="outlined"
-              color="primary"
-              style={{
-                textDecoration: "none",
-                color: "white",
-                fontSize: "20px",
-                fontWeight: "600",
-                "&:hover": {
-                  textDecoration: "underline",
-                },
+                fontWeight: "700",
+                alignSelf: "flex-start",
+                marginLeft: "80px",
+                marginTop: "70px",
               }}
             >
-              Показать все
-            </Link>
-            <IconButton
-              style={{
-                color: "white",
-                cursor:
-                  playlistIndex + 6 >= playlists.length
-                    ? "not-allowed"
-                    : "pointer",
-                opacity: playlistIndex + 6 >= playlists.length ? 0.5 : 1,
-              }}
-              onClick={handleNextPlaylist}
-              disabled={playlistIndex + 6 >= playlists.length}
-            >
-              <ArrowForwardIosRoundedIcon />
-            </IconButton>
-          </div>
-        </div>
-        {loading ? (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              margin: "15px",
-            }}
-          >
-            <CircularProgress style={{ color: "gray" }} />
-          </div>
-        ) : (
-          <SectionContainer
-            container
-            spacing={3}
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              marginTop: "10px",
-              marginLeft: "90px",
-            }}
-          >
-            {playlists
-              .slice(playlistIndex, playlistIndex + 6)
-              .map((playlist) => (
-                <div onClick={() => handlePlaylistClick(playlist._id)}>
-                  <CardStyled
-                    style={{
-                      background: "#222222",
-                      color: "white",
-                      width: "100%",
-                      height: "280px",
-                      margin: "10px",
-                      alignItems: "left",
-                    }}
-                  >
-                    <CardMediaStyled
-                      image={playlist.imageUrl}
-                      title={playlist.name}
-                      description={playlist.description}
-                    />
-                    <CardContent>
-                      <Typography
-                        variant="h6"
-                        component="div"
-                        style={{ textAlign: "center" }}
-                      >
-                        {playlist.name}
-                      </Typography>
-                      <Typography
-                        variant="p"
-                        component="div"
-                        style={{ textAlign: "center" }}
-                      >
-                        {playlist.description}
-                      </Typography>
-                    </CardContent>
-                  </CardStyled>
-                </div>
-              ))}
-          </SectionContainer>
-        )}
-
-        <Container2>
-          {likedTracks.length === 0 ? (
-            <p>Список пуст</p>
-          ) : (
-            <TrackTable component={Paper}>
-              <Table>
-                <TableHead style={{ borderBottom: "1px solid #333" }}>
-                  <TableRow>
-                    <CustomTableCell
-                      style={{
-                        fontSize: "14px",
-                        fontWeight: "700",
-                        color: "#b5b5b5",
-                      }}
-                    >
-                      #
-                    </CustomTableCell>
-                    <CustomTableCell
-                      style={{
-                        fontSize: "14px",
-                        fontWeight: "700",
-                        color: "#b5b5b5",
-                        textAlign: "center",
-                      }}
-                    >
-                      Трек
-                    </CustomTableCell>
-                    <CustomTableCell
-                      style={{
-                        fontSize: "14px",
-                        fontWeight: "700",
-                        color: "#b5b5b5",
-                        textAlign: "center",
-                      }}
-                    >
-                      Время
-                    </CustomTableCell>
-                    <CustomTableCell
-                      style={{
-                        fontSize: "14px",
-                        fontWeight: "700",
-                        color: "#b5b5b5",
-                        textAlign: "center",
-                      }}
-                    >
-                      Действия
-                    </CustomTableCell>
-                  </TableRow>
-                </TableHead>
-                <br />
-                <TableBody>
-                  {lastFiveLikedTracks.map((track, index) => (
-                    <CustomTableRow
-                      key={track.id}
-                      onMouseEnter={() => handleRowHover(index)}
-                      onMouseLeave={() => handleRowHover(-1)}
-                      onClick={() => playTrack(track)}
-                    >
+              Your liked tracks
+            </Typography>
+            {likedTracks.length === 0 ? (
+              <p>The list is empty</p>
+            ) : (
+              <TrackTable component={Paper}>
+                <Table>
+                  <TableHead style={{ borderBottom: "1px solid #333" }}>
+                    <TableRow>
                       <CustomTableCell
-                        className="customTableCell"
                         style={{
-                          borderRadius: "5px 0px 0px 5px",
+                          fontSize: "14px",
+                          fontWeight: "700",
                           color: "#b5b5b5",
-                          padding: "0px",
+                          marginLeft: "50px",
                         }}
                       >
-                        {index + 1}
-                        <PlayIcon
-                          className="playIcon"
+                        <div style={{ marginLeft: "40px", fontSize: "14px" }}>
+                          #
+                        </div>
+                      </CustomTableCell>
+                      <CustomTableCell
+                        style={{
+                          fontSize: "14px",
+                          fontWeight: "700",
+                          color: "#b5b5b5",
+                          textAlign: "left",
+                          marginLeft:"20px", 
+                        }}
+                      >
+                        Track
+                      </CustomTableCell>
+                      <CustomTableCell
+                        style={{
+                          fontSize: "14px",
+                          fontWeight: "700",
+                          color: "#b5b5b5",
+                          textAlign: "center",
+                        }}
+                      >
+                        Duration
+                      </CustomTableCell>
+                      <CustomTableCell
+                        style={{
+                          fontSize: "14px",
+                          fontWeight: "700",
+                          color: "#b5b5b5",
+                          textAlign: "center",
+                        }}
+                      >
+                        Actions
+                      </CustomTableCell>
+                    </TableRow>
+                  </TableHead>
+                  <br />
+                  <TableBody>
+                    {lastFiveLikedTracks.map((track, index) => (
+                      <CustomTableRow
+                        key={track.id}
+                        onMouseEnter={() => handleRowHover(index)}
+                        onMouseLeave={() => handleRowHover(-1)}
+                        onClick={() => playTrack(track)}
+                      >
+                        <CustomTableCell
                           style={{
-                            marginRight: "80px",
+                            borderRadius: "5px 0px 0px 5px",
+                            color: "#b5b5b5",
                             padding: "0px",
+                            marginLeft: "50px",
+                            position: "relative",
                           }}
-                        />
-                      </CustomTableCell>
-                      <CustomTableCell style={{ textAlign: "center" }}>
-                        {track.name}
-                      </CustomTableCell>
-                      <CustomTableCell style={{ textAlign: "center" }}>
-                        {msToTime(track.duration_ms)}
-                      </CustomTableCell>
-                      <CustomTableCell style={{ textAlign: "center" }}>
-                        <LikeButton onClick={() => removeFromLikes(track.id)}>
-                          Удалить из любимых
-                        </LikeButton>
-                      </CustomTableCell>
-                    </CustomTableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TrackTable>
+                        >
+                          <div
+                            className="customTableCell"
+                            style={{
+                              marginLeft: "50px",
+                              top: "30%",
+                              position: "absolute",
+                            }}
+                          >
+                            {index + 1}
+                          </div>
+                          <PlayIcon
+                            className="playIcon"
+                            style={{
+                              marginRight: "60px",
+                              padding: "0px",
+                              position: "absolute",
+                            }}
+                          />
+                        </CustomTableCell>
+                        <CustomTableCell style={{ display: "flex", alignItems: "center" }}>
+                          <TrackImage
+                            image={track.album.images[0].url}
+                            title={track.name}
+                            style={{ marginRight: "8px" }} 
+                          />
+                          <div>
+                          <div style={{ fontSize:"16px", marginTop:"4px"}}>{track.name}</div>
+                          <div style={{color:"#afafaf", fontSize:"14px"}}>{track.artists[0].name}</div>
+                          </div>
+                        </CustomTableCell>
+                        <CustomTableCell style={{ textAlign: "center" }}>
+                          {msToTime(track.duration_ms)}
+                        </CustomTableCell>
+                        <CustomTableCell
+                          style={{
+                            textAlign: "center",
+                            borderRadius: "0px 5px 5px 0px",
+                          }}
+                        >
+                          <LikeButton onClick={() => removeFromLikes(track.id)}>
+                            Delete from likes
+                          </LikeButton>
+                        </CustomTableCell>
+                      </CustomTableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TrackTable>
+            )}
+          </Container2>
+
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              width: "88%",
+              marginTop: "70px",
+            }}
+          >
+            <Typography
+              variant="h4"
+              style={{
+                fontWeight: "700",
+                alignSelf: "flex-start",
+              }}
+            >
+              Your playlists
+            </Typography>
+            <div
+              style={{
+                display: "flex",
+                alignSelf: "flex-end",
+              }}
+            >
+              <IconButton
+                style={{
+                  color: "white",
+                  cursor: "pointer",
+                }}
+                onClick={handlePrevPlaylist}
+                disabled={playlistIndex === 0}
+              >
+                <ArrowBackIosNewRoundedIcon />
+              </IconButton>
+              <Link
+                onClick={() => navigate("/section")}
+                to="/section"
+                variant="outlined"
+                color="primary"
+                style={{
+                  marginTop: "10px",
+                  textDecoration: "none",
+                  color: "white",
+                  fontSize: "20px",
+                  fontWeight: "600",
+                  "&:hover": {
+                    textDecoration: "underline",
+                  },
+                }}
+              >
+                Show all
+              </Link>
+              <IconButton
+                style={{
+                  color: "white",
+                  cursor:
+                    playlistIndex + 6 >= playlists.length
+                      ? "not-allowed"
+                      : "pointer",
+                  opacity: playlistIndex + 6 >= playlists.length ? 0.5 : 1,
+                }}
+                onClick={handleNextPlaylist}
+                disabled={playlistIndex + 6 >= playlists.length}
+              >
+                <ArrowForwardIosRoundedIcon />
+              </IconButton>
+            </div>
+          </div>
+          {loading ? (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                margin: "15px",
+              }}
+            >
+              <CircularProgress style={{ color: "gray" }} />
+            </div>
+          ) : (
+            <SectionContainer
+              container
+              spacing={3}
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                marginTop: "10px",
+                marginLeft: "90px",
+              }}
+            >
+              {playlists
+                .slice(playlistIndex, playlistIndex + 6)
+                .map((playlist) => (
+                  <div onClick={() => handlePlaylistClick(playlist._id)}>
+                    <CardStyled
+                      style={{
+                        background: "#222222",
+                        color: "white",
+                        width: "100%",
+                        height: "280px",
+                        margin: "10px",
+                        alignItems: "left",
+                      }}
+                    >
+                      <CardMediaStyled
+                        image={playlist.imageUrl}
+                        title={playlist.name}
+                        description={playlist.description}
+                      />
+                      <CardContent>
+                        <Typography
+                          variant="h6"
+                          component="div"
+                          style={{ textAlign: "center" }}
+                        >
+                          {playlist.name}
+                        </Typography>
+                        <Typography
+                          variant="p"
+                          component="div"
+                          style={{ textAlign: "center" }}
+                        >
+                          {playlist.description}
+                        </Typography>
+                      </CardContent>
+                    </CardStyled>
+                  </div>
+                ))}
+            </SectionContainer>
           )}
-        </Container2>
-      </>
-      {/* )} */}
+        </>
+      )}
     </Container>
   );
 };

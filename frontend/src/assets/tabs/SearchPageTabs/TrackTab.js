@@ -10,7 +10,9 @@ import {
   Typography,
   styled,
 } from "@mui/material";
-
+import { useRef } from "react";
+import PlayArrowIcon from "@mui/icons-material/PlayArrowRounded";
+import { usePlayer } from "../../../services/PlayerContext";
 const Container = styled("div")(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
@@ -38,9 +40,33 @@ const CustomTableCell = styled(TableCell)(({ theme }) => ({
   borderBottom: "none",
 }));
 
+const PlayIcon = styled(PlayArrowIcon)({
+  position: "relative",
+  top: "30%",
+  left: "34%",
+  height: "25px",
+  width: "25px",
+  color: "white",
+  cursor: "pointer",
+  visibility: "hidden",
+});
+
 const TrackTab = ({ trackResults }) => {
+  const handleRowHover = (index) => {
+    const playIcons = document.getElementsByClassName("playIcon");
+    const customTableCells = document.getElementsByClassName("customTableCell");
+    for (let i = 0; i < playIcons.length; i++) {
+      playIcons[i].style.visibility = i === index ? "visible" : "hidden";
+      customTableCells[i].style.visibility = i === index ? "hidden" : "visible";
+    }
+  };
+  const { setTrack, currentTrack } = usePlayer();
+  const audioPlayerRef = useRef(null);
+  const playTrack = (track) => {
+    setTrack(track);
+  };
   return (
-    <Container>
+    <Container style={{ background: "transparent" }}>
       <CustomTableContainer component={Paper}>
         <Table>
           <TableHead style={{ borderBottom: "1px solid #333" }}>
@@ -50,9 +76,10 @@ const TrackTab = ({ trackResults }) => {
                   fontSize: "14px",
                   fontWeight: "700",
                   color: "#b5b5b5",
+                  marginLeft: "50px",
                 }}
               >
-                #
+                <div style={{ marginLeft: "40px", fontSize: "14px" }}>#</div>
               </CustomTableCell>
               <CustomTableCell
                 style={{
@@ -61,7 +88,7 @@ const TrackTab = ({ trackResults }) => {
                   color: "#b5b5b5",
                 }}
               >
-                Название трека
+                Track
               </CustomTableCell>
               <CustomTableCell
                 style={{
@@ -70,7 +97,7 @@ const TrackTab = ({ trackResults }) => {
                   color: "#b5b5b5",
                 }}
               >
-                Название альбома
+                Album
               </CustomTableCell>
               <CustomTableCell
                 style={{
@@ -80,22 +107,46 @@ const TrackTab = ({ trackResults }) => {
                   textAlign: "center",
                 }}
               >
-                Время трека
+                Duration
               </CustomTableCell>
             </TableRow>
           </TableHead>
           <br />
           <TableBody>
             {trackResults.map((track, index) => (
-              <CustomTableRow key={track.id}>
+              <CustomTableRow
+                key={track.id}
+                onMouseEnter={() => handleRowHover(index)}
+                onMouseLeave={() => handleRowHover(-1)}
+                onClick={() => playTrack(track)}
+              >
                 <CustomTableCell
                   style={{
                     borderRadius: "5px 0px 0px 5px",
                     color: "#b5b5b5",
                     padding: "0px",
+                    marginLeft: "50px",
+                    position: "relative",
                   }}
                 >
-                  {index + 1}
+                  <div
+                    className="customTableCell"
+                    style={{
+                      marginLeft: "50px",
+                      top: "30%",
+                      position: "absolute",
+                    }}
+                  >
+                    {index + 1}
+                  </div>
+                  <PlayIcon
+                    className="playIcon"
+                    style={{
+                      marginRight: "60px",
+                      padding: "0px",
+                      position: "absolute",
+                    }}
+                  />
                 </CustomTableCell>
                 <CustomTableCell>{track.name}</CustomTableCell>
                 <CustomTableCell>{track.album.name}</CustomTableCell>

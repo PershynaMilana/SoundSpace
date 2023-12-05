@@ -1,10 +1,5 @@
 import React from "react";
-import {
-    Card,
-    CardMedia,
-    CardContent,
-    Typography,
-} from "@mui/material";
+import { Card, CardMedia, CardContent, Typography } from "@mui/material";
 import { styled } from "@mui/system";
 
 const CardStyled = styled(Card)(({ theme }) => ({
@@ -42,9 +37,8 @@ const AlbumTab = ({ albumResults, handleAlbumClick }) => (
                 marginTop: "30px",
             }}
         >
-            Альбомы
+            Albums
         </Typography>
-
 
         <div className="album-list" style={{ display: "flex", flexWrap: "wrap" }}>
             {albumResults.map((album) => (
@@ -60,31 +54,17 @@ const AlbumTab = ({ albumResults, handleAlbumClick }) => (
                         alignItems: "center",
                         margin: "10px",
                     }}
-                    onClick={() =>
-                        handleAlbumClick(
-                            album.id
-                        )
-                    }
+                    onClick={() => handleAlbumClick(album.id)}
                 >
                     {album.images[0] && (
                         <CardStyled>
-                            <CardMediaStyled
-                                image={
-                                    album
-                                        .images[0]
-                                        .url
-                                }
-                                title={
-                                    album.name
-                                }
-                            />
+                            <CardMediaStyled image={album.images[0].url} title={album.name} />
                             <CardContent>
                                 <Typography
                                     variant="h6"
                                     component="div"
                                     style={{
-                                        textAlign:
-                                            "center",
+                                        textAlign: "center",
                                     }}
                                 >
                                     {album.name}
@@ -93,16 +73,10 @@ const AlbumTab = ({ albumResults, handleAlbumClick }) => (
                                     variant="body2"
                                     component="div"
                                     style={{
-                                        textAlign:
-                                            "center",
+                                        textAlign: "center",
                                     }}
                                 >
-                                    by{" "}
-                                    {
-                                        album
-                                            .artists[0]
-                                            .name
-                                    }
+                                    by {album.artists[0].name}
                                 </Typography>
                             </CardContent>
                         </CardStyled>

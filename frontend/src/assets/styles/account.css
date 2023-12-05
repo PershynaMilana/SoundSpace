@@ -4,8 +4,8 @@
   align-items: center;
   justify-content: center;
   height: 80vh;
-  max-width:"1700px";
-  width:"80%";
+  max-width: "1700px";
+  width: "80%";
 }
 
 .input-container {
@@ -112,7 +112,8 @@ h2 {
   transform: scale(1.05);
 }
 
-.button-172, Link{
+.button-172,
+Link {
   max-width: 100px;
   max-height: 50px;
   height: 100%;
@@ -146,7 +147,7 @@ h2 {
 
 .button-172:hover {
   transform: scale(1.05);
-  color:white;
+  color: white;
 }
 
 .button-17:active {

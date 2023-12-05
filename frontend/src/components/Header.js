@@ -33,6 +33,62 @@ const Header = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isInputActive, setInputActive] = useState(false);
 
+  const [userData, setUserData] = useState({ name: "" });
+  const [token, setToken] = useState("");
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      loadUserData();
+    }
+  }, [isLoggedIn]);
+
+  const getCookie = (name) => {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(";").shift();
+  };
+
+  useEffect(() => {
+    const storedToken = getCookie("auth_token");
+    setToken(storedToken);
+    if (token) {
+      loadUserData();
+    }
+  }, [token]);
+
+  useEffect(() => {
+    if (token) {
+      loadUserData();
+    }
+  }, [token]);
+
+  const parseJwt = (token) => {
+    try {
+      return JSON.parse(atob(token.split(".")[1]));
+    } catch (e) {
+      return null;
+    }
+  };
+
+  const loadUserData = async () => {
+    try {
+      const storedToken = getCookie("auth_token");
+      const decodedToken = parseJwt(token);
+      console.log("Decoded Token:", decodedToken);
+      console.log("Token load user data:", token);
+      const response = await axios.get("http://localhost:8080/api/user", {
+        headers: {
+          Authorization: `Bearer ${storedToken}`,
+        },
+      });
+      console.log("Updated Name:", response.data.user.name);
+      setUserData(response.data.user);
+    } catch (error) {
+      console.error("Error loading user data:", error);
+      console.log("Axios Error Details:", error.response);
+    }
+  };
+
   const handleSearch = (e) => {
     if (e.key === "Enter" && isInputActive) {
       window.location.href = `/search/${searchQuery}`;
@@ -116,9 +172,7 @@ const Header = () => {
           >
             {props.label === "Library" ? (
               <>
-                <HeadsetIcon
-                  style={{ fontSize: 24, marginRight: "4px"}}
-                />{" "}
+                <HeadsetIcon style={{ fontSize: 24, marginRight: "4px" }} />{" "}
                 {props.label}
               </>
             ) : props.label === "Home" ? (
@@ -174,24 +228,24 @@ const Header = () => {
                 alignItems: "center",
               }}
             >
-              {location.pathname !== "/login" &&
-                location.pathname !== "/signup" && (
-                  <Tabs
-                    indicatorColor="secondary"
-                    onChange={(e, val) => setValue(val)}
-                    value={value}
-                    textColor="white"
-                    TabIndicatorProps={{
-                      style: {
-                        backgroundColor: "#1DB954",
-                      },
-                    }}
-                  >
-                    <CustomTab to="/home" label="Home" />
-                    <CustomTab to="/library/overview" label="Library" />
-                  </Tabs>
+              <Tabs
+                indicatorColor="secondary"
+                onChange={(e, val) => setValue(val)}
+                value={value}
+                textColor="white"
+                TabIndicatorProps={{
+                  style: {
+                    backgroundColor: "#1DB954",
+                  },
+                }}
+              >
+                <CustomTab to="/home" label="Home" />
+                {isLoggedIn && (
+                  <CustomTab to="/library/overview" label="Library" />
                 )}
+              </Tabs>
             </Box>
+
             <Box>
               {isLoggedIn ? (
                 <div
@@ -208,7 +262,7 @@ const Header = () => {
                     }}
                   >
                     <div onClick={() => setInputActive(true)}>
-                      <Link to={`/search/${encodeURIComponent(searchQuery)}`}>
+                      <Link>
                         <div
                           style={{
                             position: "relative",
@@ -227,7 +281,7 @@ const Header = () => {
                               cursor: "pointer",
                               width: isInputActive ? "700px" : "250px",
                               borderRadius: isInputActive ? "0px" : "20px",
-                              height: isInputActive ? "80px" : "40px",
+                              height: isInputActive ? "76px" : "40px",
                               position: "relative",
                               transition: "all 0.3s ease-in-out",
                             }}
@@ -281,15 +335,29 @@ const Header = () => {
                       height: "32px",
                     }}
                   >
-                    <img
-                      src={menuIcon}
-                      alt="Menu"
-                      style={{
-                        width: "40px",
-                        height: "40px",
-                        margin: "7px",
-                      }}
-                    />
+                    {userData.imageUrl ? (
+                      <img
+                        src={userData.imageUrl}
+                        alt="Profile"
+                        style={{
+                          width: "40px",
+                          height: "40px",
+                          margin: "7px",
+                          borderRadius: "50%",
+                        }}
+                      />
+                    ) : (
+                      <img
+                        src={menuIcon}
+                        alt="Menu"
+                        style={{
+                          width: "40px",
+                          height: "40px",
+                          margin: "7px",
+                          borderRadius: "50%",
+                        }}
+                      />
+                    )}
                   </IconButton>
                   <Menu
                     anchorEl={anchorEl}
