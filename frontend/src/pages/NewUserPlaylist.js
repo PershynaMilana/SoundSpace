@@ -5,7 +5,16 @@ import PlaylistContent from "../content/NewPlaylistContent";
 import getToken from "../services/spotifyAuth";
 import { usePlayer } from "../services/PlayerContext";
 import { useLikes } from "../services/LikesContext";
-
+import { app } from "../services/fairbaseConfig";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where,
+  deleteDoc,
+} from "firebase/firestore";
 const NewUserPlaylist = () => {
   const { playlistId } = useParams();
   const [playlist, setPlaylist] = useState(null);
@@ -15,10 +24,13 @@ const NewUserPlaylist = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [searchLoading, setSearchLoading] = useState(false);
   const { setTrack, currentTrack } = usePlayer();
-  const [likedTracks, setLikedTracks] = useState([]);
   const { addToLikes } = useLikes(); 
   const audioPlayerRef = useRef(null);
+  const [playlistTracks, setPlaylistTracks] = useState([]);
   const navigate = useNavigate();
+
+  //! -------------------------------------------------- 
+
 
   const playTrack = (track) => {
     setTrack(track);
@@ -42,6 +54,9 @@ const NewUserPlaylist = () => {
       customTableCells[i].style.visibility = i === index ? "hidden" : "visible";
     }
   };
+
+  //! -------------------------------------------------- 
+
 
   useEffect(() => {
     const fetchPlaylist = async () => {
@@ -102,6 +117,40 @@ const NewUserPlaylist = () => {
     }
 };
 
+//! -------------------------------------------------- 
+
+const fetchPlaylistTracks = async () => {
+  const db = getFirestore(app);
+  const tracksCollection = collection(db, `playlistTracks_${playlistId}`);
+  const tracksSnapshot = await getDocs(tracksCollection);
+  const tracksData = tracksSnapshot.docs.map((doc) => doc.data());
+  setPlaylistTracks(tracksData);
+};
+
+const handleAddTrack = async (track) => {
+  const db = getFirestore(app);
+  if (!playlistTracks.some((t) => t.id === track.id)) {
+    setPlaylistTracks((prevPlaylistTracks) => [...prevPlaylistTracks, track]);
+    const tracksCollection = collection(db, `playlistTracks_${playlistId}`);
+    await addDoc(tracksCollection, track);
+  }
+};
+
+const removeFromPlaylist = async (trackId) => {
+  const db = getFirestore(app);
+  setPlaylistTracks((prevLikedTracks) =>
+    prevLikedTracks.filter((likedTrack) => likedTrack.id !== trackId)
+  );
+  const tracksCollection = collection(db, `playlistTracks_${playlistId}`);
+  const q = query(tracksCollection, where("id", "==", trackId));
+  const querySnapshot = await getDocs(q);
+
+  querySnapshot.forEach(async (doc) => {
+    await deleteDoc(doc.ref);
+  });
+};
+
+
 
   return (
     <PlaylistContent
@@ -111,10 +160,16 @@ const NewUserPlaylist = () => {
       searchResults={searchResults}
       searchLoading={searchLoading}
       addToLikes={addToLikes} 
+      playlistId={playlistId}
+      playlistTracks={playlistTracks}
+      setPlaylistTracks={setPlaylistTracks}
       setSearchTerm={setSearchTerm}
       searchTracks={searchTracks}
       handleRowHover={handleRowHover}
       playPauseTrack={playTrack}
+      fetchPlaylistTracks={fetchPlaylistTracks}
+      handleAddTrack={handleAddTrack}
+      removeFromPlaylist={removeFromPlaylist}
       goBack={goBack}
     />
   );

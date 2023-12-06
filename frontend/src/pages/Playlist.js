@@ -4,7 +4,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { clientId, clientSecret } from "../services/spotifyAuth";
 import PlaylistContent from "../content/PlaylistContent";
 import { usePlayer } from "../services/PlayerContext";
-import { useLikes } from "../services/LikesContext";
 
 const Playlist = () => {
   const { playlistId } = useParams();
@@ -12,7 +11,6 @@ const Playlist = () => {
   const [tracks, setTracks] = useState([]);
   const [loading, setLoading] = useState(true);
   const { setTrack, currentTrack } = usePlayer();
-  const { addToLikes } = useLikes(); 
   const audioPlayerRef = useRef(null);
   const navigate = useNavigate();
 
@@ -128,7 +126,6 @@ const Playlist = () => {
       loading={loading}
       playlist={playlist}
       tracks={tracks}
-      addToLikes={addToLikes} 
       handleRowHover={handleRowHover}
       playPauseTrack={playTrack}
       goBack={goBack}

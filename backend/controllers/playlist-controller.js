@@ -24,7 +24,8 @@ const createPlaylist = async (req, res) => {
 
 const getPlaylists = async (req, res) => {
   try {
-    const playlists = await Playlist.find();
+    const userId = req.query.userId;
+    const playlists = await Playlist.find({ userId: userId });
     res.json(playlists);
   } catch (error) {
     console.error('Error getting playlists:', error);

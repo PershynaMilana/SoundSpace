@@ -42,6 +42,9 @@ const Sets = () => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        params: {
+          userId:decodedToken.id
+        }
       });
       setPlaylists(response.data);
     } catch (error) {

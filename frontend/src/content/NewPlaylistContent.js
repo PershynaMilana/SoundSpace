@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Typography,
   Grid,
@@ -274,17 +275,26 @@ const NewPlaylistContent = ({
   handleRowHover,
   playPauseTrack,
   addToLikes,
+  fetchPlaylistTracks,
+  playlistTracks,
+  handleAddTrack,
+  removeFromPlaylist,
 }) => {
   const [isSearchVisible, setIsSearchVisible] = useState(false);
-  const [playlistTracks, setPlaylistTracks] = useState([]);
   const [likedTracks, setLikedTracks] = useState([]);
 
-  const fetchPlaylistTracks = async () => {
-    const db = getFirestore(app);
-    const tracksCollection = collection(db, "playlistTracks");
-    const tracksSnapshot = await getDocs(tracksCollection);
-    const tracksData = tracksSnapshot.docs.map((doc) => doc.data());
-    setPlaylistTracks(tracksData);
+  const handleLikeClick = (e, track) => {
+    e.stopPropagation();
+    track.isLiked = !track.isLiked;
+
+    if (track.isLiked) {
+      setLikedTracks((prevLikedTracks) => [...prevLikedTracks, track]);
+      addToLikes(track);
+    } else {
+      setLikedTracks((prevLikedTracks) =>
+        prevLikedTracks.filter((likedTrack) => likedTrack.id !== track.id)
+      );
+    }
   };
 
   useEffect(() => {
@@ -303,40 +313,6 @@ const NewPlaylistContent = ({
     setSearchTerm("");
   };
 
-  const handleAddTrack = async (track) => {
-    const db = getFirestore(app);
-    setPlaylistTracks((prevPlaylistTracks) => [...prevPlaylistTracks, track]);
-    const tracksCollection = collection(db, "playlistTracks");
-    await addDoc(tracksCollection, track);
-  };
-
-  const removeFromPlaylist = async (trackId) => {
-    const db = getFirestore(app);
-    setPlaylistTracks((prevLikedTracks) =>
-      prevLikedTracks.filter((likedTrack) => likedTrack.id !== trackId)
-    );
-    const tracksCollection = collection(db, "playlistTracks");
-    const q = query(tracksCollection, where("id", "==", trackId));
-    const querySnapshot = await getDocs(q);
-
-    querySnapshot.forEach(async (doc) => {
-      await deleteDoc(doc.ref);
-    });
-  };
-
-  const handleLikeClick = (e, track) => {
-    e.stopPropagation();
-    track.isLiked = !track.isLiked;
-
-    if (track.isLiked) {
-      setLikedTracks((prevLikedTracks) => [...prevLikedTracks, track]);
-      addToLikes(track);
-    } else {
-      setLikedTracks((prevLikedTracks) =>
-        prevLikedTracks.filter((likedTrack) => likedTrack.id !== track.id)
-      );
-    }
-  };
 
   return (
     <Container>
@@ -399,15 +375,25 @@ const NewPlaylistContent = ({
                     Track
                   </CustomTableCell>
                   <CustomTableCell
-                    style={{
-                      fontSize: "14px",
-                      fontWeight: "700",
-                      color: "#b5b5b5",
-                      textAlign: "center",
-                    }}
-                  >
-                    Album
-                  </CustomTableCell>
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: "700",
+                    color: "#b5b5b5",
+                    textAlign: "center",
+                  }}
+                >
+                  Album
+                </CustomTableCell>
+                <CustomTableCell
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: "700",
+                    color: "#b5b5b5",
+                    textAlign: "center",
+                  }}
+                >
+                  Artist
+                </CustomTableCell>              
                   <CustomTableCell
                     style={{
                       fontSize: "14px",
@@ -481,7 +467,38 @@ const NewPlaylistContent = ({
                       {track.name}
                     </CustomTableCell>
                     <CustomTableCell style={{ textAlign: "center" }}>
-                      {track.album.name}
+                      <LikeButton>
+                        <Link
+                          to={`/album/${track.album.id}`}
+                          style={{
+                            textDecoration: "none",
+                            color: "inherit",
+                            "&:hover": {
+                              textDecoration: "underline",
+                              color: "#1DB954",
+                            },
+                          }}
+                        >
+                          {track.album.name}
+                        </Link>
+                      </LikeButton>
+                    </CustomTableCell>
+                    <CustomTableCell style={{ textAlign: "center" }}>
+                      <LikeButton>
+                        <Link
+                          to={`/artist/${track.artists[0].id}`}
+                          style={{
+                            textDecoration: "none",
+                            color: "inherit",
+                            "&:hover": {
+                              textDecoration: "underline",
+                              color: "#1DB954",
+                            },
+                          }}
+                        >
+                          {track.artists[0].name}
+                        </Link>
+                      </LikeButton>
                     </CustomTableCell>
                     <CustomTableCell style={{ textAlign: "center" }}>
                       {msToTime(track.duration_ms)}
@@ -492,7 +509,7 @@ const NewPlaylistContent = ({
                           color: likedTracks.some(
                             (likedTrack) => likedTrack.id === track.id
                           )
-                            ? "red"
+                            ? "#1DB954"
                             : "white",
                           cursor: "pointer",
                         }}

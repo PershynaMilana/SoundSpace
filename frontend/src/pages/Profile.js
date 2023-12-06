@@ -259,6 +259,9 @@ const Profile = () => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        params: {
+          userId:decodedToken.id
+        }
       });
       setPlaylists(response.data);
       setLoading(false);
@@ -403,11 +406,32 @@ const Profile = () => {
                           fontWeight: "700",
                           color: "#b5b5b5",
                           textAlign: "left",
-                          marginLeft:"20px", 
+                          marginLeft: "20px",
                         }}
                       >
                         Track
                       </CustomTableCell>
+                      <CustomTableCell
+                        style={{
+                          fontSize: "14px",
+                          fontWeight: "700",
+                          color: "#b5b5b5",
+                          textAlign: "left",
+                          marginLeft: "20px",
+                          display: "flex",
+                          alignItems: "center",
+                        }}
+                      >
+                        Album
+                      </CustomTableCell>
+                      <CustomTableCell
+                        style={{
+                          fontSize: "14px",
+                          fontWeight: "700",
+                          color: "#b5b5b5",
+                          textAlign: "right",
+                        }}
+                      ></CustomTableCell>
                       <CustomTableCell
                         style={{
                           fontSize: "14px",
@@ -467,17 +491,61 @@ const Profile = () => {
                             }}
                           />
                         </CustomTableCell>
-                        <CustomTableCell style={{ display: "flex", alignItems: "center" }}>
+                        <CustomTableCell
+                          style={{ display: "flex", alignItems: "center" }}
+                        >
                           <TrackImage
                             image={track.album.images[0].url}
                             title={track.name}
-                            style={{ marginRight: "8px" }} 
+                            style={{ marginRight: "8px" }}
                           />
                           <div>
-                          <div style={{ fontSize:"16px", marginTop:"4px"}}>{track.name}</div>
-                          <div style={{color:"#afafaf", fontSize:"14px"}}>{track.artists[0].name}</div>
+                            <div
+                              style={{
+                                fontSize: "16px",
+                                marginTop: "4px",
+                                marginLeft: "6px",
+                              }}
+                            >
+                              {track.name}
+                            </div>
+                            <div style={{ color: "#afafaf", fontSize: "14px" }}>
+                              <LikeButton>
+                                <Link
+                                  to={`/artist/${track.artists[0].id}`}
+                                  style={{
+                                    textDecoration: "none",
+                                    color: "inherit",
+                                    "&:hover": {
+                                      textDecoration: "underline",
+                                      color: "#1DB954",
+                                    },
+                                  }}
+                                >
+                                  {track.artists[0].name}
+                                </Link>
+                              </LikeButton>
+                            </div>
                           </div>
                         </CustomTableCell>
+                        <CustomTableCell>
+                          <LikeButton>
+                            <Link
+                              to={`/album/${track.album.id}`}
+                              style={{
+                                textDecoration: "none",
+                                color: "inherit",
+                                "&:hover": {
+                                  textDecoration: "underline",
+                                  color: "#1DB954",
+                                },
+                              }}
+                            >
+                              {track.album.name}
+                            </Link>
+                          </LikeButton>
+                        </CustomTableCell>
+                        <CustomTableCell></CustomTableCell>
                         <CustomTableCell style={{ textAlign: "center" }}>
                           {msToTime(track.duration_ms)}
                         </CustomTableCell>
@@ -533,8 +601,8 @@ const Profile = () => {
                 <ArrowBackIosNewRoundedIcon />
               </IconButton>
               <Link
-                onClick={() => navigate("/section")}
-                to="/section"
+                onClick={() => navigate("/library/sets")}
+                to="/library/sets"
                 variant="outlined"
                 color="primary"
                 style={{

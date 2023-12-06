@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import PlayArrowIcon from "@mui/icons-material/PlayArrowRounded";
 import FavoriteIcon from "@mui/icons-material/Favorite";
+import { useLikes } from "../services/LikesContext";
 
 import {
   Table,
@@ -89,6 +91,18 @@ const BackToAlbums = ({ goBack }) => {
   );
 };
 
+const LikeButton = styled("button")({
+  background: "none",
+  border: "none",
+  cursor: "pointer",
+  color: "inherit",
+  textDecoration: "none",
+  "&:hover": {
+    textDecoration: "underline",
+    color: "#1DB954",
+  },
+});
+
 const AlbumContent = ({
   loading,
   album,
@@ -99,7 +113,6 @@ const AlbumContent = ({
   addToLikes,
 }) => {
   const [likedTracks, setLikedTracks] = useState([]);
-
   const handleLikeClick = (e, track) => {
     e.stopPropagation();
     track.isLiked = !track.isLiked;
@@ -113,6 +126,8 @@ const AlbumContent = ({
       );
     }
   };
+
+
 
   return (
     <Container>
@@ -186,6 +201,15 @@ const AlbumContent = ({
                       fontSize: "14px",
                       fontWeight: "700",
                       color: "#b5b5b5",
+                    }}
+                  >
+                    Artist
+                  </CustomTableCell>
+                  <CustomTableCell
+                    style={{
+                      fontSize: "14px",
+                      fontWeight: "700",
+                      color: "#b5b5b5",
                       textAlign: "center",
                     }}
                   >
@@ -205,7 +229,7 @@ const AlbumContent = ({
               </TableHead>
               <br />
               <TableBody>
-                {tracks.map((track, index) => (
+              {tracks.map((track, index) => (
                   <CustomTableRow
                     key={track.id}
                     className="trackRow"
@@ -242,6 +266,23 @@ const AlbumContent = ({
                       />
                     </CustomTableCell>
                     <CustomTableCell>{track.name}</CustomTableCell>
+                    <CustomTableCell>
+                      <LikeButton>
+                        <Link
+                          to={`/artist/${track.artists[0].id}`}
+                          style={{
+                            textDecoration: "none",
+                            color: "inherit",
+                            "&:hover": {
+                              textDecoration: "underline",
+                              color: "#1DB954",
+                            },
+                          }}
+                        >
+                          {track.artists[0].name}
+                        </Link>
+                      </LikeButton>
+                    </CustomTableCell>
                     <CustomTableCell
                       style={{
                         textAlign: "center",
@@ -255,14 +296,12 @@ const AlbumContent = ({
                         borderRadius: "0px 5px 5px 0px",
                       }}
                     >
-                      <FavoriteIcon
+                       <FavoriteIcon
                         style={{
-                          textAlign: "center",
-
                           color: likedTracks.some(
                             (likedTrack) => likedTrack.id === track.id
                           )
-                            ? "red"
+                            ? "#1DB954"
                             : "white",
                           cursor: "pointer",
                         }}

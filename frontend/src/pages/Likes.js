@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useLikes } from "../services/LikesContext";
 import { usePlayer } from "../services/PlayerContext";
 import PlayArrowIcon from "@mui/icons-material/PlayArrowRounded";
@@ -199,6 +199,16 @@ const Likes = () => {
                     textAlign: "center",
                   }}
                 >
+                  Artist
+                </CustomTableCell>
+                <CustomTableCell
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: "700",
+                    color: "#b5b5b5",
+                    textAlign: "center",
+                  }}
+                >
                   Duration
                 </CustomTableCell>
                 <CustomTableCell
@@ -255,8 +265,40 @@ const Likes = () => {
                     {track.name}
                   </CustomTableCell>
                   <CustomTableCell style={{ textAlign: "center" }}>
-                    {track.album.name}
-                  </CustomTableCell>
+                      <LikeButton>
+                        <Link
+                          to={`/album/${track.album.id}`}
+                          style={{
+                            textDecoration: "none",
+                            color: "inherit",
+                            "&:hover": {
+                              textDecoration: "underline",
+                              color: "#1DB954",
+                            },
+                          }}
+                        >
+                          {track.album.name}
+                        </Link>
+                      </LikeButton>
+                    </CustomTableCell>
+                    <CustomTableCell style={{ textAlign: "center" }}>
+                      <LikeButton>
+                        <Link
+                          to={`/artist/${track.artists[0].id}`}
+                          style={{
+                            textDecoration: "none",
+                            color: "inherit",
+                            "&:hover": {
+                              textDecoration: "underline",
+                              color: "#1DB954",
+                            },
+                          }}
+                        >
+                          {track.artists[0].name}
+                        </Link>
+                      </LikeButton>
+                    </CustomTableCell>
+                  
                   <CustomTableCell style={{ textAlign: "center" }}>
                     {msToTime(track.duration_ms)}
                   </CustomTableCell>

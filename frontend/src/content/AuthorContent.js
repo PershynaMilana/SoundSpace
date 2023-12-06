@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import PlayArrowIcon from "@mui/icons-material/PlayArrowRounded";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -118,6 +118,18 @@ const BackToArtists = ({ goBack }) => {
   );
 };
 
+const LikeButton = styled("button")({
+  background: "none",
+  border: "none",
+  cursor: "pointer",
+  color: "inherit",
+  textDecoration: "none",
+  "&:hover": {
+    textDecoration: "underline",
+    color: "#1DB954",
+  },
+});
+
 const AuthorContent = ({
   loading,
   artist,
@@ -191,7 +203,7 @@ const AuthorContent = ({
                     marginLeft: "35px",
                   }}
                 >
-                  Популярность: {artist.popularity}
+                  Popularity: {artist.popularity}
                 </Typography>
               </InfoContainer>
             </Grid>
@@ -220,6 +232,15 @@ const AuthorContent = ({
                     }}
                   >
                     Track
+                  </CustomTableCell>
+                  <CustomTableCell
+                    style={{
+                      fontSize: "14px",
+                      fontWeight: "700",
+                      color: "#b5b5b5",
+                    }}
+                  >
+                    Album
                   </CustomTableCell>
                   <CustomTableCell
                     style={{
@@ -280,6 +301,23 @@ const AuthorContent = ({
                       />
                     </CustomTableCell>
                     <CustomTableCell>{track.name}</CustomTableCell>
+                    <CustomTableCell>
+                      <LikeButton>
+                        <Link
+                          to={`/album/${track.album.id}`}
+                          style={{
+                            textDecoration: "none",
+                            color: "inherit",
+                            "&:hover": {
+                              textDecoration: "underline",
+                              color: "#1DB954",
+                            },
+                          }}
+                        >
+                          {track.album.name}
+                        </Link>
+                      </LikeButton>
+                    </CustomTableCell>
                     <CustomTableCell
                       style={{
                         textAlign: "center",
@@ -295,7 +333,7 @@ const AuthorContent = ({
                           color: likedTracks.some(
                             (likedTrack) => likedTrack.id === track.id
                           )
-                            ? "red"
+                            ? "#1DB954"
                             : "white",
                           cursor: "pointer",
                         }}
@@ -343,7 +381,7 @@ const AuthorContent = ({
                     e.target.style.background = "#333333";
                   }}
                 >
-                  {expanded ? "Свернуть" : "Еще"}
+                  {expanded ? "Collapse" : "More"}
                 </button>
               </div>
             </div>
@@ -377,12 +415,12 @@ const AuthorContent = ({
               }}
             >
               <Tab
-                label="Альбомы"
+                label="Albums"
                 value="albums"
                 style={{ fontWeight: "500", color: "white" }}
               />
               <Tab
-                label="Похожие исполнители"
+                label="Related artists"
                 value="artists"
                 style={{ fontWeight: "500", color: "white" }}
               />
@@ -519,7 +557,7 @@ const AuthorContent = ({
                                 textAlign: "center",
                               }}
                             >
-                              Подписчики: {artist.followers.total}
+                              Subscribers: {artist.followers.total}
                             </Typography>
                           </CardContent>
                         </CardStyled>
