@@ -133,17 +133,25 @@ const TrackTable = styled(TableContainer)(({ theme }) => ({
   boxShadow: "none",
 }));
 
-const CustomTableRow = styled(TableRow)({
-  height: "100%",
-  maxHeight: "30px",
+const CustomTableRow = styled(TableRow)(({ theme, currentTrackId, track }) => ({
+  backgroundColor: currentTrackId === track.id ? "#333" : "transparent",
+  transition: "background-color 0.3s",
   "&:hover": {
     backgroundColor: "#333",
+    "& .playIcon": {
+      visibility: "visible",
+    },
+    "& .customTableCells": {
+      visibility: "hidden",
+    },
   },
-});
+}));
 
 const CustomTableCell = styled(TableCell)(({ theme }) => ({
   color: "white",
   borderBottom: "none",
+  position: "relative",
+  textAlign: "center",
 }));
 
 const LikeButton = styled("button")({
@@ -161,7 +169,7 @@ const LikeButton = styled("button")({
 const PlayIcon = styled(PlayArrowIcon)({
   position: "relative",
   top: "30%",
-  left: "17%",
+  left: "8%",
   height: "25px",
   width: "25px",
   color: "white",
@@ -183,9 +191,6 @@ const Profile = () => {
   const audioPlayerRef = useRef(null);
   const lastFiveLikedTracks = likedTracks.slice(-5).reverse();
   const [dominantColor, setDominantColor] = useState("#04009A");
-  const playTrack = (track) => {
-    setTrack(track);
-  };
 
   const handleImageLoad = (colors) => {
     if (colors && colors.length > 0) {
@@ -202,15 +207,6 @@ const Profile = () => {
       audioPlayerRef.current.src = currentTrack?.preview_url || "";
     }
   }, [currentTrack, audioPlayerRef]);
-
-  const handleRowHover = (index) => {
-    const playIcons = document.getElementsByClassName("playIcon");
-    const customTableCells = document.getElementsByClassName("customTableCell");
-    for (let i = 0; i < playIcons.length; i++) {
-      playIcons[i].style.visibility = i === index ? "visible" : "hidden";
-      customTableCells[i].style.visibility = i === index ? "hidden" : "visible";
-    }
-  };
 
   useEffect(() => {
     const storedToken = getCookie("auth_token");
@@ -260,8 +256,8 @@ const Profile = () => {
           Authorization: `Bearer ${token}`,
         },
         params: {
-          userId:decodedToken.id
-        }
+          userId: decodedToken.id,
+        },
       });
       setPlaylists(response.data);
       setLoading(false);
@@ -314,6 +310,43 @@ const Profile = () => {
 
   const handlePlaylistClick = (playlistId) => {
     navigate(`/newplaylist/${playlistId}`);
+  };
+
+  const handleRowClick = (track) => {
+    setCurrentTrackId(track.id);
+    setIsPlaying(currentTrackId === track.id ? !isPlaying : true);
+    setTrack(track);
+  };
+
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTrackId, setCurrentTrackId] = useState(null);
+
+  const playTrack = (track) => {
+    setTrack(track);
+    setIsPlaying(!isPlaying);
+    setCurrentTrackId(track.id);
+  };
+
+  useEffect(() => {
+    if (audioPlayerRef && audioPlayerRef.current) {
+      audioPlayerRef.current.src = currentTrack?.preview_url || "";
+    }
+  }, [currentTrack, audioPlayerRef]);
+
+  const handleRowHover = (index) => {
+    const playIcons = document.getElementsByClassName(
+      "playIcon" || "pauseIcon"
+    );
+    const customTableCells =
+      document.getElementsByClassName("customTableCells");
+
+    if (playIcons.length > index && customTableCells.length > index) {
+      for (let i = 0; i < playIcons.length; i++) {
+        playIcons[i].style.visibility = i === index ? "visible" : "hidden";
+        customTableCells[i].style.visibility =
+          i === index ? "hidden" : "visible";
+      }
+    }
   };
 
   return (
@@ -393,10 +426,10 @@ const Profile = () => {
                           fontSize: "14px",
                           fontWeight: "700",
                           color: "#b5b5b5",
-                          marginLeft: "50px",
+                          textAlign: "center",
                         }}
                       >
-                        <div style={{ marginLeft: "40px", fontSize: "14px" }}>
+                        <div style={{ textAlign: "center", fontSize: "14px" }}>
                           #
                         </div>
                       </CustomTableCell>
@@ -417,9 +450,9 @@ const Profile = () => {
                           fontWeight: "700",
                           color: "#b5b5b5",
                           textAlign: "left",
-                          marginLeft: "20px",
+                          marginLeft: "230px",
                           display: "flex",
-                          alignItems: "center",
+                          alignItems: "right",
                         }}
                       >
                         Album
@@ -461,38 +494,34 @@ const Profile = () => {
                         key={track.id}
                         onMouseEnter={() => handleRowHover(index)}
                         onMouseLeave={() => handleRowHover(-1)}
-                        onClick={() => playTrack(track)}
+                        onClick={() => handleRowClick(track)}
+                        currentTrackId={currentTrackId}
+                        track={track}
                       >
                         <CustomTableCell
                           style={{
                             borderRadius: "5px 0px 0px 5px",
                             color: "#b5b5b5",
                             padding: "0px",
-                            marginLeft: "50px",
                             position: "relative",
                           }}
                         >
                           <div
-                            className="customTableCell"
+                            className="customTableCells"
                             style={{
-                              marginLeft: "50px",
-                              top: "30%",
+                              width: "50px",
                               position: "absolute",
+                              top: "50%",
+                              left: "50%",
+                              transform: "translate(-50%, -50%)",
                             }}
                           >
                             {index + 1}
                           </div>
-                          <PlayIcon
-                            className="playIcon"
-                            style={{
-                              marginRight: "60px",
-                              padding: "0px",
-                              position: "absolute",
-                            }}
-                          />
+                          <PlayIcon className="playIcon" />
                         </CustomTableCell>
                         <CustomTableCell
-                          style={{ display: "flex", alignItems: "center" }}
+                          style={{ display: "flex", alignItems: "left" }}
                         >
                           <TrackImage
                             image={track.album.images[0].url}
@@ -505,17 +534,28 @@ const Profile = () => {
                                 fontSize: "16px",
                                 marginTop: "4px",
                                 marginLeft: "6px",
+                                color:
+                                  isPlaying && currentTrackId === track.id
+                                    ? "#1DB954"
+                                    : "white",
                               }}
                             >
                               {track.name}
                             </div>
-                            <div style={{ color: "#afafaf", fontSize: "14px" }}>
+                            <div
+                              style={{
+                                color: "#afafaf",
+                                fontSize: "14px",
+                                textAlign: "left",
+                              }}
+                            >
                               <LikeButton>
                                 <Link
                                   to={`/artist/${track.artists[0].id}`}
                                   style={{
                                     textDecoration: "none",
                                     color: "inherit",
+                                    textAlign: "left",
                                     "&:hover": {
                                       textDecoration: "underline",
                                       color: "#1DB954",

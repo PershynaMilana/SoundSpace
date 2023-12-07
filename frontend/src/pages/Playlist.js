@@ -1,41 +1,26 @@
 import axios from "axios";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState,  } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { clientId, clientSecret } from "../services/spotifyAuth";
 import PlaylistContent from "../content/PlaylistContent";
-import { usePlayer } from "../services/PlayerContext";
+
 
 const Playlist = () => {
   const { playlistId } = useParams();
   const [playlist, setPlaylist] = useState(null);
   const [tracks, setTracks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { setTrack, currentTrack } = usePlayer();
-  const audioPlayerRef = useRef(null);
+
   const navigate = useNavigate();
 
-  const playTrack = (track) => {
-    setTrack(track);
-  };
+ 
 
-  useEffect(() => {
-    if (audioPlayerRef && audioPlayerRef.current) {
-      audioPlayerRef.current.src = currentTrack?.preview_url || "";
-    }
-  }, [currentTrack, audioPlayerRef]);
 
   const goBack = () => {
     navigate(-1);
   };
 
-  const handleRowHover = (index) => {
-    const playIcons = document.getElementsByClassName("playIcon");
-    const customTableCells = document.getElementsByClassName("customTableCell");
-    for (let i = 0; i < playIcons.length; i++) {
-      playIcons[i].style.visibility = i === index ? "visible" : "hidden";
-      customTableCells[i].style.visibility = i === index ? "hidden" : "visible";
-    }
-  };
+
 
   useEffect(() => {
     if (playlistId) {
@@ -126,8 +111,6 @@ const Playlist = () => {
       loading={loading}
       playlist={playlist}
       tracks={tracks}
-      handleRowHover={handleRowHover}
-      playPauseTrack={playTrack}
       goBack={goBack}
     />
   );

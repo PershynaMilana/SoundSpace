@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { usePlayer } from "../services/PlayerContext";
 import { Link } from "react-router-dom";
 import {
   Typography,
@@ -79,23 +80,6 @@ const InfoContainer = styled("div")(({ theme }) => ({
     marginTop: "20px",
     marginLeft: "0",
   },
-}));
-
-const TrackTable = styled(TableContainer)(({ theme }) => ({
-  width: "90%",
-  backgroundColor: "transparent",
-  boxShadow: "none",
-}));
-
-const CustomTableRow = styled(TableRow)({
-  "&:hover": {
-    backgroundColor: "#333",
-  },
-});
-
-const CustomTableCell = styled(TableCell)(({ theme }) => ({
-  color: "white",
-  borderBottom: "none",
 }));
 
 const PlaylistDetails = styled("div")(({ theme }) => ({
@@ -223,10 +207,37 @@ const ClearIconCustom = styled(ClearIcon)({
   cursor: "pointer",
 });
 
-const PlayIcon = styled(PlayArrowIcon)({
+const TrackTable = styled(TableContainer)(({ theme }) => ({
+  width: "90%",
+  backgroundColor: "transparent",
+  boxShadow: "none",
+}));
+
+const CustomTableRow = styled(TableRow)(({ theme, currentTrackId, track }) => ({
+  transition: "background-color 0.3s",
+  "&:hover": {
+    backgroundColor: "#333",
+    "& .playIcon": {
+      visibility: "visible",
+    },
+    "& .customTableCells": {
+      visibility: "hidden",
+    },
+  },
+}));
+
+const CustomTableCell = styled(TableCell)(({ theme }) => ({
+  color: "white",
+  borderBottom: "none",
   position: "relative",
-  top: "30%",
-  left: "14%",
+  textAlign: "center",
+}));
+
+const PlayIcon = styled(PlayArrowIcon)({
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
   height: "25px",
   width: "25px",
   color: "white",
@@ -272,7 +283,7 @@ const NewPlaylistContent = ({
   searchResults,
   searchLoading,
   searchTracks,
-  handleRowHover,
+
   playPauseTrack,
   addToLikes,
   fetchPlaylistTracks,
@@ -313,6 +324,44 @@ const NewPlaylistContent = ({
     setSearchTerm("");
   };
 
+  const handleRowClick = (track) => {
+    setCurrentTrackId(track.id);
+    setIsPlaying(currentTrackId === track?.id ? !isPlaying : true);
+    setTrack(track);
+  };
+
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTrackId, setCurrentTrackId] = useState(null);
+  const { setTrack, currentTrack } = usePlayer();
+  const audioPlayerRef = useRef(null);
+
+  const playTrack = (track) => {
+    setTrack(track);
+    setIsPlaying(!isPlaying);
+    setCurrentTrackId(track.id);
+  };
+
+  useEffect(() => {
+    if (audioPlayerRef && audioPlayerRef.current) {
+      audioPlayerRef.current.src = currentTrack?.preview_url || "";
+    }
+  }, [currentTrack, audioPlayerRef]);
+
+  const handleRowHover = (index) => {
+    const playIcons = document.getElementsByClassName(
+      "playIcon" || "pauseIcon"
+    );
+    const customTableCells =
+      document.getElementsByClassName("customTableCells");
+
+    if (playIcons.length > index && customTableCells.length > index) {
+      for (let i = 0; i < playIcons.length; i++) {
+        playIcons[i].style.visibility = i === index ? "visible" : "hidden";
+        customTableCells[i].style.visibility =
+          i === index ? "hidden" : "visible";
+      }
+    }
+  };
 
   return (
     <Container>
@@ -348,6 +397,7 @@ const NewPlaylistContent = ({
               </PlaylistDetails>
             </InfoContainer>
           </Grid>
+
           <TrackTable component={Paper}>
             <Table>
               <TableHead style={{ borderBottom: "1px solid #333" }}>
@@ -357,10 +407,10 @@ const NewPlaylistContent = ({
                       fontSize: "14px",
                       fontWeight: "700",
                       color: "#b5b5b5",
-                      marginLeft: "50px",
+                      textAlign: "center",
                     }}
                   >
-                    <div style={{ marginLeft: "40px", fontSize: "14px" }}>
+                    <div style={{ textAlign: "center", fontSize: "14px" }}>
                       #
                     </div>
                   </CustomTableCell>
@@ -375,25 +425,25 @@ const NewPlaylistContent = ({
                     Track
                   </CustomTableCell>
                   <CustomTableCell
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: "700",
-                    color: "#b5b5b5",
-                    textAlign: "center",
-                  }}
-                >
-                  Album
-                </CustomTableCell>
-                <CustomTableCell
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: "700",
-                    color: "#b5b5b5",
-                    textAlign: "center",
-                  }}
-                >
-                  Artist
-                </CustomTableCell>              
+                    style={{
+                      fontSize: "14px",
+                      fontWeight: "700",
+                      color: "#b5b5b5",
+                      textAlign: "center",
+                    }}
+                  >
+                    Album
+                  </CustomTableCell>
+                  <CustomTableCell
+                    style={{
+                      fontSize: "14px",
+                      fontWeight: "700",
+                      color: "#b5b5b5",
+                      textAlign: "center",
+                    }}
+                  >
+                    Artist
+                  </CustomTableCell>
                   <CustomTableCell
                     style={{
                       fontSize: "14px",
@@ -433,37 +483,40 @@ const NewPlaylistContent = ({
                     key={track.id}
                     onMouseEnter={() => handleRowHover(index)}
                     onMouseLeave={() => handleRowHover(-1)}
-                    onClick={() => playPauseTrack(track)}
+                    onClick={() => handleRowClick(track)}
+                    currentTrackId={currentTrackId}
+                    track={track}
                   >
                     <CustomTableCell
                       style={{
                         borderRadius: "5px 0px 0px 5px",
                         color: "#b5b5b5",
                         padding: "0px",
-                        marginLeft: "50px",
                         position: "relative",
                       }}
                     >
                       <div
-                        className="customTableCell"
+                        className="customTableCells"
                         style={{
-                          marginLeft: "50px",
-                          top: "30%",
+                          width: "50px",
                           position: "absolute",
+                          top: "50%",
+                          left: "50%",
+                          transform: "translate(-50%, -50%)",
                         }}
                       >
                         {index + 1}
                       </div>
-                      <PlayIcon
-                        className="playIcon"
-                        style={{
-                          marginRight: "60px",
-                          padding: "0px",
-                          position: "absolute",
-                        }}
-                      />
+                      <PlayIcon className="playIcon" />
                     </CustomTableCell>
-                    <CustomTableCell style={{ textAlign: "center" }}>
+                    <CustomTableCell
+                      style={{
+                        color:
+                          isPlaying && currentTrackId === track.id
+                            ? "#1DB954"
+                            : "white",
+                      }}
+                    >
                       {track.name}
                     </CustomTableCell>
                     <CustomTableCell style={{ textAlign: "center" }}>
@@ -548,7 +601,11 @@ const NewPlaylistContent = ({
               {isSearchVisible ? <>Close</> : "More"}
             </div>
           </Grid>
-          <Grid container spacing={2} style={{ width: "93%" }}>
+          <Grid
+            container
+            spacing={2}
+            style={{ width: "93%", marginTop: "50px" }}
+          >
             {isSearchVisible && (
               <SearchContainer>
                 <SearchInput
@@ -618,8 +675,8 @@ const NewPlaylistContent = ({
                             }}
                           >
                             <CustomButton onClick={() => handleAddTrack(track)}>
-  Add to Playlist
-</CustomButton>
+                              Add to Playlist
+                            </CustomButton>
                           </CustomTableCell>
                         </CustomTableRow>
                       </TableBody>

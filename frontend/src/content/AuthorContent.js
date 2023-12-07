@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import PlayArrowIcon from "@mui/icons-material/PlayArrowRounded";
 import FavoriteIcon from "@mui/icons-material/Favorite";
+import { usePlayer } from "../services/PlayerContext";
 
 import {
   Table,
@@ -79,21 +80,32 @@ const TrackTable = styled(TableContainer)(({ theme }) => ({
   boxShadow: "none",
 }));
 
-const CustomTableRow = styled(TableRow)({
+const CustomTableRow = styled(TableRow)(({ theme, currentTrackId, track }) => ({
+  backgroundColor: currentTrackId === track.id ? "#333" : "transparent",
+  transition: "background-color 0.3s",
   "&:hover": {
     backgroundColor: "#333",
+    "& .playIcon": {
+      visibility: "visible",
+    },
+    "& .customTableCells": {
+      visibility: "hidden",
+    },
   },
-});
+}));
 
 const CustomTableCell = styled(TableCell)(({ theme }) => ({
   color: "white",
   borderBottom: "none",
+  position: "relative",
+  textAlign: "center",
 }));
 
 const PlayIcon = styled(PlayArrowIcon)({
-  position: "relative",
-  top: "30%",
-  left: "20%",
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
   height: "25px",
   width: "25px",
   color: "white",
@@ -135,8 +147,6 @@ const AuthorContent = ({
   artist,
   topTracks,
   displayedTracks,
-  handleRowHover,
-  playTrack,
   expanded,
   toggleTracks,
   selectedTab,
@@ -161,6 +171,45 @@ const AuthorContent = ({
       setLikedTracks((prevLikedTracks) =>
         prevLikedTracks.filter((likedTrack) => likedTrack.id !== track.id)
       );
+    }
+  };
+
+  const handleRowClick = (track) => {
+    setCurrentTrackId(track.id);
+    setIsPlaying(currentTrackId === track.id ? !isPlaying : true);
+    setTrack(track);
+  };
+
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTrackId, setCurrentTrackId] = useState(null);
+  const { setTrack, currentTrack } = usePlayer();
+  const audioPlayerRef = useRef(null);
+
+  const playTrack = (track) => {
+    setTrack(track);
+    setIsPlaying(!isPlaying);
+    setCurrentTrackId(track.id);
+  };
+
+  useEffect(() => {
+    if (audioPlayerRef && audioPlayerRef.current) {
+      audioPlayerRef.current.src = currentTrack?.preview_url || "";
+    }
+  }, [currentTrack, audioPlayerRef]);
+
+  const handleRowHover = (index) => {
+    const playIcons = document.getElementsByClassName(
+      "playIcon" || "pauseIcon"
+    );
+    const customTableCells =
+      document.getElementsByClassName("customTableCells");
+
+    if (playIcons.length > index && customTableCells.length > index) {
+      for (let i = 0; i < playIcons.length; i++) {
+        playIcons[i].style.visibility = i === index ? "visible" : "hidden";
+        customTableCells[i].style.visibility =
+          i === index ? "hidden" : "visible";
+      }
     }
   };
 
@@ -217,10 +266,10 @@ const AuthorContent = ({
                       fontSize: "14px",
                       fontWeight: "700",
                       color: "#b5b5b5",
-                      marginLeft: "50px",
+                      textAlign: "center",
                     }}
                   >
-                    <div style={{ marginLeft: "40px", fontSize: "14px" }}>
+                    <div style={{ textAlign: "center", fontSize: "14px" }}>
                       #
                     </div>
                   </CustomTableCell>
@@ -270,37 +319,42 @@ const AuthorContent = ({
                     key={track.id}
                     onMouseEnter={() => handleRowHover(index)}
                     onMouseLeave={() => handleRowHover(-1)}
-                    onClick={() => playTrack(track)}
+                    onClick={() => handleRowClick(track)}
+                    currentTrackId={currentTrackId}
+                    track={track}
                   >
                     <CustomTableCell
                       style={{
                         borderRadius: "5px 0px 0px 5px",
                         color: "#b5b5b5",
                         padding: "0px",
-                        marginLeft: "50px",
                         position: "relative",
                       }}
                     >
                       <div
-                        className="customTableCell"
+                        className="customTableCells"
                         style={{
-                          marginLeft: "50px",
-                          top: "30%",
+                          width: "50px",
                           position: "absolute",
+                          top: "50%",
+                          left: "50%",
+                          transform: "translate(-50%, -50%)",
                         }}
                       >
                         {index + 1}
                       </div>
-                      <PlayIcon
-                        className="playIcon"
-                        style={{
-                          marginRight: "60px",
-                          padding: "0px",
-                          position: "absolute",
-                        }}
-                      />
+                      <PlayIcon className="playIcon" />
                     </CustomTableCell>
-                    <CustomTableCell>{track.name}</CustomTableCell>
+                    <CustomTableCell
+                      style={{
+                        color:
+                          isPlaying && currentTrackId === track.id
+                            ? "#1DB954"
+                            : "white",
+                      }}
+                    >
+                      {track.name}
+                    </CustomTableCell>
                     <CustomTableCell>
                       <LikeButton>
                         <Link

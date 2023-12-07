@@ -35,7 +35,13 @@ const userSchema = new Schema({
   ],
   imageUrl: {
     type:String
-  }
+  },
+  likedTracks: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Track',
+    },
+  ],
 });
 
 module.exports = mongoose.model('User', userSchema);
