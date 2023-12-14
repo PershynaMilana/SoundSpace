@@ -64,6 +64,10 @@ const HomeContent = ({
   handleNextArtist,
   handlePrevRelease,
   handleNextRelease,
+  handleNextTrack,
+  handlePrevTrack,
+  trackIndex,
+  latestTracks,
   navigate,
 }) => (
   <ContainerStyled style={{maxWidth: "1500px", width:"100%"}}>
@@ -298,6 +302,124 @@ const HomeContent = ({
               <CardContent>
                 <Typography variant="h6" component="div">
                   {release.name}
+                </Typography>
+              </CardContent>
+            </CardStyled>
+          ))}
+      </SectionContainer>
+    )}
+
+    {/*--------------------------------------------*/}
+
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        marginBottom: "10px",
+      }}
+    >
+      <Typography
+        variant="h4"
+        gutterBottom
+        color={"white"}
+        style={{
+          order: "1",
+          fontWeight: "700",
+          fontFamily: "Verdana",
+          marginTop: "25px",
+        }}
+      >
+       Listening history
+      </Typography>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          order: "2",
+        }}
+      >
+         <IconButton
+          style={{
+            color: "white",
+            cursor: "pointer",
+            marginTop: "25px",
+          }}
+          onClick={handlePrevTrack}
+          disabled={trackIndex === 0}
+        >
+          <ArrowBackIosNewRoundedIcon />
+        </IconButton>
+        <Link
+          onClick={() => navigate("/section")}
+          to="/section"
+          variant="outlined"
+          color="primary"
+          style={{
+            textDecoration: "none",
+            color: "white",
+            fontSize: "20px",
+            verticalAlign: "middle",
+            marginTop: "30px",
+            fontWeight: "600",
+            "&:hover": {
+              textDecoration: "underline",
+            },
+          }}
+        >
+         Show all
+        </Link>
+        <IconButton
+          style={{
+            color: "white",
+            marginTop: "25px",
+            cursor:
+              trackIndex + 7 >= latestTracks.length
+                ? "not-allowed"
+                : "pointer",
+            opacity: trackIndex + 7 >= latestTracks.length ? 0.5 : 1,
+          }}
+          onClick={handleNextTrack}
+          disabled={trackIndex + 7 >= latestTracks.length}
+        >
+          <ArrowForwardIosRoundedIcon />
+        </IconButton>
+      </div>
+    </div>
+    {loading ? (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          margin: "15px",
+        }}
+      >
+        <CircularProgress style={{ color: "gray" }} />
+      </div>
+    ) : (
+      <SectionContainer style={{ display: "flex", flexWrap: "wrap" }}>
+        {latestTracks
+          .slice(trackIndex, trackIndex + 7)
+          .map((playlist) => (
+            <CardStyled
+              key={playlist.id}
+              onClick={() => navigate(`/album/${playlist.album.id}`)}
+              style={{
+                flex: '0 0 calc(14.285% - 20px)',
+                margin: "10px",
+                backgroundColor: "#222222",
+                height: "220px",
+                cursor: "pointer",
+                color: "white",
+              }}
+            >
+                <CardMediaStyled
+                  image={playlist.album?.images[0]?.url}
+                  title={playlist.name}
+                />
+              <CardContent>
+                <Typography variant="h6" component="div">
+                  {playlist.name}
                 </Typography>
               </CardContent>
             </CardStyled>

@@ -8,7 +8,7 @@ import {
   limit,
   getDocs,
 } from "firebase/firestore";
-import { app } from "../services/fairbaseConfig";
+import { app } from "../configs/fairbaseConfig";
 
 const PlayerContext = createContext();
 

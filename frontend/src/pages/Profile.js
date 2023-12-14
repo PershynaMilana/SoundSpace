@@ -26,7 +26,6 @@ import {
   TableContainer,
   TableCell,
   Paper,
-  Divider,
 } from "@mui/material";
 
 const Container = styled("div")(() => ({
@@ -192,15 +191,6 @@ const Profile = () => {
   const lastFiveLikedTracks = likedTracks.slice(-5).reverse();
   const [dominantColor, setDominantColor] = useState("#04009A");
 
-  const handleImageLoad = (colors) => {
-    if (colors && colors.length > 0) {
-      setDominantColor(colors[0]);
-    }
-  };
-
-  const handleImageError = (error) => {
-    console.error("Error loading image:", error);
-  };
 
   useEffect(() => {
     if (audioPlayerRef && audioPlayerRef.current) {
@@ -320,12 +310,6 @@ const Profile = () => {
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTrackId, setCurrentTrackId] = useState(null);
-
-  const playTrack = (track) => {
-    setTrack(track);
-    setIsPlaying(!isPlaying);
-    setCurrentTrackId(track.id);
-  };
 
   useEffect(() => {
     if (audioPlayerRef && audioPlayerRef.current) {
@@ -726,7 +710,7 @@ const Profile = () => {
                         <Typography
                           variant="p"
                           component="div"
-                          style={{ textAlign: "center" }}
+                          style={{ textAlign: "center", color: "#afafaf" }}
                         >
                           {playlist.description}
                         </Typography>

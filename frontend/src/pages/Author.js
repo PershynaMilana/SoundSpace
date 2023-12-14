@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import getToken from "../services/spotifyAuth";
+import getToken from "../configs/spotifyAuth";
 import AuthorContent from "../content/AuthorContent";
 import { usePlayer } from "../services/PlayerContext";
 import { useLikes } from "../services/LikesContext";

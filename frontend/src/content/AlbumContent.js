@@ -256,7 +256,7 @@ const AlbumContent = ({
                   <CustomTableCell
                     style={{
                       fontSize: "14px",
-                      fontWeight: "700",
+                      fontWeight: "701",
                       color: "#b5b5b5",
                       textAlign: "center",
                     }}

@@ -21,7 +21,7 @@ import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import PlayArrowIcon from "@mui/icons-material/PlayArrowRounded";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ClearIcon from "@mui/icons-material/Clear";
-import { app } from "../services/fairbaseConfig";
+import { app } from "../configs/fairbaseConfig";
 import CustomButton from "../components/CustomButton";
 import {
   getFirestore,
@@ -598,7 +598,7 @@ const NewPlaylistContent = ({
               }}
               onClick={() => setIsSearchVisible(!isSearchVisible)}
             >
-              {isSearchVisible ? <>Close</> : "More"}
+              {isSearchVisible ? <>Close</> : "Search"}
             </div>
           </Grid>
           <Grid

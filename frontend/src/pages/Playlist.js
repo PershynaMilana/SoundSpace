@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState,  } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { clientId, clientSecret } from "../services/spotifyAuth";
+import { clientId, clientSecret } from "../configs/spotifyAuth";
 import PlaylistContent from "../content/PlaylistContent";
 
 
@@ -10,17 +10,11 @@ const Playlist = () => {
   const [playlist, setPlaylist] = useState(null);
   const [tracks, setTracks] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const navigate = useNavigate();
-
- 
-
 
   const goBack = () => {
     navigate(-1);
   };
-
-
 
   useEffect(() => {
     if (playlistId) {

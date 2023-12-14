@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
-import { clientId, clientSecret } from "../services/spotifyAuth";
+import { useNavigate } from "react-router-dom";
+import { clientId, clientSecret } from "../configs/spotifyAuth";
 import {
     Container,
     Grid,

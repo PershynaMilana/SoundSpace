@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { clientId, clientSecret } from "../services/spotifyAuth";
+import { clientId, clientSecret } from "../configs/spotifyAuth";
 import AlbumContent from "../content/AlbumContent";
 import { usePlayer } from "../services/PlayerContext";
 import { useLikes } from "../services/LikesContext";

@@ -10,7 +10,7 @@ import {
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { app } from "../services/fairbaseConfig";
+import { app } from "../configs/fairbaseConfig";
 import "../assets/styles/modalWindow.css";
 import DefaultPhoto from "../assets/images/default-image.jpg";
 

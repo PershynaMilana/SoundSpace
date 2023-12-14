@@ -138,12 +138,6 @@ const Likes = () => {
     setTrack(track);
   };
 
-  const playTrack = (track) => {
-    setTrack(track);
-    setIsPlaying(!isPlaying);
-    setCurrentTrackId(track.id);
-  };
-
   useEffect(() => {
     if (audioPlayerRef && audioPlayerRef.current) {
       audioPlayerRef.current.src = currentTrack?.preview_url || "";

@@ -1,4 +1,4 @@
-import { app } from "../services/fairbaseConfig";
+import { app } from "../configs/fairbaseConfig";
 import { getFirestore, collection, getDocs, addDoc, deleteDoc, query, where } from 'firebase/firestore';
 import { createContext, useContext, useState, useEffect } from "react";
 import LikesNotification from "../components/LikesNotification";

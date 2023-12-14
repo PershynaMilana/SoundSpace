@@ -2,10 +2,10 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import PlaylistContent from "../content/NewPlaylistContent";
-import getToken from "../services/spotifyAuth";
+import getToken from "../configs/spotifyAuth";
 import { usePlayer } from "../services/PlayerContext";
 import { useLikes } from "../services/LikesContext";
-import { app } from "../services/fairbaseConfig";
+import { app } from "../configs/fairbaseConfig";
 import {
   getFirestore,
   collection,
@@ -149,8 +149,6 @@ const removeFromPlaylist = async (trackId) => {
     await deleteDoc(doc.ref);
   });
 };
-
-
 
   return (
     <PlaylistContent

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { clientId, clientSecret } from "../services/spotifyAuth";
+import { clientId, clientSecret } from "../configs/spotifyAuth";
 import HomeContent from "../content/HomeContent";
+import { usePlayer } from "../services/PlayerContext";
 
 const Home = () => {
     const [popularPlaylists, setPopularPlaylists] = useState([]);
@@ -13,6 +14,9 @@ const Home = () => {
     const navigate = useNavigate();
     const [artistIndex, setArtistIndex] = useState(0);
     const [releaseIndex, setReleaseIndex] = useState(0);
+    const [trackIndex, setTrackIndex] = useState(0);
+    const [latestTracks, setLatestTracks] = useState([]);
+    const { getLatestPlayedTracks } = usePlayer();
 
     const handleNextArtist = () => {
         if (artistIndex + 7 < artists.length) {
@@ -42,6 +46,27 @@ const Home = () => {
         setPlaylistIndex((prevIndex) => Math.max(0, prevIndex - 7));
     };
 
+    const handleNextTrack = () => {
+        setTrackIndex((prevIndex) => prevIndex + 7);
+      };
+    
+    const handlePrevTrack = () => {
+        setTrackIndex((prevIndex) => Math.max(0, prevIndex - 7));
+    };
+
+    useEffect(() => {
+        const fetchLatestTracks = async () => {
+          try {
+            const tracks = await getLatestPlayedTracks();
+            setLatestTracks(tracks);
+          } catch (error) {
+            console.error("Error fetching latest tracks:", error);
+          }
+        };
+    
+        fetchLatestTracks();
+      }, [getLatestPlayedTracks]);
+
     useEffect(() => {
         const getToken = async () => {
             try {
@@ -65,6 +90,8 @@ const Home = () => {
                 return null;
             }
         };
+
+        
 
         const getPopularPlaylists = async (token) => {
             try {
@@ -172,12 +199,16 @@ const Home = () => {
             artistIndex={artistIndex}
             newReleases={newReleases}
             releaseIndex={releaseIndex}
+            latestTracks={latestTracks}
+            trackIndex={trackIndex}
             handlePrevPlaylist={handlePrevPlaylist}
             handleNextPlaylist={handleNextPlaylist}
             handlePrevArtist={handlePrevArtist}
             handleNextArtist={handleNextArtist}
             handlePrevRelease={handlePrevRelease}
             handleNextRelease={handleNextRelease}
+            handleNextTrack={handleNextTrack}
+            handlePrevTrack={handlePrevTrack}
             navigate={navigate}
         />
     );
